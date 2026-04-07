@@ -1,0 +1,227 @@
+```html
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>HR Portal - PT Sepatu Indonesia</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap');
+        * { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: #f8fafc; margin: 0; }
+        .teal-theme { background-color: #1abc9c; }
+        .teal-text { color: #1abc9c; }
+        .animate-fade { animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // --- KODE CONFIG DARI GAMBAR ANDA (SUDAH SAYA ISI) ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyAg2NSb0rqD6BNtu96_7VJezhGiUlYyIZM",
+            authDomain: "hire-1a51d.firebaseapp.com",
+            projectId: "hire-1a51d",
+            storageBucket: "hire-1a51d.firebasestorage.app",
+            messagingSenderId: "370568295",
+            appId: "1:370568295:web:a0d38b16b3bde89cbbf8c2",
+            measurementId: "G-XQ749R6HHK"
+        };
+
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, doc, getDoc, setDoc, onSnapshot, query, where, updateDoc, deleteDoc, orderBy } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        const appId = "hire-shoe-enterprise";
+
+        function App() {
+            const [view, setView] = useState('splash');
+            const [loading, setLoading] = useState(false);
+            const [user, setUser] = useState(null);
+            const [profile, setProfile] = useState(null);
+            const [config, setConfig] = useState({ name: 'PT SEPATU MAJU', logo: '', webhook: '' });
+            const [applicants, setApplicants] = useState([]);
+            const [jobs, setJobs] = useState([]);
+
+            // Form States
+            const [email, setEmail] = useState('');
+            const [pass, setPass] = useState('');
+            const [name, setName] = useState('');
+            const [authMode, setAuthMode] = useState('login');
+            
+            // Apply Form
+            const [ktp, setKtp] = useState('');
+            const [wa, setWa] = useState('');
+            const [pos, setPos] = useState('');
+            const [photo, setPhoto] = useState('');
+
+            useEffect(() => {
+                const unsubAuth = onAuthStateChanged(auth, async (u) => {
+                    if (u) {
+                        setUser(u);
+                        const pSnap = await getDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', u.uid));
+                        const pData = pSnap.exists() ? pSnap.data() : { role: u.email.includes('admin') ? 'admin' : 'user', name: u.displayName || 'User' };
+                        setProfile(pData);
+                        setView(pData.role === 'admin' ? 'admin_db' : 'user_db');
+                    } else {
+                        setTimeout(() => setView('login'), 2000);
+                    }
+                });
+                onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'config'), (s) => s.exists() && setConfig(s.data()));
+                onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'jobs'), (s) => setJobs(s.docs.map(d => ({id: d.id, ...d.data()}))));
+                return () => unsubAuth();
+            }, []);
+
+            useEffect(() => {
+                if (profile?.role === 'admin') {
+                    return onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'applicants'), (s) => setApplicants(s.docs.map(d => ({id: d.id, ...d.data()}))));
+                }
+            }, [profile]);
+
+            useEffect(() => { if (window.lucide) window.lucide.createIcons(); });
+
+            const handleAuth = async (e) => {
+                e.preventDefault();
+                setLoading(true);
+                try {
+                    if (authMode === 'signup') {
+                        const res = await createUserWithEmailAndPassword(auth, email, pass);
+                        const role = email === "admin@pabriksepatu.com" ? "admin" : "user";
+                        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', res.user.uid), { uid: res.user.uid, name, email, role });
+                    } else {
+                        await signInWithEmailAndPassword(auth, email, pass);
+                    }
+                } catch (err) { alert(err.message); }
+                setLoading(false);
+            };
+
+            const toBase64 = (file) => new Promise((res) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => res(reader.result);
+            });
+
+            if (view === 'splash') return (
+                <div className="h-screen teal-theme flex flex-col items-center justify-center text-white">
+                    <i data-lucide="shield-check" className="w-16 h-16 mb-4 animate-bounce"></i>
+                    <h1 className="text-3xl font-black tracking-tighter uppercase">HIREPRO</h1>
+                    <p className="text-[10px] font-bold tracking-[0.4em] opacity-50 uppercase">Enterprise System</p>
+                </div>
+            );
+
+            if (view === 'login') return (
+                <div className="min-h-screen bg-white flex flex-col p-10 justify-center animate-fade max-w-md mx-auto">
+                    <div className="text-center mb-10">
+                        <div className="w-20 h-20 bg-[#1abc9c] rounded-[2rem] mx-auto flex items-center justify-center text-white mb-4 shadow-xl"><i data-lucide="briefcase"></i></div>
+                        <h2 className="text-2xl font-black text-slate-800 tracking-tighter uppercase leading-none">{config.name}</h2>
+                        <p className="text-[10px] font-bold text-slate-400 mt-2 uppercase tracking-widest leading-none italic">Recruitment System</p>
+                    </div>
+                    <form className="space-y-4" onSubmit={handleAuth}>
+                        {authMode === 'signup' && <input className="w-full p-4 bg-slate-50 border rounded-2xl outline-none text-sm" placeholder="Nama Lengkap" value={name} onChange={e => setName(e.target.value)} required />}
+                        <input className="w-full p-4 bg-slate-50 border rounded-2xl outline-none text-sm" type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required />
+                        <input className="w-full p-4 bg-slate-50 border rounded-2xl outline-none text-sm" type="password" placeholder="Password" value={pass} onChange={e => setPass(e.target.value)} required />
+                        <button type="submit" className="w-full teal-theme text-white font-black py-4 rounded-3xl shadow-xl shadow-teal-50 uppercase text-xs tracking-widest">{authMode === 'login' ? 'MASUK' : 'DAFTAR'}</button>
+                    </form>
+                    <button onClick={() => setAuthMode(authMode === 'login' ? 'signup' : 'login')} className="mt-8 text-[10px] font-black text-slate-300 uppercase underline tracking-widest block mx-auto">{authMode === 'login' ? 'Buat Akun Pelamar' : 'Login Disini'}</button>
+                </div>
+            );
+
+            if (view === 'user_db') return (
+                <div className="min-h-screen bg-[#f8fafc] animate-fade max-w-md mx-auto pb-24">
+                    <div className="teal-theme text-white pt-16 pb-20 px-8 rounded-b-[4rem] text-center shadow-xl relative">
+                        <div className="w-24 h-24 bg-white rounded-full mx-auto mb-4 flex items-center justify-center text-[#1abc9c] shadow-lg border-4 border-white/20"><i data-lucide="user" className="w-12 h-12"></i></div>
+                        <h2 className="text-2xl font-black uppercase tracking-tight leading-none">{profile?.name}</h2>
+                        <p className="text-[10px] font-bold opacity-60 mt-2 uppercase">Status: Pelamar</p>
+                    </div>
+                    <div className="px-6 -mt-10 space-y-4">
+                        <button onClick={() => setView('user_form')} className="w-full bg-white p-6 rounded-[2.5rem] border shadow-sm flex justify-between items-center active:scale-95 transition-transform">
+                            <div className="text-left"><h3 className="font-black text-sm text-slate-800 uppercase">Kirim Lamaran</h3><p className="text-[10px] text-slate-400">Pilih posisi & upload foto</p></div>
+                            <div className="w-12 h-12 bg-slate-50 text-[#1abc9c] rounded-2xl flex items-center justify-center"><i data-lucide="file-plus"></i></div>
+                        </button>
+                        <button onClick={() => signOut(auth)} className="w-full py-4 text-red-500 font-black uppercase text-[10px] tracking-widest">Logout</button>
+                    </div>
+                </div>
+            );
+
+            if (view === 'user_form') return (
+                <div className="min-h-screen bg-white pb-20 animate-fade max-w-md mx-auto">
+                    <div className="teal-theme text-white p-6 flex items-center gap-4 sticky top-0 z-50">
+                        <button onClick={() => setView('user_db')}><i data-lucide="chevron-left"></i></button>
+                        <h1 className="font-black text-lg">Formulir</h1>
+                    </div>
+                    <div className="p-8 space-y-6">
+                        <input className="w-full p-4 bg-slate-50 rounded-2xl outline-none text-sm border" placeholder="NIK KTP" value={ktp} onChange={e => setKtp(e.target.value)} />
+                        <input className="w-full p-4 bg-slate-50 rounded-2xl outline-none text-sm border" placeholder="No WhatsApp" value={wa} onChange={e => setWa(e.target.value)} />
+                        <select className="w-full p-4 bg-slate-50 rounded-2xl text-sm border" onChange={e => setPos(e.target.value)}>
+                            <option value="">Pilih Posisi...</option>
+                            <option>Operator Sewing</option>
+                            <option>Quality Control</option>
+                        </select>
+                        <label className={`block w-full p-8 border-2 border-dashed rounded-[2rem] text-center ${photo ? 'bg-green-50 border-green-300' : 'bg-slate-50'} cursor-pointer`}>
+                            <input type="file" className="hidden" accept="image/*" onChange={async e => setPhoto(await toBase64(e.target.files[0]))} />
+                            <i data-lucide="camera" className="mx-auto mb-1 text-slate-300"></i>
+                            <span className="text-[9px] font-black text-slate-400 uppercase">{photo ? '✓ Foto OK' : 'Upload Pas Foto'}</span>
+                        </label>
+                        <button onClick={async () => {
+                            setLoading(true);
+                            await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'applicants'), { ktp, wa, pos, photo, userName: profile.name, userId: user.uid, at: new Date().toISOString() });
+                            alert("Lamaran Terkirim!"); setView('user_db'); setLoading(false);
+                        }} className="w-full teal-theme text-white font-black py-4 rounded-[2.5rem] shadow-2xl">KIRIM LAMARAN</button>
+                    </div>
+                </div>
+            );
+
+            if (view === 'admin_db') return (
+                <div className="min-h-screen bg-slate-50 max-w-md mx-auto animate-fade">
+                    <div className="bg-slate-900 text-white p-8 pt-14 rounded-b-[4rem] shadow-xl">
+                        <div className="flex justify-between items-center mb-8">
+                            <h2 className="text-xl font-black uppercase italic">Admin Panel</h2>
+                            <button onClick={() => signOut(auth)} className="p-3 bg-white/10 rounded-2xl"><i data-lucide="log-out"></i></button>
+                        </div>
+                    </div>
+                    <div className="p-8 space-y-4">
+                        <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2">Database Pelamar ({applicants.length})</h3>
+                        {applicants.map(ap => (
+                            <div key={ap.id} className="bg-white p-5 rounded-[2.5rem] border shadow-sm flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 bg-[#1abc9c]/10 text-[#1abc9c] rounded-xl flex items-center justify-center font-black">{ap.userName?.[0]}</div>
+                                    <div><h4 className="font-bold text-sm text-slate-800 leading-none mb-1">{ap.userName}</h4><p className="text-[9px] text-blue-600 font-bold uppercase">{ap.pos}</p></div>
+                                </div>
+                                <button onClick={() => window.open(`https://wa.me/${ap.wa}`)} className="p-2 bg-green-50 text-green-500 rounded-lg"><i data-lucide="phone"></i></button>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+
+            return (
+                <div className="max-w-md mx-auto relative min-h-screen">
+                    {loading && (
+                        <div className="fixed inset-0 bg-white/95 backdrop-blur-md z-[200] flex flex-col items-center justify-center">
+                            <i data-lucide="loader-2" className="animate-spin text-[#1abc9c] w-12 h-12 mb-4"></i>
+                            <p className="text-[10px] font-black tracking-widest text-slate-800 uppercase animate-pulse">Syncing Cloud...</p>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
+
+```
