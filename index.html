@@ -3,164 +3,199 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>UAT - Sistem Rekrutmen Enterprise</title>
+    <title>HIREPRO - Sistem Rekrutmen Enterprise</title>
     
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/htm@3.1.1/dist/htm.umd.js"></script>
-
-    <!-- Firebase SDK Compat -->
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-
+    <!-- Backup CSS jika script luar gagal -->
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap');
-        * { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background-color: #f8fafc; margin: 0; }
-        .teal-bg { background-color: #1abc9c; }
-        .teal-text { color: #1abc9c; }
-        .animate-in { animation: fadeIn 0.4s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; } }
+        @import url('[https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap](https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap)');
+        
+        :root {
+            --teal: #1abc9c;
+            --dark: #0f172a;
+            --gray: #f8fafc;
+            --border: #e2e8f0;
+        }
+
+        * { font-family: 'Plus Jakarta Sans', sans-serif; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--gray); margin: 0; padding: 0; color: #1e293b; }
+        
+        .app-container { 
+            max-width: 480px; 
+            margin: 0 auto; 
+            min-height: 100vh; 
+            background: white; 
+            display: flex; 
+            flex-direction: column;
+            box-shadow: 0 0 50px rgba(0,0,0,0.05);
+        }
+
+        /* Utility */
+        .hidden { display: none !important; }
+        .p-8 { padding: 2rem; }
+        .text-center { text-align: center; }
+        .flex { display: flex; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        
+        /* Header Dashboard */
+        .header-teal { background: var(--teal); color: white; padding: 3rem 2rem 5rem 2rem; border-radius: 0 0 3.5rem 3.5rem; box-shadow: 0 10px 25px rgba(26, 188, 156, 0.2); }
+        .header-dark { background: var(--dark); color: white; padding: 3rem 2rem 5rem 2rem; border-radius: 0 0 3.5rem 3.5rem; }
+
+        /* Card & Inputs */
+        .card { background: white; border: 1px solid var(--border); border-radius: 2rem; padding: 1.5rem; margin-bottom: 1rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .input-group { margin-bottom: 1.2rem; }
+        label { display: block; font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; margin-left: 0.5rem; margin-bottom: 0.4rem; letter-spacing: 1px; }
+        input, select { width: 100%; padding: 1.2rem; background: #f1f5f9; border: 1px solid var(--border); border-radius: 1.2rem; outline: none; font-size: 14px; transition: 0.3s; }
+        input:focus { border-color: var(--teal); background: white; box-shadow: 0 0 0 4px rgba(26, 188, 156, 0.1); }
+
+        /* Buttons */
+        .btn-main { background: var(--teal); color: white; border: none; width: 100%; padding: 1.2rem; border-radius: 1.5rem; font-weight: 800; text-transform: uppercase; font-size: 12px; letter-spacing: 1px; cursor: pointer; box-shadow: 0 10px 15px rgba(26, 188, 156, 0.3); transition: 0.3s; }
+        .btn-outline { background: white; border: 2px solid var(--teal); color: var(--teal); width: 100%; padding: 1.1rem; border-radius: 1.5rem; font-weight: 800; text-transform: uppercase; font-size: 11px; cursor: pointer; }
+        .btn-dark { background: var(--dark); color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 1rem; font-size: 10px; font-weight: 800; text-transform: uppercase; }
+
+        /* List Items */
+        .list-item { display: flex; align-items: center; justify-content: space-between; background: white; border: 1px solid var(--border); padding: 1.2rem; border-radius: 1.8rem; margin-bottom: 0.8rem; }
+        .avatar { width: 3.5rem; height: 3.5rem; background: #f1f5f9; border-radius: 1.2rem; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+        
+        .animate-fade { animation: fadeInUp 0.5s ease-out; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
-    <div id="root"></div>
 
-    <script>
-        const { useState, useEffect } = React;
-        const html = htm.bind(React.createElement);
+    <div class="app-container">
+        
+        <!-- 1. HALAMAN LOGIN -->
+        <div id="page-login" class="p-8 animate-fade" style="margin-top: auto; margin-bottom: auto;">
+            <div class="text-center" style="margin-bottom: 3rem;">
+                <div style="font-size: 4rem; margin-bottom: 1rem;">👟</div>
+                <h1 style="font-size: 2.5rem; font-weight: 900; letter-spacing: -2px; margin: 0; line-height: 1;">HIREPRO</h1>
+                <p style="font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 4px; margin-top: 0.5rem;">Enterprise Recruitment</p>
+            </div>
 
-        // CONFIG FIREBASE (Data Bersih Tanpa Karakter Tersembunyi)
-        const firebaseConfig = {
-            apiKey: "AIzaSyAg2NSb0rqD6BNtu96_7VJezhGiUlYyIZM",
-            authDomain: "hire-1a51d.firebaseapp.com",
-            projectId: "hire-1a51d",
-            storageBucket: "hire-1a51d.firebasestorage.app",
-            messagingSenderId: "370568295",
-            appId: "1:370568295:web:a0d38b16b3bde89cbbf8c2"
-        };
+            <div class="input-group">
+                <label>Alamat Email</label>
+                <input type="email" id="email" placeholder="admin@demo.com" value="admin@demo.com">
+            </div>
+            <div class="input-group" style="margin-bottom: 2rem;">
+                <label>Kata Sandi</label>
+                <input type="password" id="password" placeholder="••••••" value="123456">
+            </div>
 
-        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
-        const APP_ID = "v35_uat_stable";
+            <button class="btn-main" onclick="handleLogin()">Masuk Dashboard</button>
 
-        function App() {
-            const [view, setView] = useState('login'); 
-            const [mode, setMode] = useState('real'); // real, demo
-            const [userEmail, setUserEmail] = useState('');
-            const [loading, setLoading] = useState(false);
+            <div style="margin-top: 3rem; padding: 2rem; background: #f8fafc; border: 2px dashed #e2e8f0; border-radius: 2.5rem; text-align: center;">
+                <p style="font-size: 9px; font-weight: 800; color: #94a3b8; text-transform: uppercase; margin-bottom: 1rem;">Opsi Demo Presentasi (UAT):</p>
+                <div style="display: grid; grid-template-cols: 1fr 1fr; gap: 0.8rem; display: flex;">
+                    <button class="btn-dark" onclick="changePage('admin')" style="flex: 1;">Mode Admin</button>
+                    <button class="btn-outline" onclick="changePage('user')" style="flex: 1; border-color: #cbd5e1; color: #94a3b8;">Mode Pelamar</button>
+                </div>
+            </div>
+        </div>
 
-            // Auth Listeners
-            useEffect(() => {
-                const unsub = auth.onAuthStateChanged(u => {
-                    if (u && mode === 'real') {
-                        setUserEmail(u.email);
-                        setView(u.email.includes('admin') ? 'admin' : 'dashboard');
-                    }
-                });
-                return () => unsub();
-            }, [mode]);
-
-            const handleAuth = async (isSignup, email, pass) => {
-                setLoading(true);
-                try {
-                    if (isSignup) await auth.createUserWithEmailAndPassword(email, pass);
-                    else await auth.signInWithEmailAndPassword(email, pass);
-                } catch (err) {
-                    alert("DATABASE OFFLINE: " + err.message + "\n\nGunakan 'MODE DEMO' untuk UAT.");
-                }
-                setLoading(false);
-            };
-
-            // --- KOMPONEN UI ---
-
-            const LoginView = () => {
-                const [emailField, setEmailField] = useState('');
-                const [passField, setPassField] = useState('');
-                const [isSignup, setIsSignup] = useState(false);
-
-                return html`
-                    <div class="min-h-screen flex flex-col justify-center p-8 max-w-md mx-auto bg-white animate-in">
-                        <div class="text-center mb-10">
-                            <div class="text-6xl mb-4">👟</div>
-                            <h1 class="text-3xl font-black text-slate-800 tracking-tighter leading-none">HIREPRO</h1>
-                            <p class="text-[10px] font-bold text-slate-400 mt-2 uppercase tracking-widest leading-none italic">Sistem Rekrutmen Enterprise</p>
-                        </div>
-
-                        <form class="space-y-4" onSubmit=${e => { e.preventDefault(); handleAuth(isSignup, emailField, passField); }}>
-                            <input class="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none text-sm" placeholder="Email" value=${emailField} onChange=${e => setEmailField(e.target.value)} required />
-                            <input class="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none text-sm" type="password" placeholder="Password" value=${passField} onChange=${e => setPassField(e.target.value)} required />
-                            <button type="submit" class="w-full teal-bg text-white font-black py-4 rounded-3xl shadow-xl uppercase text-xs tracking-widest">
-                                ${loading ? 'SINKRONISASI...' : (isSignup ? 'DAFTAR SEKARANG' : 'MASUK SISTEM')}
-                            </button>
-                        </form>
-
-                        <button onClick=${() => setIsSignup(!isSignup)} class="mt-6 text-[10px] font-bold text-slate-300 underline uppercase block mx-auto">
-                            ${isSignup ? 'Sudah punya akun? Login' : 'Belum punya akun? Daftar'}
-                        </button>
-
-                        <!-- TOMBOL UAT (SANGAT PENTING) -->
-                        <div class="mt-12 p-6 bg-slate-50 border-2 border-dashed border-slate-200 rounded-[2.5rem] text-center">
-                            <p class="text-[10px] font-black text-slate-400 uppercase mb-3 italic">Keperluan UAT / Demo Pimpinan:</p>
-                            <button onClick=${() => { setMode('demo'); setView('admin'); setUserEmail('admin@pabrik.com'); }} class="w-full py-3 border-2 border-[#1abc9c] text-[#1abc9c] font-black rounded-2xl uppercase text-[10px] active:bg-[#1abc9c] active:text-white transition-all">
-                                MASUK MODE DEMO (UAT)
-                            </button>
-                        </div>
-                    </div>
-                `;
-            };
-
-            const AdminDashboard = () => html`
-                <div class="min-h-screen bg-slate-50 max-w-md mx-auto animate-in pb-20">
-                    <div class="bg-slate-900 text-white p-10 pt-16 rounded-b-[4rem] text-center shadow-2xl">
-                        <h2 class="text-2xl font-black uppercase tracking-tighter italic leading-none tracking-widest">ADMIN CONTROL</h2>
-                        <p class="text-[9px] font-bold opacity-30 uppercase mt-2 italic tracking-[0.2em]">PT SEPATU INDONESIA ${mode === 'demo' ? '(MODE DEMO)' : ''}</p>
-                    </div>
-                    <div class="p-8">
-                        <div class="flex justify-between items-center mb-6 px-2">
-                            <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Pelamar Masuk (UAT)</h3>
-                            <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                        </div>
-                        
-                        <div class="space-y-3">
-                            <div class="bg-white p-5 rounded-[2rem] border shadow-sm flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-12 h-12 bg-teal-50 text-2xl rounded-2xl flex items-center justify-center">👤</div>
-                                    <div class="text-left">
-                                        <h4 class="font-black text-sm text-slate-800 leading-none mb-1 uppercase">Dey (Contoh)</h4>
-                                        <p class="text-[9px] font-bold text-blue-600 uppercase">Operator Sewing</p>
-                                    </div>
-                                </div>
-                                <div class="text-xl">📞</div>
-                            </div>
-                            
-                            <div class="bg-white p-5 rounded-[2rem] border shadow-sm flex items-center justify-between opacity-60">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-12 h-12 bg-slate-50 text-2xl rounded-2xl flex items-center justify-center">👤</div>
-                                    <div class="text-left">
-                                        <h4 class="font-black text-sm text-slate-800 leading-none mb-1 uppercase">Budi (Dummy)</h4>
-                                        <p class="text-[9px] font-bold text-slate-400 uppercase">Quality Control</p>
-                                    </div>
-                                </div>
-                                <div class="px-3 py-1 bg-green-100 text-green-600 rounded-full text-[8px] font-black">LOLOS</div>
-                            </div>
-                        </div>
-
-                        <button onClick=${() => window.location.reload()} class="w-full py-5 text-red-500 font-bold uppercase text-[10px] tracking-widest mt-20">Keluar Sistem</button>
+        <!-- 2. DASHBOARD ADMIN -->
+        <div id="page-admin" class="hidden animate-fade">
+            <div class="header-dark text-center">
+                <h2 style="font-size: 1.5rem; font-weight: 900; letter-spacing: 2px; margin: 0;">ADMIN CONTROL</h2>
+                <p style="font-size: 9px; font-weight: 700; opacity: 0.4; letter-spacing: 2px; margin-top: 0.5rem;">PT SEPATU INDONESIA (DEMO MODE)</p>
+                <button onclick="changePage('login')" style="margin-top: 1.5rem; background: rgba(255,255,255,0.1); border: none; color: white; padding: 0.5rem 1.2rem; border-radius: 2rem; font-size: 9px; font-weight: 700;">KELUAR</button>
+            </div>
+            
+            <div class="p-8" style="margin-top: -3rem;">
+                <div class="flex items-center justify-between" style="margin-bottom: 1.5rem; padding: 0 0.5rem;">
+                    <h3 style="font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px;">Pelamar Terbaru</h3>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span style="font-size: 9px; font-weight: 800; color: var(--teal);">LIVE</span>
+                        <div style="width: 8px; height: 8px; background: var(--teal); border-radius: 50%;" id="status-ping"></div>
                     </div>
                 </div>
-            `;
 
-            if (view === 'admin') return AdminDashboard();
-            if (view === 'dashboard') return html`<div class="p-20 text-center"><h1 class="font-black">DASHBOARD PELAMAR AKTIF</h1><button onClick=${() => window.location.reload()}>Logout</button></div>`;
-            return LoginView();
+                <div class="list-item">
+                    <div class="flex items-center" style="gap: 1rem;">
+                        <div class="avatar">👤</div>
+                        <div style="text-align: left;">
+                            <h4 style="font-weight: 800; font-size: 14px; margin: 0; text-transform: uppercase;">Dey (User Baru)</h4>
+                            <p style="font-size: 10px; font-weight: 700; color: #3b82f6; margin-top: 2px; text-transform: uppercase;">Operator Sewing</p>
+                        </div>
+                    </div>
+                    <div style="font-size: 1.5rem;">📞</div>
+                </div>
+
+                <div class="list-item" style="opacity: 0.6;">
+                    <div class="flex items-center" style="gap: 1rem;">
+                        <div class="avatar">👤</div>
+                        <div>
+                            <h4 style="font-weight: 800; font-size: 14px; margin: 0; text-transform: uppercase;">Budi Santoso</h4>
+                            <p style="font-size: 10px; font-weight: 700; color: #64748b; margin-top: 2px; text-transform: uppercase;">Quality Control</p>
+                        </div>
+                    </div>
+                    <div style="background: #dcfce7; color: #166534; font-size: 8px; font-weight: 900; padding: 0.4rem 0.8rem; border-radius: 2rem;">LOLOS</div>
+                </div>
+
+                <div style="margin-top: 5rem; text-align: center; opacity: 0.3;">
+                    <p style="font-size: 8px; font-weight: 800; letter-spacing: 2px;">RECRUITMENT SYSTEM V38.0</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. DASHBOARD PELAMAR -->
+        <div id="page-user" class="hidden animate-fade">
+            <div class="header-teal text-center">
+                <div style="width: 5rem; height: 5rem; background: rgba(255,255,255,0.2); border: 4px solid rgba(255,255,255,0.1); border-radius: 50%; margin: 0 auto 1.5rem auto; display: flex; align-items: center; justify-content: center; font-size: 2.5rem;">👤</div>
+                <h2 style="font-size: 1.5rem; font-weight: 900; margin: 0; text-transform: uppercase;">Dede Hardiyanto</h2>
+                <p style="font-size: 10px; font-weight: 700; opacity: 0.7; letter-spacing: 1px; margin-top: 0.5rem;">ID: HP-2026-0407</p>
+            </div>
+
+            <div class="p-8" style="margin-top: -3rem;">
+                <div class="card flex items-center justify-between" onclick="alert('Membuka Formulir...')">
+                    <div style="text-align: left;">
+                        <h3 style="font-weight: 800; font-size: 14px; margin: 0; text-transform: uppercase;">Isi Lamaran Baru</h3>
+                        <p style="font-size: 10px; color: #94a3b8; margin-top: 4px; font-style: italic;">Lengkapi data diri & berkas</p>
+                    </div>
+                    <div style="font-size: 2rem;">📝</div>
+                </div>
+
+                <div class="card flex items-center justify-between" style="opacity: 0.5;">
+                    <div style="text-align: left;">
+                        <h3 style="font-weight: 800; font-size: 14px; margin: 0; text-transform: uppercase;">Psikotes Online</h3>
+                        <p style="font-size: 10px; color: #94a3b8; margin-top: 4px; font-style: italic;">Menunggu konfirmasi HRD</p>
+                    </div>
+                    <div style="font-size: 2rem;">🧠</div>
+                </div>
+
+                <button onclick="changePage('login')" style="margin-top: 5rem; background: none; border: none; color: #94a3b8; font-weight: 800; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; width: 100%; cursor: pointer;">Keluar Sistem</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // FUNGSI NAVIGASI (MURNI JAVASCRIPT - TIDAK AKAN BLANK)
+        function changePage(pageId) {
+            document.getElementById('page-login').classList.add('hidden');
+            document.getElementById('page-admin').classList.add('hidden');
+            document.getElementById('page-user').classList.add('hidden');
+
+            document.getElementById('page-' + pageId).classList.remove('hidden');
+            window.scrollTo(0,0);
         }
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(React.createElement(App));
+        function handleLogin() {
+            const email = document.getElementById('email').value.toLowerCase();
+            if (email.includes('admin')) {
+                changePage('admin');
+            } else {
+                changePage('user');
+            }
+        }
+
+        // Animasi Ping Sederhana
+        setInterval(() => {
+            const ping = document.getElementById('status-ping');
+            if(ping) ping.style.opacity = ping.style.opacity === '0' ? '1' : '0';
+        }, 800);
+
+        console.log("HIREPRO Engine V38 Active.");
     </script>
 </body>
 </html>
