@@ -3,25 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HIREPRO - Sistem Rekrutmen Enterprise</title>
+    <title>UAT - Sistem Rekrutmen Enterprise</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/htm@3.1.1/dist/htm.umd.js"></script>
 
-    <!-- Firebase Compat SDK -->
+    <!-- Firebase SDK Compat -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap');
         * { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background-color: #f8fafc; margin: 0; }
         .teal-bg { background-color: #1abc9c; }
         .teal-text { color: #1abc9c; }
-        .animate-fade { animation: fadeIn 0.4s ease-out; }
+        .animate-in { animation: fadeIn 0.4s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; } }
     </style>
 </head>
@@ -32,7 +32,7 @@
         const { useState, useEffect } = React;
         const html = htm.bind(React.createElement);
 
-        // CONFIG FIREBASE ANDA (DARI GAMBAR 34322)
+        // CONFIG FIREBASE (Data Bersih Tanpa Karakter Tersembunyi)
         const firebaseConfig = {
             apiKey: "AIzaSyAg2NSb0rqD6BNtu96_7VJezhGiUlYyIZM",
             authDomain: "hire-1a51d.firebaseapp.com",
@@ -43,219 +43,120 @@
         };
 
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
         const auth = firebase.auth();
-        const APP_ID = "hire_master_v34";
+        const db = firebase.firestore();
+        const APP_ID = "v35_uat_stable";
 
         function App() {
             const [view, setView] = useState('login'); 
-            const [user, setUser] = useState(null);
-            const [profile, setProfile] = useState(null);
+            const [mode, setMode] = useState('real'); // real, demo
+            const [userEmail, setUserEmail] = useState('');
             const [loading, setLoading] = useState(false);
-            const [applicants, setApplicants] = useState([]);
-            const [selectedAp, setSelectedAp] = useState(null);
 
-            // Form States
-            const [email, setEmail] = useState('');
-            const [pass, setPass] = useState('');
-            const [name, setName] = useState('');
-            const [isSignup, setIsSignup] = useState(false);
-            
-            // Apply States
-            const [ktp, setKtp] = useState('');
-            const [pos, setPos] = useState('');
-            const [wa, setWa] = useState('');
-            const [photo, setPhoto] = useState('');
-
+            // Auth Listeners
             useEffect(() => {
-                const unsub = auth.onAuthStateChanged(async (u) => {
-                    if (u) {
-                        setUser(u);
-                        const snap = await db.collection('artifacts').doc(APP_ID).collection('users').doc(u.uid).get();
-                        if (snap.exists) {
-                            const data = snap.data();
-                            setProfile(data);
-                            setView(data.role === 'admin' ? 'admin' : 'dashboard');
-                        } else {
-                            setView('dashboard');
-                        }
-                    } else {
-                        setView('login');
+                const unsub = auth.onAuthStateChanged(u => {
+                    if (u && mode === 'real') {
+                        setUserEmail(u.email);
+                        setView(u.email.includes('admin') ? 'admin' : 'dashboard');
                     }
                 });
                 return () => unsub();
-            }, []);
+            }, [mode]);
 
-            useEffect(() => {
-                if (view === 'admin') {
-                    return db.collection('artifacts').doc(APP_ID).collection('applicants').onSnapshot(s => {
-                        setApplicants(s.docs.map(d => ({id: d.id, ...d.data()})));
-                    });
+            const handleAuth = async (isSignup, email, pass) => {
+                setLoading(true);
+                try {
+                    if (isSignup) await auth.createUserWithEmailAndPassword(email, pass);
+                    else await auth.signInWithEmailAndPassword(email, pass);
+                } catch (err) {
+                    alert("DATABASE OFFLINE: " + err.message + "\n\nGunakan 'MODE DEMO' untuk UAT.");
                 }
-            }, [view]);
-
-            const handleAuth = async (e) => {
-                e.preventDefault();
-                setLoading(true);
-                try {
-                    if (isSignup) {
-                        const res = await auth.createUserWithEmailAndPassword(email, pass);
-                        const role = email.includes('admin') ? 'admin' : 'user';
-                        const pData = { uid: res.user.uid, name, email, role };
-                        await db.collection('artifacts').doc(APP_ID).collection('users').doc(res.user.uid).set(pData);
-                        setProfile(pData);
-                    } else {
-                        await auth.signInWithEmailAndPassword(email, pass);
-                    }
-                } catch (err) { alert(err.message); }
                 setLoading(false);
             };
 
-            const submitApply = async () => {
-                setLoading(true);
-                try {
-                    await db.collection('artifacts').doc(APP_ID).collection('applicants').add({
-                        ktp, pos, wa, photo, userName: profile?.name || email, userId: user.uid, status: 'PROSES', at: new Date().toISOString()
-                    });
-                    alert("Lamaran Terkirim!");
-                    setView('dashboard');
-                } catch (e) { alert(e.message); }
-                setLoading(false);
-            };
+            // --- KOMPONEN UI ---
 
-            const updateStatus = async (id, status) => {
-                await db.collection('artifacts').doc(APP_ID).collection('applicants').doc(id).update({ status });
-                setSelectedAp(null);
-            };
+            const LoginView = () => {
+                const [emailField, setEmailField] = useState('');
+                const [passField, setPassField] = useState('');
+                const [isSignup, setIsSignup] = useState(false);
 
-            const toBase64 = (file) => new Promise((res) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = () => res(reader.result);
-            });
-
-            // --- UI VIEWS ---
-
-            if (view === 'login') return html`
-                <div class="min-h-screen flex flex-col justify-center p-8 max-w-md mx-auto bg-white animate-fade">
-                    <div class="text-center mb-10">
-                        <div class="text-6xl mb-4 text-center w-full">👟</div>
-                        <h1 class="text-3xl font-black tracking-tighter text-slate-800 leading-none">HIREPRO</h1>
-                        <p class="text-[10px] font-bold text-slate-400 mt-2 uppercase tracking-widest leading-none">PT Sepatu Indonesia</p>
-                    </div>
-                    <form onSubmit=${handleAuth} class="space-y-4">
-                        ${isSignup && html`<input class="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none text-sm" placeholder="Nama Lengkap" value=${name} onChange=${e => setName(e.target.value)} required />`}
-                        <input class="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none text-sm" type="email" placeholder="Email" value=${email} onChange=${e => setEmail(e.target.value)} required />
-                        <input class="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none text-sm" type="password" placeholder="Password" value=${pass} onChange=${e => setPass(e.target.value)} required />
-                        <button type="submit" class="w-full teal-bg text-white font-black py-4 rounded-3xl shadow-lg uppercase text-xs">
-                            ${loading ? 'MEMPROSES...' : (isSignup ? 'DAFTAR AKUN BARU' : 'MASUK KE SISTEM')}
-                        </button>
-                    </form>
-                    <button onClick=${() => setIsSignup(!isSignup)} class="mt-8 text-[10px] font-bold text-slate-300 underline uppercase block mx-auto text-center">
-                        ${isSignup ? 'Sudah punya akun? Login' : 'Belum punya akun? Daftar'}
-                    </button>
-                    <div class="mt-12 p-4 bg-slate-50 rounded-2xl text-center">
-                        <p class="text-[9px] text-slate-400 font-bold uppercase mb-2">Mode Demo Cepat:</p>
-                        <button onClick=${() => {setEmail('admin@pabrik.com'); setPass('123456'); setIsSignup(false);}} class="text-[9px] border border-slate-200 px-4 py-1 rounded-full text-slate-400">Gunakan Akun Admin</button>
-                    </div>
-                </div>
-            `;
-
-            if (view === 'dashboard') return html`
-                <div class="min-h-screen bg-slate-50 max-w-md mx-auto animate-fade">
-                    <div class="teal-bg text-white p-10 pt-16 rounded-b-[4rem] text-center shadow-xl">
-                        <div class="text-5xl mb-4">👤</div>
-                        <h2 class="text-2xl font-black uppercase tracking-tight leading-none">${profile?.name || 'Pelamar'}</h2>
-                        <p class="text-[10px] font-bold opacity-60 uppercase tracking-widest mt-2">Status: Pelamar Aktif</p>
-                    </div>
-                    <div class="p-8 space-y-4">
-                        <button onClick=${() => setView('form')} class="w-full bg-white p-6 rounded-[2.5rem] border shadow-sm flex justify-between items-center active:scale-95 transition-all">
-                            <div class="text-left"><h3 class="font-black text-sm text-slate-800 uppercase leading-none">Isi Lamaran Kerja</h3><p class="text-[10px] text-slate-400 mt-1 italic">Kirim data diri & berkas</p></div>
-                            <div class="text-2xl">📝</div>
-                        </button>
-                        <button onClick=${() => auth.signOut().then(() => window.location.reload())} class="w-full py-5 text-red-500 font-bold uppercase text-[10px] tracking-widest mt-10">LOGOUT SISTEM</button>
-                    </div>
-                </div>
-            `;
-
-            if (view === 'form') return html`
-                <div class="min-h-screen bg-white pb-20 animate-fade max-w-md mx-auto">
-                    <div class="teal-bg text-white p-6 sticky top-0 z-50 flex items-center gap-4 shadow-md">
-                        <button onClick=${() => setView('dashboard')} class="text-xl font-bold">←</button>
-                        <h1 class="font-black uppercase tracking-tight">Pendaftaran</h1>
-                    </div>
-                    <div class="p-8 space-y-6">
-                        <div><label class="text-[10px] font-black uppercase text-slate-400 ml-1">NIK KTP</label><input class="w-full p-4 bg-slate-50 border rounded-2xl outline-none text-sm mt-1" value=${ktp} onChange=${e => setKtp(e.target.value)} /></div>
-                        <div><label class="text-[10px] font-black uppercase text-slate-400 ml-1">No WhatsApp</label><input class="w-full p-4 bg-slate-50 border rounded-2xl outline-none text-sm mt-1" value=${wa} onChange=${e => setWa(e.target.value)} /></div>
-                        <div><label class="text-[10px] font-black uppercase text-slate-400 ml-1">Posisi Lowongan</label>
-                            <select class="w-full p-4 bg-slate-50 border rounded-2xl outline-none text-sm mt-1" value=${pos} onChange=${e => setPos(e.target.value)}>
-                                <option value="">Pilih...</option>
-                                <option>Operator Sewing</option>
-                                <option>Quality Control</option>
-                                <option>Gudang Bahan</option>
-                            </select>
+                return html`
+                    <div class="min-h-screen flex flex-col justify-center p-8 max-w-md mx-auto bg-white animate-in">
+                        <div class="text-center mb-10">
+                            <div class="text-6xl mb-4">👟</div>
+                            <h1 class="text-3xl font-black text-slate-800 tracking-tighter leading-none">HIREPRO</h1>
+                            <p class="text-[10px] font-bold text-slate-400 mt-2 uppercase tracking-widest leading-none italic">Sistem Rekrutmen Enterprise</p>
                         </div>
-                        <label class="block w-full p-8 border-2 border-dashed rounded-[2rem] text-center ${photo ? 'bg-green-50 border-green-300' : 'bg-slate-50'} cursor-pointer transition-all">
-                            <input type="file" class="hidden" accept="image/*" onChange=${async e => setPhoto(await toBase64(e.target.files[0]))} />
-                            <div class="text-2xl mb-1">${photo ? '✅' : '📷'}</div>
-                            <span class="text-[9px] font-black text-slate-400 uppercase">${photo ? 'FOTO SIAP' : 'UPLOAD PAS FOTO'}</span>
-                        </label>
-                        <button onClick=${submitApply} class="w-full teal-bg text-white font-black py-5 rounded-[2.5rem] shadow-2xl">
-                            ${loading ? 'MENGIRIM...' : 'KIRIM LAMARAN SEKARANG'}
-                        </button>
-                    </div>
-                </div>
-            `;
 
-            if (view === 'admin') return html`
-                <div class="min-h-screen bg-slate-50 max-w-md mx-auto animate-fade pb-20">
-                    <div class="bg-slate-900 text-white p-10 pt-16 rounded-b-[4rem] text-center shadow-xl">
-                        <h2 class="text-2xl font-black uppercase tracking-tighter italic leading-none">Admin Control</h2>
-                        <p class="text-[10px] font-bold opacity-30 uppercase tracking-widest mt-2">Daftar Pelamar Masuk</p>
+                        <form class="space-y-4" onSubmit=${e => { e.preventDefault(); handleAuth(isSignup, emailField, passField); }}>
+                            <input class="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none text-sm" placeholder="Email" value=${emailField} onChange=${e => setEmailField(e.target.value)} required />
+                            <input class="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none text-sm" type="password" placeholder="Password" value=${passField} onChange=${e => setPassField(e.target.value)} required />
+                            <button type="submit" class="w-full teal-bg text-white font-black py-4 rounded-3xl shadow-xl uppercase text-xs tracking-widest">
+                                ${loading ? 'SINKRONISASI...' : (isSignup ? 'DAFTAR SEKARANG' : 'MASUK SISTEM')}
+                            </button>
+                        </form>
+
+                        <button onClick=${() => setIsSignup(!isSignup)} class="mt-6 text-[10px] font-bold text-slate-300 underline uppercase block mx-auto">
+                            ${isSignup ? 'Sudah punya akun? Login' : 'Belum punya akun? Daftar'}
+                        </button>
+
+                        <!-- TOMBOL UAT (SANGAT PENTING) -->
+                        <div class="mt-12 p-6 bg-slate-50 border-2 border-dashed border-slate-200 rounded-[2.5rem] text-center">
+                            <p class="text-[10px] font-black text-slate-400 uppercase mb-3 italic">Keperluan UAT / Demo Pimpinan:</p>
+                            <button onClick=${() => { setMode('demo'); setView('admin'); setUserEmail('admin@pabrik.com'); }} class="w-full py-3 border-2 border-[#1abc9c] text-[#1abc9c] font-black rounded-2xl uppercase text-[10px] active:bg-[#1abc9c] active:text-white transition-all">
+                                MASUK MODE DEMO (UAT)
+                            </button>
+                        </div>
                     </div>
-                    <div class="p-8 space-y-3">
-                        <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-2 mb-4">Total Pelamar: ${applicants.length}</h3>
-                        ${applicants.map(ap => html`
-                            <div key=${ap.id} onClick=${() => setSelectedAp(ap)} class="bg-white p-5 rounded-[2rem] border shadow-sm flex items-center justify-between active:scale-95 transition-all">
+                `;
+            };
+
+            const AdminDashboard = () => html`
+                <div class="min-h-screen bg-slate-50 max-w-md mx-auto animate-in pb-20">
+                    <div class="bg-slate-900 text-white p-10 pt-16 rounded-b-[4rem] text-center shadow-2xl">
+                        <h2 class="text-2xl font-black uppercase tracking-tighter italic leading-none tracking-widest">ADMIN CONTROL</h2>
+                        <p class="text-[9px] font-bold opacity-30 uppercase mt-2 italic tracking-[0.2em]">PT SEPATU INDONESIA ${mode === 'demo' ? '(MODE DEMO)' : ''}</p>
+                    </div>
+                    <div class="p-8">
+                        <div class="flex justify-between items-center mb-6 px-2">
+                            <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Pelamar Masuk (UAT)</h3>
+                            <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                        </div>
+                        
+                        <div class="space-y-3">
+                            <div class="bg-white p-5 rounded-[2rem] border shadow-sm flex items-center justify-between">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-12 h-12 bg-teal-50 text-2xl rounded-2xl flex items-center justify-center font-black">${ap.photo ? html`<img src=${ap.photo} class="w-full h-full object-cover rounded-2xl" />` : '👤'}</div>
+                                    <div class="w-12 h-12 bg-teal-50 text-2xl rounded-2xl flex items-center justify-center">👤</div>
                                     <div class="text-left">
-                                        <h4 class="font-black text-sm text-slate-800 leading-none mb-1 uppercase">${ap.userName}</h4>
-                                        <p class="text-[9px] font-bold text-blue-600 uppercase leading-none">${ap.pos}</p>
+                                        <h4 class="font-black text-sm text-slate-800 leading-none mb-1 uppercase">Dey (Contoh)</h4>
+                                        <p class="text-[9px] font-bold text-blue-600 uppercase">Operator Sewing</p>
                                     </div>
                                 </div>
-                                <div class="px-3 py-1 rounded-full text-[8px] font-black uppercase ${ap.status === 'Lolos' ? 'bg-green-100 text-green-600' : ap.status === 'Gagal' ? 'bg-red-100 text-red-600' : 'bg-orange-100 text-orange-600'}">
-                                    ${ap.status}
-                                </div>
+                                <div class="text-xl">📞</div>
                             </div>
-                        `)}
-                        ${applicants.length === 0 && html`<p class="text-center text-slate-300 py-20 text-xs italic">Belum ada pelamar masuk...</p>`}
-                        <button onClick=${() => auth.signOut().then(() => window.location.reload())} class="w-full py-10 text-slate-300 font-bold uppercase text-[9px] tracking-widest">Logout Admin</button>
-                    </div>
-
-                    ${selectedAp && html`
-                        <div class="fixed inset-0 bg-slate-900/80 z-[100] flex items-end animate-fade">
-                            <div class="bg-white w-full rounded-t-[3rem] p-8 max-h-[90vh] overflow-y-auto">
-                                <div class="w-12 h-1 bg-slate-100 mx-auto mb-6 rounded-full"></div>
-                                <div class="flex flex-col items-center text-center mb-8">
-                                    <img src=${selectedAp.photo || 'https://via.placeholder.com/150'} class="w-32 h-32 rounded-3xl object-cover mb-4 border-4 border-slate-50 shadow-xl" />
-                                    <h2 class="text-2xl font-black uppercase tracking-tight">${selectedAp.userName}</h2>
-                                    <p class="text-xs text-blue-600 font-bold uppercase tracking-widest mt-1">${selectedAp.pos}</p>
-                                    <p class="text-[10px] text-slate-400 mt-2 uppercase">NIK: ${selectedAp.ktp}</p>
+                            
+                            <div class="bg-white p-5 rounded-[2rem] border shadow-sm flex items-center justify-between opacity-60">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-12 h-12 bg-slate-50 text-2xl rounded-2xl flex items-center justify-center">👤</div>
+                                    <div class="text-left">
+                                        <h4 class="font-black text-sm text-slate-800 leading-none mb-1 uppercase">Budi (Dummy)</h4>
+                                        <p class="text-[9px] font-bold text-slate-400 uppercase">Quality Control</p>
+                                    </div>
                                 </div>
-                                <div class="grid grid-cols-2 gap-4 mb-6">
-                                    <button onClick=${() => updateStatus(selectedAp.id, 'Gagal')} class="py-4 bg-red-50 text-red-500 font-black rounded-3xl uppercase text-[10px]">Gagal</button>
-                                    <button onClick=${() => updateStatus(selectedAp.id, 'Lolos')} class="py-4 teal-bg text-white font-black rounded-3xl uppercase text-[10px]">Lolos</button>
-                                </div>
-                                <button onClick=${() => window.open(`https://wa.me/${selectedAp.wa}`)} class="w-full py-4 bg-green-500 text-white font-black rounded-3xl uppercase text-[10px] flex items-center justify-center gap-2 mb-4">📞 Hubungi via WA</button>
-                                <button onClick=${() => setSelectedAp(null)} class="w-full py-2 text-slate-300 text-[10px] font-bold uppercase">Tutup</button>
+                                <div class="px-3 py-1 bg-green-100 text-green-600 rounded-full text-[8px] font-black">LOLOS</div>
                             </div>
                         </div>
-                    `}
+
+                        <button onClick=${() => window.location.reload()} class="w-full py-5 text-red-500 font-bold uppercase text-[10px] tracking-widest mt-20">Keluar Sistem</button>
+                    </div>
                 </div>
             `;
 
-            return null;
+            if (view === 'admin') return AdminDashboard();
+            if (view === 'dashboard') return html`<div class="p-20 text-center"><h1 class="font-black">DASHBOARD PELAMAR AKTIF</h1><button onClick=${() => window.location.reload()}>Logout</button></div>`;
+            return LoginView();
         }
 
         const root = ReactDOM.createRoot(document.getElementById('root'));
