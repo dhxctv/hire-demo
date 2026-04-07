@@ -3,199 +3,346 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HIREPRO - Sistem Rekrutmen Enterprise</title>
+    <title>HIREPRO - Industrial Recruitment System</title>
     
-    <!-- Backup CSS jika script luar gagal -->
+    <!-- Framework & UI Library -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/htm@3.1.1/dist/htm.umd.js"></script>
+
+    <!-- Firebase Compat SDK (Super Stable for Mobile) -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
     <style>
-        @import url('[https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap](https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap)');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
         
         :root {
-            --teal: #1abc9c;
-            --dark: #0f172a;
-            --gray: #f8fafc;
-            --border: #e2e8f0;
+            --primary: #f97316; /* Orange Master Industri */
+            --primary-dark: #ea580c;
+            --dark: #1e293b;
+            --bg: #f8fafc;
         }
 
         * { font-family: 'Plus Jakarta Sans', sans-serif; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { background-color: var(--gray); margin: 0; padding: 0; color: #1e293b; }
+        body { background-color: var(--bg); margin: 0; padding: 0; color: #334155; }
+        
+        .orange-gradient { background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); }
+        .industrial-shadow { box-shadow: 0 10px 25px -5px rgba(249, 115, 22, 0.2); }
+        .hidden { display: none !important; }
         
         .app-container { 
             max-width: 480px; 
             margin: 0 auto; 
             min-height: 100vh; 
             background: white; 
-            display: flex; 
-            flex-direction: column;
-            box-shadow: 0 0 50px rgba(0,0,0,0.05);
+            position: relative;
+            box-shadow: 0 0 40px rgba(0,0,0,0.03);
         }
 
-        /* Utility */
-        .hidden { display: none !important; }
-        .p-8 { padding: 2rem; }
-        .text-center { text-align: center; }
-        .flex { display: flex; }
-        .items-center { align-items: center; }
-        .justify-between { justify-content: space-between; }
-        
-        /* Header Dashboard */
-        .header-teal { background: var(--teal); color: white; padding: 3rem 2rem 5rem 2rem; border-radius: 0 0 3.5rem 3.5rem; box-shadow: 0 10px 25px rgba(26, 188, 156, 0.2); }
-        .header-dark { background: var(--dark); color: white; padding: 3rem 2rem 5rem 2rem; border-radius: 0 0 3.5rem 3.5rem; }
+        .animate-fade { animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Card & Inputs */
-        .card { background: white; border: 1px solid var(--border); border-radius: 2rem; padding: 1.5rem; margin-bottom: 1rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
-        .input-group { margin-bottom: 1.2rem; }
-        label { display: block; font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; margin-left: 0.5rem; margin-bottom: 0.4rem; letter-spacing: 1px; }
-        input, select { width: 100%; padding: 1.2rem; background: #f1f5f9; border: 1px solid var(--border); border-radius: 1.2rem; outline: none; font-size: 14px; transition: 0.3s; }
-        input:focus { border-color: var(--teal); background: white; box-shadow: 0 0 0 4px rgba(26, 188, 156, 0.1); }
-
-        /* Buttons */
-        .btn-main { background: var(--teal); color: white; border: none; width: 100%; padding: 1.2rem; border-radius: 1.5rem; font-weight: 800; text-transform: uppercase; font-size: 12px; letter-spacing: 1px; cursor: pointer; box-shadow: 0 10px 15px rgba(26, 188, 156, 0.3); transition: 0.3s; }
-        .btn-outline { background: white; border: 2px solid var(--teal); color: var(--teal); width: 100%; padding: 1.1rem; border-radius: 1.5rem; font-weight: 800; text-transform: uppercase; font-size: 11px; cursor: pointer; }
-        .btn-dark { background: var(--dark); color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 1rem; font-size: 10px; font-weight: 800; text-transform: uppercase; }
-
-        /* List Items */
-        .list-item { display: flex; align-items: center; justify-content: space-between; background: white; border: 1px solid var(--border); padding: 1.2rem; border-radius: 1.8rem; margin-bottom: 0.8rem; }
-        .avatar { width: 3.5rem; height: 3.5rem; background: #f1f5f9; border-radius: 1.2rem; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
-        
-        .animate-fade { animation: fadeInUp 0.5s ease-out; }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        /* Custom Input Styling */
+        .form-input {
+            width: 100%; padding: 1rem; background: #f1f5f9; border: 1px solid #e2e8f0;
+            border-radius: 1rem; outline: none; transition: 0.3s; font-size: 14px;
+        }
+        .form-input:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.1); }
     </style>
 </head>
 <body>
 
-    <div class="app-container">
-        
-        <!-- 1. HALAMAN LOGIN -->
-        <div id="page-login" class="p-8 animate-fade" style="margin-top: auto; margin-bottom: auto;">
-            <div class="text-center" style="margin-bottom: 3rem;">
-                <div style="font-size: 4rem; margin-bottom: 1rem;">👟</div>
-                <h1 style="font-size: 2.5rem; font-weight: 900; letter-spacing: -2px; margin: 0; line-height: 1;">HIREPRO</h1>
-                <p style="font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 4px; margin-top: 0.5rem;">Enterprise Recruitment</p>
-            </div>
-
-            <div class="input-group">
-                <label>Alamat Email</label>
-                <input type="email" id="email" placeholder="admin@demo.com" value="admin@demo.com">
-            </div>
-            <div class="input-group" style="margin-bottom: 2rem;">
-                <label>Kata Sandi</label>
-                <input type="password" id="password" placeholder="••••••" value="123456">
-            </div>
-
-            <button class="btn-main" onclick="handleLogin()">Masuk Dashboard</button>
-
-            <div style="margin-top: 3rem; padding: 2rem; background: #f8fafc; border: 2px dashed #e2e8f0; border-radius: 2.5rem; text-align: center;">
-                <p style="font-size: 9px; font-weight: 800; color: #94a3b8; text-transform: uppercase; margin-bottom: 1rem;">Opsi Demo Presentasi (UAT):</p>
-                <div style="display: grid; grid-template-cols: 1fr 1fr; gap: 0.8rem; display: flex;">
-                    <button class="btn-dark" onclick="changePage('admin')" style="flex: 1;">Mode Admin</button>
-                    <button class="btn-outline" onclick="changePage('user')" style="flex: 1; border-color: #cbd5e1; color: #94a3b8;">Mode Pelamar</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- 2. DASHBOARD ADMIN -->
-        <div id="page-admin" class="hidden animate-fade">
-            <div class="header-dark text-center">
-                <h2 style="font-size: 1.5rem; font-weight: 900; letter-spacing: 2px; margin: 0;">ADMIN CONTROL</h2>
-                <p style="font-size: 9px; font-weight: 700; opacity: 0.4; letter-spacing: 2px; margin-top: 0.5rem;">PT SEPATU INDONESIA (DEMO MODE)</p>
-                <button onclick="changePage('login')" style="margin-top: 1.5rem; background: rgba(255,255,255,0.1); border: none; color: white; padding: 0.5rem 1.2rem; border-radius: 2rem; font-size: 9px; font-weight: 700;">KELUAR</button>
-            </div>
-            
-            <div class="p-8" style="margin-top: -3rem;">
-                <div class="flex items-center justify-between" style="margin-bottom: 1.5rem; padding: 0 0.5rem;">
-                    <h3 style="font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px;">Pelamar Terbaru</h3>
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <span style="font-size: 9px; font-weight: 800; color: var(--teal);">LIVE</span>
-                        <div style="width: 8px; height: 8px; background: var(--teal); border-radius: 50%;" id="status-ping"></div>
-                    </div>
-                </div>
-
-                <div class="list-item">
-                    <div class="flex items-center" style="gap: 1rem;">
-                        <div class="avatar">👤</div>
-                        <div style="text-align: left;">
-                            <h4 style="font-weight: 800; font-size: 14px; margin: 0; text-transform: uppercase;">Dey (User Baru)</h4>
-                            <p style="font-size: 10px; font-weight: 700; color: #3b82f6; margin-top: 2px; text-transform: uppercase;">Operator Sewing</p>
-                        </div>
-                    </div>
-                    <div style="font-size: 1.5rem;">📞</div>
-                </div>
-
-                <div class="list-item" style="opacity: 0.6;">
-                    <div class="flex items-center" style="gap: 1rem;">
-                        <div class="avatar">👤</div>
-                        <div>
-                            <h4 style="font-weight: 800; font-size: 14px; margin: 0; text-transform: uppercase;">Budi Santoso</h4>
-                            <p style="font-size: 10px; font-weight: 700; color: #64748b; margin-top: 2px; text-transform: uppercase;">Quality Control</p>
-                        </div>
-                    </div>
-                    <div style="background: #dcfce7; color: #166534; font-size: 8px; font-weight: 900; padding: 0.4rem 0.8rem; border-radius: 2rem;">LOLOS</div>
-                </div>
-
-                <div style="margin-top: 5rem; text-align: center; opacity: 0.3;">
-                    <p style="font-size: 8px; font-weight: 800; letter-spacing: 2px;">RECRUITMENT SYSTEM V38.0</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- 3. DASHBOARD PELAMAR -->
-        <div id="page-user" class="hidden animate-fade">
-            <div class="header-teal text-center">
-                <div style="width: 5rem; height: 5rem; background: rgba(255,255,255,0.2); border: 4px solid rgba(255,255,255,0.1); border-radius: 50%; margin: 0 auto 1.5rem auto; display: flex; align-items: center; justify-content: center; font-size: 2.5rem;">👤</div>
-                <h2 style="font-size: 1.5rem; font-weight: 900; margin: 0; text-transform: uppercase;">Dede Hardiyanto</h2>
-                <p style="font-size: 10px; font-weight: 700; opacity: 0.7; letter-spacing: 1px; margin-top: 0.5rem;">ID: HP-2026-0407</p>
-            </div>
-
-            <div class="p-8" style="margin-top: -3rem;">
-                <div class="card flex items-center justify-between" onclick="alert('Membuka Formulir...')">
-                    <div style="text-align: left;">
-                        <h3 style="font-weight: 800; font-size: 14px; margin: 0; text-transform: uppercase;">Isi Lamaran Baru</h3>
-                        <p style="font-size: 10px; color: #94a3b8; margin-top: 4px; font-style: italic;">Lengkapi data diri & berkas</p>
-                    </div>
-                    <div style="font-size: 2rem;">📝</div>
-                </div>
-
-                <div class="card flex items-center justify-between" style="opacity: 0.5;">
-                    <div style="text-align: left;">
-                        <h3 style="font-weight: 800; font-size: 14px; margin: 0; text-transform: uppercase;">Psikotes Online</h3>
-                        <p style="font-size: 10px; color: #94a3b8; margin-top: 4px; font-style: italic;">Menunggu konfirmasi HRD</p>
-                    </div>
-                    <div style="font-size: 2rem;">🧠</div>
-                </div>
-
-                <button onclick="changePage('login')" style="margin-top: 5rem; background: none; border: none; color: #94a3b8; font-weight: 800; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; width: 100%; cursor: pointer;">Keluar Sistem</button>
-            </div>
-        </div>
-
-    </div>
+    <div id="root"></div>
 
     <script>
-        // FUNGSI NAVIGASI (MURNI JAVASCRIPT - TIDAK AKAN BLANK)
-        function changePage(pageId) {
-            document.getElementById('page-login').classList.add('hidden');
-            document.getElementById('page-admin').classList.add('hidden');
-            document.getElementById('page-user').classList.add('hidden');
+        const { useState, useEffect } = React;
+        const html = htm.bind(React.createElement);
 
-            document.getElementById('page-' + pageId).classList.remove('hidden');
-            window.scrollTo(0,0);
+        // CONFIG FIREBASE ASLI MILIK ANDA (DARI GAMBAR 34322)
+        const firebaseConfig = {
+            apiKey: "AIzaSyAg2NSb0rqD6BNtu96_7VJezhGiUlYyIZM",
+            authDomain: "hire-1a51d.firebaseapp.com",
+            projectId: "hire-1a51d",
+            storageBucket: "hire-1a51d.firebasestorage.app",
+            messagingSenderId: "370568295",
+            appId: "1:370568295:web:a0d38b16b3bde89cbbf8c2"
+        };
+
+        // Inisialisasi Firebase
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+        const APP_ID = "industry_master_v39";
+
+        function App() {
+            const [view, setView] = useState('splash'); // splash, login, dashboard, admin, form
+            const [user, setUser] = useState(null);
+            const [profile, setProfile] = useState(null);
+            const [loading, setLoading] = useState(false);
+            const [applicants, setApplicants] = useState([]);
+            const [jobs, setJobs] = useState([]);
+            const [selectedAp, setSelectedAp] = useState(null);
+
+            // Form States
+            const [email, setEmail] = useState('');
+            const [pass, setPass] = useState('');
+            const [name, setName] = useState('');
+            const [isSignup, setIsSignup] = useState(false);
+
+            // Application Data
+            const [ktp, setKtp] = useState('');
+            const [pos, setPos] = useState('');
+            const [wa, setWa] = useState('');
+            const [photo, setPhoto] = useState('');
+
+            // 1. Initial Authentication & Profiling
+            useEffect(() => {
+                const unsub = auth.onAuthStateChanged(async (u) => {
+                    if (u) {
+                        setUser(u);
+                        const snap = await db.collection('artifacts').doc(APP_ID).collection('public').doc('data').collection('users').doc(u.uid).get();
+                        if (snap.exists) {
+                            const data = snap.data();
+                            setProfile(data);
+                            setView(data.role === 'admin' ? 'admin' : 'dashboard');
+                        } else {
+                            // First time login setup
+                            const role = u.email.includes('admin') ? 'admin' : 'user';
+                            const pData = { uid: u.uid, name: name || u.email.split('@')[0], email: u.email, role: role };
+                            await db.collection('artifacts').doc(APP_ID).collection('public').doc('data').collection('users').doc(u.uid).set(pData);
+                            setProfile(pData);
+                            setView(role === 'admin' ? 'admin' : 'dashboard');
+                        }
+                    } else {
+                        setTimeout(() => setView('login'), 1500);
+                    }
+                });
+
+                // Listen to Jobs
+                db.collection('artifacts').doc(APP_ID).collection('public').doc('data').collection('jobs').onSnapshot(s => {
+                    setJobs(s.docs.map(d => ({id: d.id, ...d.data()})));
+                });
+
+                return () => unsub();
+            }, []);
+
+            // 2. Admin Real-time Listener
+            useEffect(() => {
+                if (view === 'admin') {
+                    return db.collection('artifacts').doc(APP_ID).collection('public').doc('data').collection('applicants').onSnapshot(s => {
+                        setApplicants(s.docs.map(d => ({id: d.id, ...d.data()})));
+                    });
+                }
+            }, [view]);
+
+            // Actions
+            const handleAuth = async (e) => {
+                e.preventDefault();
+                setLoading(true);
+                try {
+                    if (isSignup) await auth.createUserWithEmailAndPassword(email, pass);
+                    else await auth.signInWithEmailAndPassword(email, pass);
+                } catch (err) { alert("Sistem: " + err.message); }
+                setLoading(false);
+            };
+
+            const submitApply = async () => {
+                if(!ktp || !pos || !wa) return alert("Lengkapi data wajib!");
+                setLoading(true);
+                try {
+                    await db.collection('artifacts').doc(APP_ID).collection('public').doc('data').collection('applicants').add({
+                        ktp, pos, wa, photo, userName: profile?.name || email, userId: user.uid, status: 'PROSES', at: new Date().toISOString()
+                    });
+                    alert("Lamaran Berhasil Terkirim!");
+                    setView('dashboard');
+                } catch (e) { alert(e.message); }
+                setLoading(false);
+            };
+
+            const updateApStatus = async (id, status) => {
+                await db.collection('artifacts').doc(APP_ID).collection('public').doc('data').collection('applicants').doc(id).update({ status });
+                setSelectedAp(null);
+            };
+
+            const toBase64 = (file) => new Promise((res) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => res(reader.result);
+            });
+
+            // --- VIEWS ---
+
+            if (view === 'splash') return html`
+                <div class="app-container orange-gradient flex flex-col items-center justify-center text-white">
+                    <div class="text-7xl mb-6 animate-bounce">👟</div>
+                    <h1 class="text-4xl font-black tracking-tighter uppercase leading-none">HIREPRO</h1>
+                    <p class="text-[10px] font-bold tracking-[0.5em] opacity-60 uppercase mt-4">Industrial Recruitment</p>
+                </div>
+            `;
+
+            if (view === 'login') return html`
+                <div class="app-container p-10 flex flex-col justify-center animate-fade">
+                    <div class="text-center mb-12">
+                        <div class="text-6xl mb-4">💼</div>
+                        <h2 class="text-3xl font-black text-slate-800 tracking-tighter uppercase leading-none">Pintu Masuk</h2>
+                        <p class="text-[10px] font-bold text-slate-400 mt-2 uppercase tracking-widest italic">PT Sepatu Indonesia</p>
+                    </div>
+                    
+                    <form onSubmit=${handleAuth} class="space-y-4">
+                        ${isSignup && html`<div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase ml-2">Nama Lengkap</label><input class="form-input" placeholder="Dey Hardiyanto" value=${name} onChange=${e => setName(e.target.value)} required /></div>`}
+                        <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase ml-2">Alamat Email</label><input class="form-input" type="email" placeholder="admin@sepatu.com" value=${email} onChange=${e => setEmail(e.target.value)} required /></div>
+                        <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase ml-2">Kata Sandi</label><input class="form-input" type="password" placeholder="••••••••" value=${pass} onChange=${e => setPass(e.target.value)} required /></div>
+                        
+                        <button type="submit" class="w-full orange-gradient text-white font-black py-5 rounded-3xl industrial-shadow uppercase text-xs tracking-widest mt-4 active:scale-95 transition-all">
+                            ${loading ? 'SINKRONISASI...' : (isSignup ? 'Buat Akun Pelamar' : 'Masuk Ke Sistem')}
+                        </button>
+                    </form>
+
+                    <button onClick=${() => setIsSignup(!isSignup)} class="mt-8 text-[10px] font-bold text-slate-300 underline uppercase block mx-auto text-center">
+                        ${isSignup ? 'Sudah punya akun? Login' : 'Belum punya akun? Daftar Akun'}
+                    </button>
+                    
+                    <div class="mt-16 p-6 bg-slate-50 border-2 border-dashed border-slate-200 rounded-[2.5rem] text-center">
+                        <p class="text-[9px] text-slate-400 font-bold uppercase mb-3">Opsi Demo UAT:</p>
+                        <button onClick=${() => {setEmail('admin@sepatu.com'); setPass('123456'); setIsSignup(false);}} class="text-[10px] font-black text-orange-500 uppercase border border-orange-200 px-6 py-2 rounded-full">Gunakan Akun Admin</button>
+                    </div>
+                </div>
+            `;
+
+            if (view === 'dashboard') return html`
+                <div class="app-container bg-slate-50 animate-fade">
+                    <div class="orange-gradient text-white p-10 pt-20 rounded-b-[4rem] text-center industrial-shadow relative">
+                        <div class="w-24 h-24 bg-white/20 rounded-full mx-auto mb-6 flex items-center justify-center text-5xl border-4 border-white/10 shadow-xl">👤</div>
+                        <h2 class="text-2xl font-black uppercase tracking-tight leading-none">${profile?.name}</h2>
+                        <p class="text-[10px] font-bold opacity-60 uppercase tracking-widest mt-2">ID Pelamar: ${user?.uid.slice(0,8)}</p>
+                    </div>
+
+                    <div class="p-8 -mt-10 space-y-4">
+                        <div onClick=${() => setView('form')} class="bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-sm flex justify-between items-center active:scale-95 transition-all cursor-pointer">
+                            <div class="text-left">
+                                <h3 class="font-black text-sm text-slate-800 uppercase leading-none">Isi Formulir Kerja</h3>
+                                <p class="text-[10px] text-slate-400 mt-2 italic">Kirim berkas & biodata KTP</p>
+                            </div>
+                            <div class="text-3xl text-orange-500">📝</div>
+                        </div>
+
+                        <div class="bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-sm flex justify-between items-center opacity-40">
+                            <div class="text-left">
+                                <h3 class="font-black text-sm text-slate-800 uppercase leading-none">Mulai Psikotes</h3>
+                                <p class="text-[10px] text-slate-400 mt-2 italic">Menunggu verifikasi HRD</p>
+                            </div>
+                            <div class="text-3xl text-orange-200">🧠</div>
+                        </div>
+
+                        <button onClick=${() => auth.signOut().then(() => window.location.reload())} class="w-full py-5 text-slate-300 font-black uppercase text-[10px] tracking-widest mt-12">Keluar Sistem</button>
+                    </div>
+                </div>
+            `;
+
+            if (view === 'form') return html`
+                <div class="app-container bg-white animate-fade pb-20">
+                    <div class="orange-gradient text-white p-6 sticky top-0 z-50 flex items-center gap-4 industrial-shadow">
+                        <button onClick=${() => setView('dashboard')} class="text-xl font-bold">←</button>
+                        <h1 class="font-black uppercase tracking-tight">Formulir Pendaftaran</h1>
+                    </div>
+                    
+                    <div class="p-10 space-y-6">
+                        <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase ml-2">Nomor NIK KTP</label><input class="form-input" placeholder="16 Digit NIK" value=${ktp} onChange=${e => setKtp(e.target.value)} /></div>
+                        <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase ml-2">WhatsApp Aktif</label><input class="form-input" placeholder="081234567xxx" value=${wa} onChange=${e => setWa(e.target.value)} /></div>
+                        <div class="space-y-1"><label class="text-[10px] font-black text-slate-400 uppercase ml-2">Posisi Lowongan</label>
+                            <select class="form-input" value=${pos} onChange=${e => setPos(e.target.value)}>
+                                <option value="">Pilih Posisi...</option>
+                                <option>Operator Sewing</option>
+                                <option>Operator Cutting</option>
+                                <option>Quality Control</option>
+                                <option>Staff Gudang</option>
+                                ${jobs.map(j => html`<option key=${j.id} value=${j.title}>${j.title}</option>`)}
+                            </select>
+                        </div>
+                        
+                        <label class="block w-full p-10 border-2 border-dashed border-slate-200 rounded-[2.5rem] text-center ${photo ? 'bg-orange-50 border-orange-300' : 'bg-slate-50'} cursor-pointer transition-all">
+                            <input type="file" class="hidden" accept="image/*" onChange=${async e => setPhoto(await toBase64(e.target.files[0]))} />
+                            <div class="text-4xl mb-2">${photo ? '✅' : '📷'}</div>
+                            <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">${photo ? 'FOTO BERHASIL DIUPLOAD' : 'AMBIL FOTO WAJAH'}</span>
+                        </label>
+
+                        <button onClick=${submitApply} class="w-full orange-gradient text-white font-black py-5 rounded-[2.5rem] shadow-xl text-xs uppercase tracking-widest mt-6">
+                            ${loading ? 'MENGIRIM...' : 'Kirim Lamaran Kerja'}
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            if (view === 'admin') return html`
+                <div class="app-container bg-slate-50 animate-fade pb-24">
+                    <div class="bg-slate-900 text-white p-10 pt-20 rounded-b-[4rem] text-center shadow-2xl">
+                        <h2 class="text-2xl font-black uppercase tracking-tighter italic leading-none text-orange-500">ADMIN CONTROL</h2>
+                        <p class="text-[10px] font-bold opacity-30 uppercase tracking-[0.2em] mt-2">Pusat Data Rekrutmen</p>
+                        <button onClick=${() => auth.signOut().then(() => window.location.reload())} class="mt-8 px-8 py-2 bg-white/10 rounded-full text-[9px] font-bold uppercase tracking-widest">Logout Admin</button>
+                    </div>
+                    
+                    <div class="p-8">
+                        <div class="flex justify-between items-center mb-6 px-2">
+                            <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Database Pelamar (${applicants.length})</h3>
+                            <div class="flex items-center gap-2"><div class="w-2 h-2 bg-orange-500 rounded-full animate-ping"></div><span class="text-[9px] font-bold text-orange-500 uppercase">Live Sync</span></div>
+                        </div>
+
+                        <div class="space-y-3">
+                            ${applicants.map(ap => html`
+                                <div key=${ap.id} onClick=${() => setSelectedAp(ap)} class="bg-white p-5 rounded-[2.2rem] border border-slate-100 shadow-sm flex items-center justify-between active:scale-95 transition-all cursor-pointer">
+                                    <div class="flex items-center gap-4">
+                                        <div class="w-14 h-14 bg-orange-50 rounded-2xl flex items-center justify-center overflow-hidden border border-orange-100">
+                                            ${ap.photo ? html`<img src=${ap.photo} class="w-full h-full object-cover" />` : html`<span class="text-2xl">👤</span>`}
+                                        </div>
+                                        <div class="text-left">
+                                            <h4 class="font-black text-sm text-slate-800 leading-none mb-1 uppercase">${ap.userName}</h4>
+                                            <p class="text-[9px] font-bold text-blue-500 uppercase tracking-tighter">${ap.pos}</p>
+                                        </div>
+                                    </div>
+                                    <div class="px-3 py-1 rounded-full text-[8px] font-black uppercase ${ap.status === 'Lolos' ? 'bg-green-100 text-green-600' : ap.status === 'Gagal' ? 'bg-red-100 text-red-600' : 'bg-orange-100 text-orange-600'}">
+                                        ${ap.status}
+                                    </div>
+                                </div>
+                            `)}
+                            ${applicants.length === 0 && html`<div class="text-center py-20 text-slate-300 italic text-xs">Belum ada data masuk...</div>`}
+                        </div>
+                    </div>
+
+                    <!-- Modal Detail Pelamar -->
+                    ${selectedAp && html`
+                        <div class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[100] flex items-end animate-fade">
+                            <div class="bg-white w-full rounded-t-[4rem] p-10 max-h-[90vh] overflow-y-auto">
+                                <div class="w-12 h-1 bg-slate-100 mx-auto mb-8 rounded-full"></div>
+                                <div class="flex flex-col items-center text-center mb-10">
+                                    <img src=${selectedAp.photo || 'https://via.placeholder.com/150'} class="w-40 h-40 rounded-[2.5rem] object-cover mb-6 border-4 border-slate-50 shadow-2xl" />
+                                    <h2 class="text-2xl font-black uppercase tracking-tight text-slate-800">${selectedAp.userName}</h2>
+                                    <p class="text-xs text-orange-500 font-bold uppercase tracking-[0.2em] mt-2 italic">${selectedAp.pos}</p>
+                                    <div class="mt-6 p-4 bg-slate-50 rounded-2xl w-full text-left space-y-2">
+                                        <p class="text-[10px] text-slate-400 font-bold uppercase">NIK: <span class="text-slate-700">${selectedAp.ktp}</span></p>
+                                        <p class="text-[10px] text-slate-400 font-bold uppercase">Tgl Daftar: <span class="text-slate-700">${new Date(selectedAp.at).toLocaleDateString()}</span></p>
+                                    </div>
+                                </div>
+                                
+                                <div class="grid grid-cols-2 gap-4 mb-6">
+                                    <button onClick=${() => updateApStatus(selectedAp.id, 'Gagal')} class="py-5 bg-red-50 text-red-500 font-black rounded-3xl uppercase text-[10px] tracking-widest border border-red-100">Gagal</button>
+                                    <button onClick=${() => updateApStatus(selectedAp.id, 'Lolos')} class="py-5 orange-gradient text-white font-black rounded-3xl uppercase text-[10px] tracking-widest shadow-lg">Lolos</button>
+                                </div>
+                                <button onClick=${() => window.open(`https://wa.me/${selectedAp.wa}`)} class="w-full py-5 bg-green-500 text-white font-black rounded-3xl uppercase text-[10px] flex items-center justify-center gap-3 mb-6 shadow-xl"><span class="text-xl">📞</span> HUBUNGI VIA WHATSAPP</button>
+                                <button onClick=${() => setSelectedAp(null)} class="w-full text-slate-300 font-bold uppercase text-[9px] tracking-[0.3em]">Tutup Detail</button>
+                            </div>
+                        </div>
+                    `}
+                </div>
+            `;
+
+            return null;
         }
 
-        function handleLogin() {
-            const email = document.getElementById('email').value.toLowerCase();
-            if (email.includes('admin')) {
-                changePage('admin');
-            } else {
-                changePage('user');
-            }
-        }
-
-        // Animasi Ping Sederhana
-        setInterval(() => {
-            const ping = document.getElementById('status-ping');
-            if(ping) ping.style.opacity = ping.style.opacity === '0' ? '1' : '0';
-        }, 800);
-
-        console.log("HIREPRO Engine V38 Active.");
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(React.createElement(App));
     </script>
 </body>
 </html>
