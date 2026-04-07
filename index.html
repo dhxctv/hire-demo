@@ -4,367 +4,166 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HR Portal - PT Sepatu Indonesia</title>
-    <!-- Framework & UI Libraries -->
+    <title>HIREPRO V26 - PT Sepatu Indonesia</title>
+    
+    <!-- 1. LIBRARY DASAR -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    
+
+    <!-- 2. FIREBASE STABIL -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap');
         * { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background-color: #f8fafc; margin: 0; padding: 0; }
-        .teal-theme { background: linear-gradient(135deg, #1abc9c 0%, #16a085 100%); }
+        body { background-color: #f1f5f9; margin: 0; padding: 0; }
+        .teal-theme { background: #1abc9c; }
         .teal-text { color: #1abc9c; }
-        .animate-fade { animation: fadeIn 0.3s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; } }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        input:focus, select:focus { outline: none; ring: 2px; ring-color: #1abc9c; border-color: transparent; }
+        #debug-log { position: fixed; bottom: 0; left: 0; right: 0; height: 50px; background: #000; color: #0f0; font-family: monospace; font-size: 9px; overflow-y: auto; padding: 5px; z-index: 9999; opacity: 0.8; pointer-events: none; }
     </style>
 </head>
 <body>
     <div id="root"></div>
+    <div id="debug-log">Memulai V26...</div>
 
     <script type="text/babel">
-        const { useState, useEffect, useRef } = React;
+        const { useState, useEffect } = React;
 
-        // --- KONFIGURASI ASLI DARI SCREENSHOT ANDA ---
+        // Fungsi Log untuk melacak error di layar HP
+        const addLog = (m) => {
+            const el = document.getElementById('debug-log');
+            if (el) el.innerHTML += `<br/>> ${m}`;
+        };
+
+        // --- CONFIG FIREBASE ANDA ---
         const firebaseConfig = {
             apiKey: "AIzaSyAg2NSb0rqD6BNtu96_7VJezhGiUlYyIZM",
             authDomain: "hire-1a51d.firebaseapp.com",
             projectId: "hire-1a51d",
             storageBucket: "hire-1a51d.firebasestorage.app",
             messagingSenderId: "370568295",
-            appId: "1:370568295:web:a0d38b16b3bde89cbbf8c2",
-            measurementId: "G-XQ749R6HHK"
+            appId: "1:370568295:web:a0d38b16b3bde89cbbf8c2"
         };
 
-        // Firebase Imports
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, doc, getDoc, setDoc, onSnapshot, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
-        const appId = "hire-factory-v1";
+        // Inisialisasi
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+        const APP_ID = "hire-v26-final";
 
         function App() {
-            // View Logic
-            const [view, setView] = useState('splash'); // splash, login, user_db, admin_db, form
+            const [view, setView] = useState('splash');
+            const [user, setUser] = useState(null);
             const [profile, setProfile] = useState(null);
             const [loading, setLoading] = useState(false);
-            
-            // App Data
-            const [applicants, setApplicants] = useState([]);
-            const [logs, setLogs] = useState([]);
-            const [config, setConfig] = useState({ name: 'PT SEPATU INDONESIA', logo: '' });
 
-            // Form Buffers (Mencegah Keyboard Tertutup)
-            const [fEmail, setFEmail] = useState('');
-            const [fPass, setFPass] = useState('');
-            const [fName, setFName] = useState('');
+            // Form Buffers
+            const [email, setEmail] = useState('');
+            const [pass, setPass] = useState('');
+            const [name, setName] = useState('');
             const [authMode, setAuthMode] = useState('login');
 
-            // Apply Form Data
-            const [ktp, setKtp] = useState('');
-            const [wa, setWa] = useState('');
-            const [pos, setPos] = useState('');
-            const [photo, setPhoto] = useState('');
-
-            // Admin Logic
-            const [selectedAp, setSelectedAp] = useState(null);
-
-            // 1. Sinkronisasi Data
             useEffect(() => {
-                const unsubAuth = onAuthStateChanged(auth, async (u) => {
+                addLog("Aplikasi Siap.");
+                const unsub = auth.onAuthStateChanged(async (u) => {
+                    addLog("Cek Auth...");
                     if (u) {
-                        const snap = await getDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', u.uid));
-                        if (snap.exists()) {
-                            setProfile(snap.data());
-                            setView(snap.data().role === 'admin' ? 'admin_db' : 'user_db');
-                        } else {
-                            // Setup default profile
-                            const role = u.email.includes('admin') ? 'admin' : 'user';
-                            const pData = { uid: u.uid, name: fName || 'User', email: u.email, role };
-                            await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', u.uid), pData);
-                            setProfile(pData);
-                            setView(role === 'admin' ? 'admin_db' : 'user_db');
-                        }
+                        addLog("Login: " + u.email);
+                        setUser(u);
+                        try {
+                            const snap = await db.collection('artifacts').doc(APP_ID).collection('users').doc(u.uid).get();
+                            if (snap.exists) {
+                                setProfile(snap.data());
+                                setView(snap.data().role === 'admin' ? 'admin_db' : 'user_db');
+                            } else {
+                                setView('user_db');
+                            }
+                        } catch (e) { addLog("DB Error: " + e.message); }
                     } else {
-                        setTimeout(() => setView('login'), 2000);
+                        addLog("Belum login. Ke Login Page.");
+                        setTimeout(() => setView('login'), 1000);
                     }
                 });
-                onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'config'), (s) => s.exists() && setConfig(s.data()));
-                return () => unsubAuth();
+                return () => unsub();
             }, []);
-
-            // 2. Data Real-time (Admin Only)
-            useEffect(() => {
-                if (profile?.role === 'admin') {
-                    const unsubApp = onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'applicants'), (s) => setApplicants(s.docs.map(d => ({id: d.id, ...d.data()}))));
-                    const unsubLog = onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'logs'), (s) => setLogs(s.docs.map(d => ({id: d.id, ...d.data()})).sort((a,b) => new Date(b.at) - new Date(a.at))));
-                    return () => { unsubApp(); unsubLog(); };
-                }
-            }, [profile]);
-
-            useEffect(() => { if (window.lucide) window.lucide.createIcons(); });
-
-            // --- Handlers ---
-            const writeLog = async (act, det) => {
-                await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'logs'), { u: profile?.name || 'System', act, det, at: new Date().toISOString() });
-            };
 
             const handleAuth = async (e) => {
                 e.preventDefault();
                 setLoading(true);
+                addLog("Proses " + authMode + "...");
                 try {
                     if (authMode === 'signup') {
-                        await createUserWithEmailAndPassword(auth, fEmail, fPass);
+                        const res = await auth.createUserWithEmailAndPassword(email, pass);
+                        const pData = { uid: res.user.uid, name, email, role: 'user' };
+                        await db.collection('artifacts').doc(APP_ID).collection('users').doc(res.user.uid).set(pData);
+                        setProfile(pData);
                     } else {
-                        await signInWithEmailAndPassword(auth, fEmail, fPass);
+                        await auth.signInWithEmailAndPassword(email, pass);
                     }
-                } catch (err) { alert(err.message); }
+                } catch (err) { 
+                    alert(err.message); 
+                    addLog("Error: " + err.message);
+                }
                 setLoading(false);
             };
 
-            const toBase64 = (file) => new Promise((res) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = () => res(reader.result);
-            });
-
-            // --- Views ---
-
-            if (view === 'splash') return (
-                <div className="h-screen teal-theme flex flex-col items-center justify-center text-white p-10 animate-fade">
-                    <i data-lucide="shield-check" className="w-16 h-16 mb-4 animate-bounce"></i>
-                    <h1 className="text-3xl font-black tracking-tighter uppercase">HIREPRO</h1>
-                    <p className="text-[10px] font-bold tracking-[0.4em] opacity-40 uppercase">Pabrik Sepatu System</p>
-                </div>
-            );
-
-            if (view === 'login') return (
-                <div className="min-h-screen bg-white flex flex-col p-10 justify-center animate-fade max-w-md mx-auto">
-                    <div className="text-center mb-10">
-                        <div className="w-20 h-20 bg-[#1abc9c] rounded-[2rem] mx-auto flex items-center justify-center text-white shadow-xl rotate-3 mb-4"><i data-lucide="briefcase"></i></div>
-                        <h2 className="text-2xl font-black text-slate-800 tracking-tighter uppercase leading-none">{config.name}</h2>
-                        <p className="text-[10px] font-bold text-slate-300 mt-2 uppercase tracking-widest leading-none">Portal Rekrutmen</p>
-                    </div>
-                    <form className="space-y-4" onSubmit={handleAuth}>
-                        {authMode === 'signup' && <input className="w-full p-4 bg-slate-50 border rounded-2xl outline-none text-sm" placeholder="Nama Lengkap" value={fName} onChange={e => setFName(e.target.value)} required />}
-                        <input className="w-full p-4 bg-slate-50 border rounded-2xl outline-none text-sm" type="email" placeholder="Email" value={fEmail} onChange={e => setFEmail(e.target.value)} required />
-                        <input className="w-full p-4 bg-slate-50 border rounded-2xl outline-none text-sm" type="password" placeholder="Password" value={fPass} onChange={e => setFPass(e.target.value)} required />
-                        <button type="submit" className="w-full teal-theme text-white font-black py-4 rounded-3xl shadow-xl uppercase text-xs">
-                            {authMode === 'login' ? 'MASUK' : 'DAFTAR'}
-                        </button>
-                    </form>
-                    <button onClick={() => setAuthMode(authMode === 'login' ? 'signup' : 'login')} className="mt-8 text-[10px] font-black text-slate-300 uppercase underline block mx-auto">{authMode === 'login' ? 'Buat Akun Pelamar' : 'Login Disini'}</button>
-                </div>
-            );
-
-            if (view === 'user_db') return (
-                <div className="min-h-screen bg-[#f8fafc] animate-fade max-w-md mx-auto pb-24 text-center">
-                    <div className="teal-theme text-white pt-16 pb-20 px-8 rounded-b-[4rem] shadow-xl relative">
-                        <div className="w-24 h-24 bg-white rounded-full mx-auto mb-4 flex items-center justify-center text-[#1abc9c] shadow-lg border-4 border-white/20"><i data-lucide="user" className="w-12 h-12"></i></div>
-                        <h2 className="text-2xl font-black uppercase tracking-tight">{profile?.name}</h2>
-                        <p className="text-[10px] font-bold opacity-70 uppercase mt-1">Status: Pelamar Aktif</p>
-                    </div>
-                    <div className="px-6 -mt-10 space-y-4">
-                        <button onClick={() => setView('form')} className="w-full bg-white p-6 rounded-[2.5rem] border shadow-sm flex justify-between items-center active:scale-95 transition-all">
-                            <div className="text-left"><h3 className="font-black text-sm text-slate-800 uppercase">Kirim Lamaran</h3><p className="text-[10px] text-slate-400">Pilih posisi & upload foto</p></div>
-                            <div className="w-12 h-12 bg-slate-50 text-[#1abc9c] rounded-2xl flex items-center justify-center"><i data-lucide="file-plus"></i></div>
-                        </button>
-                        <button onClick={() => signOut(auth)} className="w-full py-5 text-red-500 font-bold uppercase text-[10px] tracking-widest mt-10">LOGOUT SISTEM</button>
-                    </div>
-                </div>
-            );
-
-            if (view === 'form') return (
-                <div className="min-h-screen bg-white pb-20 animate-fade max-w-md mx-auto">
-                    <div className="teal-theme text-white p-6 sticky top-0 z-50 flex items-center gap-4 shadow-md">
-                        <button onClick={() => setView('user_db')}><i data-lucide="chevron-left"></i></button>
-                        <h1 className="font-black uppercase tracking-tight">Pendaftaran</h1>
-                    </div>
-                    <div className="p-8 space-y-6">
-                        <div className="space-y-1"><label className="text-[10px] font-black uppercase text-slate-400 ml-1">NIK KTP</label><input className="w-full p-4 bg-slate-50 rounded-2xl outline-none text-sm border" value={ktp} onChange={e => setKtp(e.target.value)} /></div>
-                        <div className="space-y-1"><label className="text-[10px] font-black uppercase text-slate-400 ml-1">Nomor WhatsApp</label><input className="w-full p-4 bg-slate-50 rounded-2xl outline-none text-sm border" value={wa} onChange={e => setWa(e.target.value)} /></div>
-                        <div className="space-y-1"><label className="text-[10px] font-black uppercase text-slate-400 ml-1">Posisi Lowongan</label><select className="w-full p-4 bg-slate-50 rounded-2xl text-sm border" onChange={e => setPos(e.target.value)}><option value="">Pilih Posisi...</option><option>Operator Sewing</option><option>Operator Cutting</option><option>Quality Control</option></select></div>
-                        <label className={`block w-full p-8 border-2 border-dashed rounded-[2rem] text-center ${photo ? 'bg-green-50 border-green-300' : 'bg-slate-50'} cursor-pointer`}>
-                            <input type="file" className="hidden" accept="image/*" onChange={async e => setPhoto(await toBase64(e.target.files[0]))} />
-                            <i data-lucide="camera" className="mx-auto mb-1 text-slate-300"></i>
-                            <span className="text-[9px] font-black text-slate-400 uppercase">{photo ? '✓ Foto OK' : 'Upload Foto Wajah'}</span>
-                        </label>
-                        <button onClick={async () => {
-                            setLoading(true);
-                            await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'applicants'), { ktp, wa, pos, photo, userName: profile.name, userId: profile.uid, at: new Date().toISOString() });
-                            alert("Terkirim!"); setView('user_db'); setLoading(false);
-                        }} className="w-full teal-theme text-white font-black py-4 rounded-[2.5rem] shadow-2xl">KIRIM LAMARAN</button>
-                    </div>
-                </div>
-            );
-
-            if (view === 'admin_db') return (
-                <div className="min-h-screen bg-[#f3f4f6] animate-fade max-w-md mx-auto pb-24">
-                    <div className="bg-slate-900 text-white p-8 pt-14 rounded-b-[4rem] shadow-xl">
-                        <div className="flex justify-between items-center mb-10">
-                            <div><h2 className="text-xl font-black uppercase italic leading-none tracking-tighter">Admin Control</h2><p className="text-[9px] font-bold text-white/30 uppercase mt-2">{config.name}</p></div>
-                            <button onClick={() => signOut(auth)} className="p-3 bg-white/10 rounded-2xl"><i data-lucide="log-out"></i></button>
-                        </div>
-                    </div>
-                    <div className="p-8 space-y-4">
-                        <h3 className="font-black text-xs text-slate-400 tracking-widest uppercase ml-2 italic">Database Pelamar ({applicants.length})</h3>
-                        {applicants.map(ap => (
-                            <div key={ap.id} onClick={() => setSelectedAp(ap)} className="bg-white p-5 rounded-[2.5rem] border shadow-sm flex items-center justify-between">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-12 h-12 bg-[#1abc9c]/10 text-[#1abc9c] rounded-2xl flex items-center justify-center font-black">{ap.userName?.[0]}</div>
-                                    <div><h4 className="font-black text-sm text-slate-800 leading-none mb-1 uppercase">{ap.userName}</h4><p className="text-[9px] font-bold text-blue-600 uppercase">{ap.pos || 'Operator'}</p></div>
-                                </div>
-                                <i data-lucide="chevron-right" className="text-slate-200"></i>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            );
-
+            // Switcher Tampilan
             return (
-                <div className="max-w-md mx-auto relative min-h-screen">
-                    {selectedAp && (
-                        <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[100] flex items-end animate-fade">
-                            <div className="bg-white w-full max-w-md mx-auto rounded-t-[4rem] p-10 max-h-[90vh] overflow-y-auto">
-                                <div className="w-12 h-1 bg-slate-100 rounded-full mx-auto mb-8"></div>
-                                <div className="flex flex-col items-center mb-8">
-                                    {selectedAp.photo ? <img src={selectedAp.photo} className="w-24 h-24 rounded-3xl object-cover shadow-xl border-4 border-slate-50 mb-4" /> : <div className="w-20 h-20 bg-slate-100 rounded-3xl mb-4" />}
-                                    <h2 className="text-2xl font-black uppercase">{selectedAp.userName}</h2>
-                                    <p className="text-xs text-blue-600 font-bold uppercase tracking-widest">{selectedAp.pos}</p>
+                <div className="max-w-md mx-auto min-h-screen bg-white relative">
+                    
+                    {/* 1. Splash Screen */}
+                    {view === 'splash' && (
+                        <div className="h-screen teal-theme flex flex-col items-center justify-center text-white p-10 text-center">
+                            <div className="text-6xl mb-4">👟</div>
+                            <h1 className="text-3xl font-black tracking-tighter">HIREPRO</h1>
+                            <p className="text-[10px] font-bold tracking-[0.4em] opacity-50 uppercase mt-2">Pabrik Sepatu System</p>
+                        </div>
+                    )}
+
+                    {/* 2. Login Screen */}
+                    {view === 'login' && (
+                        <div className="min-h-screen p-10 flex flex-col justify-center">
+                            <div className="text-center mb-10">
+                                <div className="text-5xl mb-4">💼</div>
+                                <h2 className="text-2xl font-black text-slate-800 tracking-tighter uppercase">Portal Rekrutmen</h2>
+                                <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-widest">Silakan Masuk</p>
+                            </div>
+                            <form className="space-y-4" onSubmit={handleAuth}>
+                                {authMode === 'signup' && <input className="w-full p-4 bg-slate-50 border rounded-2xl outline-none text-sm" placeholder="Nama Lengkap" value={name} onChange={e => setName(e.target.value)} required />}
+                                <input className="w-full p-4 bg-slate-50 border rounded-2xl outline-none text-sm" type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required />
+                                <input className="w-full p-4 bg-slate-50 border rounded-2xl outline-none text-sm" type="password" placeholder="Password" value={pass} onChange={e => setPass(e.target.value)} required />
+                                <button type="submit" className="w-full teal-theme text-white font-black py-4 rounded-3xl shadow-xl uppercase text-xs">
+                                    {authMode === 'login' ? 'MASUK' : 'DAFTAR'}
+                                </button>
+                            </form>
+                            <button onClick={() => setAuthMode(authMode === 'login' ? 'signup' : 'login')} className="mt-8 text-[10px] font-black text-slate-300 uppercase underline block mx-auto">{authMode === 'login' ? 'Buat Akun Pelamar' : 'Sudah punya akun? Login'}</button>
+                        </div>
+                    )}
+
+                    {/* 3. User Dashboard */}
+                    {view === 'user_db' && (
+                        <div className="min-h-screen bg-slate-50 pb-20">
+                            <div className="teal-theme text-white pt-16 pb-20 px-8 rounded-b-[3rem] text-center shadow-lg">
+                                <div className="w-20 h-20 bg-white rounded-full mx-auto mb-4 flex items-center justify-center text-3xl shadow-md border-4 border-white/20">👤</div>
+                                <h2 className="text-xl font-black uppercase tracking-tight">{profile?.name || user?.email}</h2>
+                                <p className="text-[10px] font-bold opacity-70 mt-1 uppercase tracking-widest">Pelamar Aktif</p>
+                            </div>
+                            <div className="px-6 -mt-10 space-y-4">
+                                <div className="bg-white p-6 rounded-3xl border shadow-sm flex justify-between items-center active:scale-95 transition-all">
+                                    <div><h3 className="font-black text-sm text-slate-800 uppercase">Kirim Lamaran</h3><p className="text-[10px] text-slate-400">Pilih posisi & upload biodata</p></div>
+                                    <div className="text-2xl">📝</div>
                                 </div>
-                                <button onClick={() => window.open(`https://wa.me/${selectedAp.wa}`)} className="w-full py-5 bg-green-500 text-white font-black rounded-3xl shadow-xl flex items-center justify-center gap-2 mb-4"><i data-lucide="phone"></i> HUBUNGI VIA WA</button>
-                                <button onClick={() => setSelectedAp(null)} className="w-full py-4 text-slate-300 font-bold uppercase text-[9px]">TUTUP DETAIL</button>
+                                <button onClick={() => auth.signOut().then(() => window.location.reload())} className="w-full py-4 text-red-500 font-bold uppercase text-[10px] tracking-widest mt-10">Logout Sistem</button>
                             </div>
                         </div>
                     )}
-                    {loading && (
-                        <div className="fixed inset-0 bg-white/95 backdrop-blur-md z-[200] flex flex-col items-center justify-center">
-                            <i data-lucide="loader-2" className="animate-spin text-[#1abc9c] w-12 h-12 mb-4"></i>
-                            <p className="text-[10px] font-black tracking-widest text-slate-800 uppercase animate-pulse">Syncing Cloud Database...</p>
-                        </div>
-                    )}
-                </div>
-            );
-        }
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
-    </script>
-</body>
-</html>
-
-```
-                    <i data-lucide="shield-check" className="w-16 h-16 mb-4 animate-bounce"></i>
-                    <h1 className="text-3xl font-black tracking-tighter uppercase">HIREPRO v1</h1>
-                </div>
-            );
-
-            if (view === 'login') return (
-                <div className="min-h-screen bg-white flex flex-col p-10 justify-center animate-fade max-w-md mx-auto">
-                    <div className="text-center mb-10">
-                        {config.logo ? <img src={config.logo} className="w-20 h-20 mx-auto object-contain mb-4" /> : <div className="w-20 h-20 teal-theme rounded-[2rem] mx-auto mb-4 flex items-center justify-center text-white shadow-xl rotate-3"><i data-lucide="briefcase"></i></div>}
-                        <h2 className="text-2xl font-black text-slate-800 leading-none mb-1 uppercase">{config.name}</h2>
-                        <p className="text-[10px] font-bold text-slate-400 mt-2 uppercase italic tracking-widest leading-none">Management System</p>
-                    </div>
-                    <form className="space-y-4" onSubmit={handleAuth}>
-                        {authMode === 'signup' && <input className="w-full p-4 bg-slate-50 border rounded-2xl outline-none text-sm" placeholder="Nama Lengkap" value={authName} onChange={e => setAuthName(e.target.value)} required />}
-                        <input className="w-full p-4 bg-slate-50 border rounded-2xl outline-none text-sm" type="email" placeholder="Email" value={authEmail} onChange={e => setAuthEmail(e.target.value)} required />
-                        <input className="w-full p-4 bg-slate-50 border rounded-2xl outline-none text-sm" type="password" placeholder="Password" value={authPass} onChange={e => setAuthPass(e.target.value)} required />
-                        <button type="submit" className="w-full teal-theme text-white font-black py-4 rounded-3xl shadow-xl uppercase text-xs">{authMode === 'login' ? 'MASUK' : 'DAFTAR'}</button>
-                    </form>
-                    <button onClick={() => setAuthMode(authMode === 'login' ? 'signup' : 'login')} className="mt-8 text-[10px] font-black text-slate-300 uppercase underline block mx-auto">{authMode === 'login' ? 'Daftar Akun Baru' : 'Login Disini'}</button>
-                </div>
-            );
-
-            if (view === 'user_db') return (
-                <div className="min-h-screen bg-[#f8fafc] animate-fade max-w-md mx-auto pb-24">
-                    <div className="teal-theme text-white pt-16 pb-20 px-8 rounded-b-[4rem] text-center shadow-xl relative">
-                        <div className="w-24 h-24 bg-white rounded-full mx-auto mb-4 flex items-center justify-center text-[#1abc9c] shadow-lg border-4 border-white/20"><i data-lucide="user" className="w-12 h-12"></i></div>
-                        <h2 className="text-2xl font-black uppercase leading-none tracking-tight">{profile?.name}</h2>
-                        <p className="text-[10px] font-bold opacity-60 mt-2 uppercase tracking-widest italic">Pelamar Aktif</p>
-                    </div>
-                    <div className="px-6 -mt-10 space-y-4">
-                        <button onClick={() => setView('user_form')} className="w-full bg-white p-6 rounded-[2.5rem] border shadow-sm flex justify-between items-center active:scale-95 transition-transform">
-                            <div className="text-left"><h3 className="font-black text-sm text-slate-800 uppercase">Isi Lamaran</h3><p className="text-[10px] text-slate-400">Upload berkas & foto</p></div>
-                            <div className="w-10 h-10 bg-slate-50 text-[#1abc9c] rounded-xl flex items-center justify-center"><i data-lucide="file-plus"></i></div>
-                        </button>
-                        <button onClick={() => signOut(auth)} className="w-full py-4 bg-red-50 text-red-500 font-bold uppercase text-[10px] tracking-widest mt-10">Logout</button>
-                    </div>
-                </div>
-            );
-
-            if (view === 'user_form') return (
-                <div className="min-h-screen bg-white pb-20 animate-fade max-w-md mx-auto">
-                    <div className="teal-theme text-white p-6 sticky top-0 z-50 flex items-center gap-4">
-                        <button onClick={() => setView('user_db')}><i data-lucide="chevron-left"></i></button>
-                        <h1 className="font-bold">Formulir Lamaran</h1>
-                    </div>
-                    <div className="p-8 space-y-6">
-                        <input className="w-full p-4 bg-slate-50 rounded-2xl outline-none text-sm border" placeholder="NIK KTP" value={ktp} onChange={e => setKtp(e.target.value)} />
-                        <input className="w-full p-4 bg-slate-50 rounded-2xl outline-none text-sm border" placeholder="WhatsApp" value={wa} onChange={e => setWa(e.target.value)} />
-                        <select className="w-full p-4 bg-slate-50 rounded-2xl text-sm border" onChange={e => setPos(e.target.value)}>
-                            <option value="">Pilih Lowongan...</option>
-                            <option>Operator Sewing</option>
-                            <option>Quality Control</option>
-                            {jobs.map(j => <option key={j.id} value={j.title}>{j.title}</option>)}
-                        </select>
-                        <label className={`block w-full p-8 border-2 border-dashed rounded-[2rem] text-center ${photo ? 'bg-green-50 border-green-300' : 'bg-slate-50'} cursor-pointer`}>
-                            <input type="file" className="hidden" accept="image/*" onChange={async e => {
-                                const reader = new FileReader();
-                                reader.readAsDataURL(e.target.files[0]);
-                                reader.onload = () => setPhoto(reader.result);
-                            }} />
-                            <i data-lucide="camera" className="mx-auto mb-1 text-slate-300"></i>
-                            <span className="text-[9px] font-black uppercase text-slate-400">{photo ? '✓ Foto OK' : 'Upload Foto'}</span>
-                        </label>
-                        <button onClick={async () => {
-                            setLoading(true);
-                            await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'applicants'), { ktp, wa, pos, photo, userName: profile.name, userId: user.uid, at: new Date().toISOString() });
-                            alert("Terkirim!"); setView('user_db'); setLoading(false);
-                        }} className="w-full teal-theme text-white font-black py-4 rounded-[2.5rem] shadow-2xl">KIRIM LAMARAN</button>
-                    </div>
-                </div>
-            );
-
-            if (view === 'admin_db') return (
-                <div className="min-h-screen bg-slate-50 animate-fade max-w-md mx-auto pb-24">
-                    <div className="bg-slate-900 text-white p-8 pt-14 rounded-b-[4rem] shadow-xl">
-                        <div className="flex justify-between items-center mb-8">
-                            <h2 className="text-xl font-black uppercase italic leading-none">Admin Panel</h2>
-                            <button onClick={() => signOut(auth)} className="p-3 bg-white/10 rounded-2xl"><i data-lucide="log-out"></i></button>
-                        </div>
-                    </div>
-                    <div className="p-8 space-y-4">
-                        <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-2">Daftar Pelamar ({applicants.length})</h3>
-                        {applicants.map(ap => (
-                            <div key={ap.id} className="bg-white p-5 rounded-[2.5rem] border shadow-sm flex items-center justify-between">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 bg-[#1abc9c]/10 text-[#1abc9c] rounded-xl flex items-center justify-center font-black">{ap.userName?.[0]}</div>
-                                    <div><h4 className="font-bold text-sm text-slate-800 leading-none mb-1">{ap.userName}</h4><p className="text-[9px] text-blue-600 font-bold uppercase">{ap.pos}</p></div>
-                                </div>
-                                <button onClick={() => window.open(`https://wa.me/${ap.wa}`)} className="p-2 bg-green-50 text-green-500 rounded-lg"><i data-lucide="phone"></i></button>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            );
-
-            return (
-                <div className="max-w-md mx-auto relative min-h-screen">
-                    {loading && (
-                        <div className="fixed inset-0 bg-white/95 backdrop-blur-md z-[200] flex flex-col items-center justify-center">
-                            <i data-lucide="loader-2" className="animate-spin text-[#1abc9c] w-12 h-12 mb-4"></i>
-                            <p className="text-[10px] font-black tracking-widest uppercase text-slate-800 animate-pulse">Syncing Database...</p>
-                        </div>
-                    )}
+                    {/* Loader */}
+                    {loading && <div className="fixed inset-0 bg-white/80 z-[300] flex items-center justify-center text-3xl animate-spin">⏳</div>}
                 </div>
             );
         }
