@@ -3,36 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HIREPRO - Live Demo</title>
+    <title>HIREPRO - Sistem Rekrutmen Enterprise</title>
     
-    <!-- CSS Terpercaya -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Library Tanpa Babel (Menggunakan htm untuk render cepat di HP) -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/htm@3.1.1/dist/htm.umd.js"></script>
 
-    <!-- Firebase Compat -->
+    <!-- Firebase Compat SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
         * { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: #f8fafc; margin: 0; }
         .teal-bg { background-color: #1abc9c; }
         .teal-text { color: #1abc9c; }
+        .animate-fade { animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; } }
     </style>
 </head>
-<body class="bg-slate-50">
+<body>
     <div id="root"></div>
 
     <script>
         const { useState, useEffect } = React;
         const html = htm.bind(React.createElement);
 
-        // CONFIG ANDA
+        // CONFIG FIREBASE ANDA (DARI GAMBAR 34322)
         const firebaseConfig = {
             apiKey: "AIzaSyAg2NSb0rqD6BNtu96_7VJezhGiUlYyIZM",
             authDomain: "hire-1a51d.firebaseapp.com",
@@ -42,109 +42,220 @@
             appId: "1:370568295:web:a0d38b16b3bde89cbbf8c2"
         };
 
-        // Init Firebase secara aman
-        let auth, db;
-        try {
-            if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-            auth = firebase.auth();
-            db = firebase.firestore();
-        } catch (e) { console.error("Firebase fail:", e); }
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+        const APP_ID = "hire_master_v34";
 
         function App() {
-            const [view, setView] = useState('login'); // login, dashboard, admin, form
-            const [isDemo, setIsDemo] = useState(false);
+            const [view, setView] = useState('login'); 
+            const [user, setUser] = useState(null);
+            const [profile, setProfile] = useState(null);
+            const [loading, setLoading] = useState(false);
+            const [applicants, setApplicants] = useState([]);
+            const [selectedAp, setSelectedAp] = useState(null);
+
+            // Form States
             const [email, setEmail] = useState('');
             const [pass, setPass] = useState('');
-            const [authMode, setAuthMode] = useState('signup');
+            const [name, setName] = useState('');
+            const [isSignup, setIsSignup] = useState(false);
+            
+            // Apply States
+            const [ktp, setKtp] = useState('');
+            const [pos, setPos] = useState('');
+            const [wa, setWa] = useState('');
+            const [photo, setPhoto] = useState('');
+
+            useEffect(() => {
+                const unsub = auth.onAuthStateChanged(async (u) => {
+                    if (u) {
+                        setUser(u);
+                        const snap = await db.collection('artifacts').doc(APP_ID).collection('users').doc(u.uid).get();
+                        if (snap.exists) {
+                            const data = snap.data();
+                            setProfile(data);
+                            setView(data.role === 'admin' ? 'admin' : 'dashboard');
+                        } else {
+                            setView('dashboard');
+                        }
+                    } else {
+                        setView('login');
+                    }
+                });
+                return () => unsub();
+            }, []);
+
+            useEffect(() => {
+                if (view === 'admin') {
+                    return db.collection('artifacts').doc(APP_ID).collection('applicants').onSnapshot(s => {
+                        setApplicants(s.docs.map(d => ({id: d.id, ...d.data()})));
+                    });
+                }
+            }, [view]);
 
             const handleAuth = async (e) => {
                 e.preventDefault();
-                if (isDemo) {
-                    setView(email.includes('admin') ? 'admin' : 'dashboard');
-                    return;
-                }
-                
+                setLoading(true);
                 try {
-                    if (authMode === 'signup') {
-                        await auth.createUserWithEmailAndPassword(email, pass);
+                    if (isSignup) {
+                        const res = await auth.createUserWithEmailAndPassword(email, pass);
+                        const role = email.includes('admin') ? 'admin' : 'user';
+                        const pData = { uid: res.user.uid, name, email, role };
+                        await db.collection('artifacts').doc(APP_ID).collection('users').doc(res.user.uid).set(pData);
+                        setProfile(pData);
                     } else {
                         await auth.signInWithEmailAndPassword(email, pass);
                     }
-                } catch (err) {
-                    alert("DATABASE ERROR: " + err.message + "\n\nTips: Gunakan 'Mode Demo' jika database belum aktif.");
-                }
+                } catch (err) { alert(err.message); }
+                setLoading(false);
             };
 
-            // UI LOGIN
-            const LoginView = () => html`
-                <div class="min-h-screen flex flex-col items-center justify-center p-8 bg-white">
-                    <div class="w-full max-w-sm text-center">
-                        <div class="text-6xl mb-4">👟</div>
-                        <h1 class="text-3xl font-black tracking-tighter text-slate-800 uppercase leading-none">HirePro</h1>
-                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-10">Pabrik Sepatu System</p>
-                        
-                        <form onSubmit=${handleAuth} class="space-y-4">
-                            <input class="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none text-sm" placeholder="Email" value=${email} onChange=${e => setEmail(e.target.value)} required />
-                            <input class="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none text-sm" type="password" placeholder="Password" value=${pass} onChange=${e => setPass(e.target.value)} required />
-                            <button type="submit" class="w-full teal-bg text-white py-4 rounded-3xl shadow-lg uppercase text-xs font-black tracking-widest">
-                                ${authMode === 'signup' ? 'Daftar Sekarang' : 'Masuk Dashboard'}
-                            </button>
-                        </form>
+            const submitApply = async () => {
+                setLoading(true);
+                try {
+                    await db.collection('artifacts').doc(APP_ID).collection('applicants').add({
+                        ktp, pos, wa, photo, userName: profile?.name || email, userId: user.uid, status: 'PROSES', at: new Date().toISOString()
+                    });
+                    alert("Lamaran Terkirim!");
+                    setView('dashboard');
+                } catch (e) { alert(e.message); }
+                setLoading(false);
+            };
 
-                        <button onClick=${() => setAuthMode(authMode === 'signup' ? 'login' : 'signup')} class="mt-6 text-[10px] font-bold text-slate-300 underline uppercase block mx-auto">
-                            ${authMode === 'signup' ? 'Sudah punya akun? Login' : 'Belum punya akun? Daftar'}
+            const updateStatus = async (id, status) => {
+                await db.collection('artifacts').doc(APP_ID).collection('applicants').doc(id).update({ status });
+                setSelectedAp(null);
+            };
+
+            const toBase64 = (file) => new Promise((res) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => res(reader.result);
+            });
+
+            // --- UI VIEWS ---
+
+            if (view === 'login') return html`
+                <div class="min-h-screen flex flex-col justify-center p-8 max-w-md mx-auto bg-white animate-fade">
+                    <div class="text-center mb-10">
+                        <div class="text-6xl mb-4 text-center w-full">👟</div>
+                        <h1 class="text-3xl font-black tracking-tighter text-slate-800 leading-none">HIREPRO</h1>
+                        <p class="text-[10px] font-bold text-slate-400 mt-2 uppercase tracking-widest leading-none">PT Sepatu Indonesia</p>
+                    </div>
+                    <form onSubmit=${handleAuth} class="space-y-4">
+                        ${isSignup && html`<input class="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none text-sm" placeholder="Nama Lengkap" value=${name} onChange=${e => setName(e.target.value)} required />`}
+                        <input class="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none text-sm" type="email" placeholder="Email" value=${email} onChange=${e => setEmail(e.target.value)} required />
+                        <input class="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none text-sm" type="password" placeholder="Password" value=${pass} onChange=${e => setPass(e.target.value)} required />
+                        <button type="submit" class="w-full teal-bg text-white font-black py-4 rounded-3xl shadow-lg uppercase text-xs">
+                            ${loading ? 'MEMPROSES...' : (isSignup ? 'DAFTAR AKUN BARU' : 'MASUK KE SISTEM')}
                         </button>
-
-                        <div class="mt-12 p-4 bg-orange-50 rounded-2xl border border-orange-100">
-                            <p class="text-[9px] text-orange-400 font-bold uppercase mb-2">Masalah Koneksi?</p>
-                            <button onClick=${() => { setIsDemo(true); setEmail('admin@demo.com'); setPass('123456'); }} class="text-[10px] bg-orange-500 text-white px-4 py-2 rounded-full font-bold uppercase">Aktifkan Mode Demo</button>
-                        </div>
+                    </form>
+                    <button onClick=${() => setIsSignup(!isSignup)} class="mt-8 text-[10px] font-bold text-slate-300 underline uppercase block mx-auto text-center">
+                        ${isSignup ? 'Sudah punya akun? Login' : 'Belum punya akun? Daftar'}
+                    </button>
+                    <div class="mt-12 p-4 bg-slate-50 rounded-2xl text-center">
+                        <p class="text-[9px] text-slate-400 font-bold uppercase mb-2">Mode Demo Cepat:</p>
+                        <button onClick=${() => {setEmail('admin@pabrik.com'); setPass('123456'); setIsSignup(false);}} class="text-[9px] border border-slate-200 px-4 py-1 rounded-full text-slate-400">Gunakan Akun Admin</button>
                     </div>
                 </div>
             `;
 
-            // UI DASHBOARD PELAMAR
-            const UserDashboard = () => html`
-                <div class="min-h-screen bg-slate-50">
-                    <div class="teal-bg text-white p-10 pt-16 rounded-b-[3rem] text-center shadow-xl">
+            if (view === 'dashboard') return html`
+                <div class="min-h-screen bg-slate-50 max-w-md mx-auto animate-fade">
+                    <div class="teal-bg text-white p-10 pt-16 rounded-b-[4rem] text-center shadow-xl">
                         <div class="text-5xl mb-4">👤</div>
-                        <h2 class="text-2xl font-black uppercase tracking-tight">${email}</h2>
-                        <p class="text-[10px] font-bold opacity-60 uppercase tracking-widest">Pelamar Aktif ${isDemo ? '(DEMO)' : ''}</p>
+                        <h2 class="text-2xl font-black uppercase tracking-tight leading-none">${profile?.name || 'Pelamar'}</h2>
+                        <p class="text-[10px] font-bold opacity-60 uppercase tracking-widest mt-2">Status: Pelamar Aktif</p>
                     </div>
                     <div class="p-8 space-y-4">
-                        <div class="bg-white p-6 rounded-3xl border shadow-sm flex items-center justify-between">
-                            <div class="text-left"><h3 class="font-black text-sm text-slate-800 uppercase">Kirim Lamaran</h3><p class="text-[10px] text-slate-400 italic">Pilih posisi kerja</p></div>
+                        <button onClick=${() => setView('form')} class="w-full bg-white p-6 rounded-[2.5rem] border shadow-sm flex justify-between items-center active:scale-95 transition-all">
+                            <div class="text-left"><h3 class="font-black text-sm text-slate-800 uppercase leading-none">Isi Lamaran Kerja</h3><p class="text-[10px] text-slate-400 mt-1 italic">Kirim data diri & berkas</p></div>
                             <div class="text-2xl">📝</div>
-                        </div>
-                        <button onClick=${() => window.location.reload()} class="w-full py-4 text-red-500 font-black uppercase text-[10px] mt-10">Logout</button>
+                        </button>
+                        <button onClick=${() => auth.signOut().then(() => window.location.reload())} class="w-full py-5 text-red-500 font-bold uppercase text-[10px] tracking-widest mt-10">LOGOUT SISTEM</button>
                     </div>
                 </div>
             `;
 
-            // UI ADMIN
-            const AdminDashboard = () => html`
-                <div class="min-h-screen bg-slate-50">
-                    <div class="bg-slate-900 text-white p-10 pt-16 rounded-b-[3rem] text-center shadow-xl">
-                        <h2 class="text-2xl font-black uppercase tracking-tighter italic">Admin Control</h2>
-                        <p class="text-[10px] font-bold opacity-30 uppercase tracking-widest mt-2 italic">PT Sepatu Indonesia ${isDemo ? '(DEMO)' : ''}</p>
+            if (view === 'form') return html`
+                <div class="min-h-screen bg-white pb-20 animate-fade max-w-md mx-auto">
+                    <div class="teal-bg text-white p-6 sticky top-0 z-50 flex items-center gap-4 shadow-md">
+                        <button onClick=${() => setView('dashboard')} class="text-xl font-bold">←</button>
+                        <h1 class="font-black uppercase tracking-tight">Pendaftaran</h1>
                     </div>
-                    <div class="p-8">
-                        <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 mb-4">Pelamar Masuk</h3>
-                        <div class="bg-white p-5 rounded-3xl border shadow-sm flex items-center justify-between mb-3">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 bg-teal-50 text-teal-500 rounded-xl flex items-center justify-center font-black">D</div>
-                                <div><h4 class="font-bold text-sm text-slate-800 leading-none mb-1 uppercase">Dey (Contoh)</h4><p class="text-[9px] text-blue-600 font-bold uppercase">Operator Sewing</p></div>
+                    <div class="p-8 space-y-6">
+                        <div><label class="text-[10px] font-black uppercase text-slate-400 ml-1">NIK KTP</label><input class="w-full p-4 bg-slate-50 border rounded-2xl outline-none text-sm mt-1" value=${ktp} onChange=${e => setKtp(e.target.value)} /></div>
+                        <div><label class="text-[10px] font-black uppercase text-slate-400 ml-1">No WhatsApp</label><input class="w-full p-4 bg-slate-50 border rounded-2xl outline-none text-sm mt-1" value=${wa} onChange=${e => setWa(e.target.value)} /></div>
+                        <div><label class="text-[10px] font-black uppercase text-slate-400 ml-1">Posisi Lowongan</label>
+                            <select class="w-full p-4 bg-slate-50 border rounded-2xl outline-none text-sm mt-1" value=${pos} onChange=${e => setPos(e.target.value)}>
+                                <option value="">Pilih...</option>
+                                <option>Operator Sewing</option>
+                                <option>Quality Control</option>
+                                <option>Gudang Bahan</option>
+                            </select>
+                        </div>
+                        <label class="block w-full p-8 border-2 border-dashed rounded-[2rem] text-center ${photo ? 'bg-green-50 border-green-300' : 'bg-slate-50'} cursor-pointer transition-all">
+                            <input type="file" class="hidden" accept="image/*" onChange=${async e => setPhoto(await toBase64(e.target.files[0]))} />
+                            <div class="text-2xl mb-1">${photo ? '✅' : '📷'}</div>
+                            <span class="text-[9px] font-black text-slate-400 uppercase">${photo ? 'FOTO SIAP' : 'UPLOAD PAS FOTO'}</span>
+                        </label>
+                        <button onClick=${submitApply} class="w-full teal-bg text-white font-black py-5 rounded-[2.5rem] shadow-2xl">
+                            ${loading ? 'MENGIRIM...' : 'KIRIM LAMARAN SEKARANG'}
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            if (view === 'admin') return html`
+                <div class="min-h-screen bg-slate-50 max-w-md mx-auto animate-fade pb-20">
+                    <div class="bg-slate-900 text-white p-10 pt-16 rounded-b-[4rem] text-center shadow-xl">
+                        <h2 class="text-2xl font-black uppercase tracking-tighter italic leading-none">Admin Control</h2>
+                        <p class="text-[10px] font-bold opacity-30 uppercase tracking-widest mt-2">Daftar Pelamar Masuk</p>
+                    </div>
+                    <div class="p-8 space-y-3">
+                        <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-2 mb-4">Total Pelamar: ${applicants.length}</h3>
+                        ${applicants.map(ap => html`
+                            <div key=${ap.id} onClick=${() => setSelectedAp(ap)} class="bg-white p-5 rounded-[2rem] border shadow-sm flex items-center justify-between active:scale-95 transition-all">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-12 h-12 bg-teal-50 text-2xl rounded-2xl flex items-center justify-center font-black">${ap.photo ? html`<img src=${ap.photo} class="w-full h-full object-cover rounded-2xl" />` : '👤'}</div>
+                                    <div class="text-left">
+                                        <h4 class="font-black text-sm text-slate-800 leading-none mb-1 uppercase">${ap.userName}</h4>
+                                        <p class="text-[9px] font-bold text-blue-600 uppercase leading-none">${ap.pos}</p>
+                                    </div>
+                                </div>
+                                <div class="px-3 py-1 rounded-full text-[8px] font-black uppercase ${ap.status === 'Lolos' ? 'bg-green-100 text-green-600' : ap.status === 'Gagal' ? 'bg-red-100 text-red-600' : 'bg-orange-100 text-orange-600'}">
+                                    ${ap.status}
+                                </div>
                             </div>
-                            <div class="text-xl">📞</div>
-                        </div>
-                        <button onClick=${() => window.location.reload()} class="w-full py-4 text-red-500 font-black uppercase text-[10px] mt-10">Logout Admin</button>
+                        `)}
+                        ${applicants.length === 0 && html`<p class="text-center text-slate-300 py-20 text-xs italic">Belum ada pelamar masuk...</p>`}
+                        <button onClick=${() => auth.signOut().then(() => window.location.reload())} class="w-full py-10 text-slate-300 font-bold uppercase text-[9px] tracking-widest">Logout Admin</button>
                     </div>
+
+                    ${selectedAp && html`
+                        <div class="fixed inset-0 bg-slate-900/80 z-[100] flex items-end animate-fade">
+                            <div class="bg-white w-full rounded-t-[3rem] p-8 max-h-[90vh] overflow-y-auto">
+                                <div class="w-12 h-1 bg-slate-100 mx-auto mb-6 rounded-full"></div>
+                                <div class="flex flex-col items-center text-center mb-8">
+                                    <img src=${selectedAp.photo || 'https://via.placeholder.com/150'} class="w-32 h-32 rounded-3xl object-cover mb-4 border-4 border-slate-50 shadow-xl" />
+                                    <h2 class="text-2xl font-black uppercase tracking-tight">${selectedAp.userName}</h2>
+                                    <p class="text-xs text-blue-600 font-bold uppercase tracking-widest mt-1">${selectedAp.pos}</p>
+                                    <p class="text-[10px] text-slate-400 mt-2 uppercase">NIK: ${selectedAp.ktp}</p>
+                                </div>
+                                <div class="grid grid-cols-2 gap-4 mb-6">
+                                    <button onClick=${() => updateStatus(selectedAp.id, 'Gagal')} class="py-4 bg-red-50 text-red-500 font-black rounded-3xl uppercase text-[10px]">Gagal</button>
+                                    <button onClick=${() => updateStatus(selectedAp.id, 'Lolos')} class="py-4 teal-bg text-white font-black rounded-3xl uppercase text-[10px]">Lolos</button>
+                                </div>
+                                <button onClick=${() => window.open(`https://wa.me/${selectedAp.wa}`)} class="w-full py-4 bg-green-500 text-white font-black rounded-3xl uppercase text-[10px] flex items-center justify-center gap-2 mb-4">📞 Hubungi via WA</button>
+                                <button onClick=${() => setSelectedAp(null)} class="w-full py-2 text-slate-300 text-[10px] font-bold uppercase">Tutup</button>
+                            </div>
+                        </div>
+                    `}
                 </div>
             `;
 
-            if (view === 'dashboard') return UserDashboard();
-            if (view === 'admin') return AdminDashboard();
-            return LoginView();
+            return null;
         }
 
         const root = ReactDOM.createRoot(document.getElementById('root'));
