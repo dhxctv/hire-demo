@@ -1,208 +1,328 @@
-```react
-import React, { useState, useEffect } from 'react';
-import { initializeApp } from 'firebase/app';
-import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
-import { getFirestore, doc, setDoc, getDoc, collection, onSnapshot, addDoc, query, limit } from 'firebase/firestore';
-
-// ==========================================
-// ::MODUL 1 - KONFIGURASI DATABASE ::
-// Pastikan tidak ada spasi di awal/akhir API Key
-// ==========================================
-const firebaseConfig = {
-  apiKey: "AIzaSyAg2NSb0rqD6BNtu96_7VJezhGiUlYyIZM",
-  authDomain: "hire-1a51d.firebaseapp.com",
-  projectId: "hire-1a51d",
-  storageBucket: "hire-1a51d.firebasestorage.app",
-  messagingSenderId: "370568295",
-  appId: "1:370568295:web:a0d38b16b3bde89cbbf8c2"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-const appId = "hirepro-v53-final";
-
-// ==========================================
-// ::MODUL 2 - UI DESIGN TOKENS (INDUSTRIAL ORANGE) ::
-// ==========================================
-const THEME = {
-  orange: 'bg-orange-500',
-  orangeText: 'text-orange-500',
-  dark: 'bg-slate-900',
-  card: 'bg-white shadow-xl shadow-orange-100/20 border border-slate-100',
-  input: 'w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:border-orange-500 focus:bg-white transition-all text-sm'
-};
-
-// ==========================================
-// ::MODUL 3 - KOMPONEN ANTARMUKA ::
-// ==========================================
-
-// 3.1 Komponen Input
-const FormInput = ({ label, type = "text", value, onChange, placeholder }) => (
-  <div className="space-y-1">
-    <label className="text-[10px] font-black text-slate-400 uppercase italic ml-2">{label}</label>
-    <input type={type} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} className={THEME.input} required />
-  </div>
-);
-
-// 3.2 Komponen Tombol
-const ActionButton = ({ onClick, label, loading, variant = "orange" }) => (
-  <button onClick={onClick} disabled={loading} className={`w-full py-5 rounded-3xl font-black uppercase text-xs tracking-widest transition-all active:scale-95 shadow-lg ${variant === 'orange' ? 'bg-orange-500 text-white shadow-orange-200' : 'bg-slate-800 text-white shadow-slate-200'}`}>
-    {loading ? "MEMPROSES DATA..." : label}
-  </button>
-);
-
-// ==========================================
-// ::MODUL 4 - TAMPILAN MENU (VIEW LAYERS) ::
-// ==========================================
-
-const LoginRegister = ({ isSignup, setIsSignup, email, setEmail, pass, setPass, name, setName, handleAuth, loading, dbStatus }) => (
-  <div className="min-h-screen flex flex-col justify-center p-8 max-w-md mx-auto bg-white">
-    <div className="text-center mb-10">
-      <div className="text-7xl mb-4 flex justify-center">💼</div>
-      <h2 className="text-3xl font-black text-slate-800 tracking-tighter uppercase leading-none italic">
-        {isSignup ? "Daftar Akun" : "Pintu Masuk"}
-      </h2>
-      <p className="text-[10px] font-bold text-slate-400 mt-2 uppercase tracking-widest italic">PT SEPATU INDONESIA</p>
-      
-      {/* DB STATUS INDICATOR */}
-      <div className={`mt-4 inline-flex items-center gap-2 px-3 py-1 rounded-full text-[8px] font-bold uppercase ${dbStatus === 'ONLINE' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}`}>
-        <div className={`w-1.5 h-1.5 rounded-full ${dbStatus === 'ONLINE' ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`}></div>
-        DATABASE {dbStatus}
-      </div>
-    </div>
-
-    <div className="space-y-4">
-      {isSignup && <FormInput label="Nama Lengkap" value={name} onChange={setName} placeholder="Contoh: Admin Pabrik" />}
-      <FormInput label="Email Perusahaan" type="email" value={email} onChange={setEmail} placeholder="admin@pabrik.com" />
-      <FormInput label="Kata Sandi" type="password" value={pass} onChange={setPass} placeholder="Min. 6 Karakter" />
-      <div className="pt-4">
-        <ActionButton label={isSignup ? "Daftar Sekarang" : "Masuk Sistem"} onClick={handleAuth} loading={loading} />
-      </div>
-    </div>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>HIREPRO - Industrial Master System</title>
     
-    <button onClick={() => setIsSignup(!isSignup)} className="mt-8 text-[10px] font-bold text-slate-300 underline uppercase block mx-auto">
-      {isSignup ? "Sudah punya akun? Login" : "Belum punya akun? Daftar"}
-    </button>
-  </div>
-);
+    <!-- ::MODUL 1 - LIBRARY & SDK :: -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
-const UserDashboard = ({ profile, setView }) => (
-  <div className="min-h-screen bg-slate-50 max-w-md mx-auto">
-    <div className="bg-orange-500 text-white p-10 pt-20 rounded-b-[4rem] text-center shadow-2xl">
-      <div className="w-24 h-24 bg-white/20 rounded-full mx-auto mb-6 flex items-center justify-center text-5xl border-4 border-white/10 shadow-xl italic font-black">👤</div>
-      <h2 className="text-2xl font-black uppercase tracking-tight leading-none italic">{profile?.name || "Pelamar"}</h2>
-      <p className="text-[10px] font-bold opacity-60 uppercase tracking-widest mt-2 italic">Akses Pelamar Terverifikasi</p>
-    </div>
-    <div className="p-8 -mt-10 space-y-4">
-      <div onClick={() => setView('form')} className="bg-white p-7 rounded-[2.5rem] border border-slate-100 shadow-sm flex justify-between items-center active:scale-95 transition-all cursor-pointer">
-        <div className="text-left leading-none">
-          <h3 className="font-black text-sm text-slate-800 uppercase leading-none">Isi Lamaran</h3>
-          <p className="text-[10px] text-slate-400 mt-2 italic">Kirim NIK & Berkas Lamaran</p>
-        </div>
-        <div className="text-3xl text-orange-500">📝</div>
-      </div>
-      <button onClick={() => signOut(auth).then(() => window.location.reload())} className="w-full py-10 text-slate-300 font-bold uppercase text-[9px] tracking-[0.4em] mt-10">Logout Sistem</button>
-    </div>
-  </div>
-);
-
-// ==========================================
-// ::MODUL 5 - LOGIKA UTAMA (SISTEM ENGINE) ::
-// ==========================================
-
-export default function App() {
-  const [view, setView] = useState('splash');
-  const [dbStatus, setDbStatus] = useState('CHECKING...');
-  const [loading, setLoading] = useState(false);
-  const [isSignup, setIsSignup] = useState(false);
-  const [profile, setProfile] = useState(null);
-
-  // Form states
-  const [email, setEmail] = useState('');
-  const [pass, setPass] = useState('');
-  const [name, setName] = useState('');
-
-  // 5.1 System Check
-  useEffect(() => {
-    // Cek apakah API Key bisa menjangkau Firestore
-    const testRef = doc(db, 'artifacts', 'status');
-    getDoc(testRef)
-      .then(() => setDbStatus('ONLINE'))
-      .catch((err) => {
-        if (err.code === 'permission-denied') setDbStatus('ONLINE');
-        else setDbStatus('ERROR API KEY');
-      });
-
-    const unsub = onAuthStateChanged(auth, async (u) => {
-      if (u) {
-        const snap = await getDoc(doc(db, 'artifacts', appId, 'users', u.uid));
-        if (snap.exists()) setProfile(snap.data());
-        setView('dashboard');
-      } else {
-        setTimeout(() => setView('auth'), 2000);
-      }
-    });
-    return () => unsub();
-  }, []);
-
-  // 5.2 ::FORM SUBMIT ::
-  const handleAuth = async (e) => {
-    if (e) e.preventDefault();
-    if (!email || !pass) return alert("Isi email dan password!");
-    
-    setLoading(true);
-    try {
-      if (isSignup) {
-        // Eksekusi Daftar
-        const res = await createUserWithEmailAndPassword(auth, email, pass);
-        const role = email.toLowerCase().includes('admin') ? 'admin' : 'user';
-        const userData = { uid: res.user.uid, name: name || 'User', email, role, at: new Date().toISOString() };
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
         
-        // Simpan Profil (Sangat Krusial)
-        await setDoc(doc(db, 'artifacts', appId, 'users', res.user.uid), userData);
-        setProfile(userData);
-        alert("BERHASIL: Akun Anda telah aktif.");
-      } else {
-        // Eksekusi Login
-        await signInWithEmailAndPassword(auth, email, pass);
-      }
-    } catch (err) {
-      // Diagnostik IT Terperinci
-      let errorMessage = "Koneksi Gagal.";
-      if (err.code === 'auth/api-key-not-valid') errorMessage = "API KEY SALAH/DIBLOKIR. Matikan 'Restriction' di Google Console untuk tes.";
-      if (err.code === 'auth/email-already-in-use') errorMessage = "Email sudah terdaftar. Silakan Login.";
-      if (err.code === 'auth/invalid-email') errorMessage = "Format email tidak sah.";
-      
-      alert(`DIAGNOSTIK IT: ${errorMessage}\n\nKode Error: ${err.code}`);
-    } finally {
-      setLoading(false);
-    }
-  };
+        /* ::MODUL 2 - DESIGN TOKENS (TEMA ORANGE INDUSTRI) :: */
+        :root {
+            --primary: #f97316; 
+            --dark: #1e293b;
+            --bg: #f8fafc;
+        }
 
-  // 5.3 Routing Tampilan
-  if (view === 'splash') return (
-    <div className="h-screen bg-orange-500 flex flex-col items-center justify-center text-white p-10 text-center animate-pulse">
-      <div className="text-8xl mb-4">👟</div>
-      <h1 className="text-4xl font-black tracking-tighter italic italic">HIREPRO</h1>
-      <p className="text-[10px] font-bold tracking-[0.5em] opacity-40 uppercase">Industrial v53</p>
+        * { font-family: 'Plus Jakarta Sans', sans-serif; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg); margin: 0; padding: 0; color: var(--dark); overflow-x: hidden; }
+        
+        .orange-grad { background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); }
+        .shadow-indus { box-shadow: 0 15px 35px -5px rgba(249, 115, 22, 0.2); }
+        .hidden { display: none !important; }
+        
+        .app-shell { max-width: 480px; margin: 0 auto; min-height: 100vh; background: white; position: relative; box-shadow: 0 0 50px rgba(0,0,0,0.03); }
+
+        /* ::MODUL 3 - UI ELEMENTS (INPUT & BUTTON) :: */
+        .input-group { margin-bottom: 1rem; text-align: left; }
+        .input-pro {
+            width: 100%; padding: 1.1rem; background: #f1f5f9; border: 1.5px solid #e2e8f0;
+            border-radius: 1.2rem; outline: none; transition: 0.3s; font-size: 14px;
+        }
+        .input-pro:focus { border-color: var(--primary); background: white; }
+        
+        .btn-pro {
+            width: 100%; padding: 1.2rem; border-radius: 1.5rem; font-weight: 800; 
+            text-transform: uppercase; font-size: 12px; letter-spacing: 1px;
+            color: white; border: none; cursor: pointer; transition: 0.2s;
+        }
+        .btn-pro:active { transform: scale(0.96); }
+
+        .fade-in { animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; } }
+        
+        /* Spinner untuk Loading */
+        .loader { width: 20px; height: 20px; border: 3px solid #FFF; border-bottom-color: transparent; border-radius: 50%; display: inline-block; animation: rotation 1s linear infinite; }
+        @keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <div class="app-shell" id="main-app">
+        
+        <!-- ::MODUL 4 - MENU SPLASH :: -->
+        <div id="view-splash" class="h-screen orange-grad flex flex-col items-center justify-center text-white p-10 text-center">
+            <div class="text-8xl mb-6">👟</div>
+            <h1 class="text-4xl font-black tracking-tighter uppercase leading-none italic">HIREPRO</h1>
+            <p class="text-[10px] font-bold tracking-[0.5em] opacity-40 uppercase mt-4">Safe Engine v56</p>
+            
+            <!-- Tombol Darurat jika Firebase macet -->
+            <div id="emergency-btn" class="hidden mt-10">
+                <button onclick="forceView('auth')" class="px-6 py-2 bg-white/20 rounded-full text-[10px] font-bold uppercase border border-white/30">Lanjutkan Tanpa Koneksi</button>
+            </div>
+        </div>
+
+        <!-- ::MODUL 5 - MENU AUTH (LOGIN/DAFTAR) :: -->
+        <div id="view-auth" class="hidden p-10 flex flex-col justify-center min-h-screen fade-in bg-white">
+            <div class="text-center mb-10">
+                <div class="text-6xl mb-4">💼</div>
+                <h2 id="auth-title" class="text-3xl font-black text-slate-800 tracking-tighter uppercase italic">Pintu Masuk</h2>
+                <p class="text-[10px] font-bold text-slate-400 mt-2 uppercase tracking-widest italic leading-none">PT Sepatu Indonesia</p>
+            </div>
+            
+            <div class="space-y-4">
+                <div id="reg-name-container" class="hidden">
+                    <label class="text-[10px] font-black text-slate-400 ml-2 uppercase italic">Nama Lengkap</label>
+                    <input id="auth-name" class="input-pro" placeholder="Dey Mahardhika">
+                </div>
+                <div class="input-group">
+                    <label class="text-[10px] font-black text-slate-400 ml-2 uppercase italic">Alamat Email</label>
+                    <input id="auth-email" class="input-pro" type="email" placeholder="nama@email.com">
+                </div>
+                <div class="input-group">
+                    <label class="text-[10px] font-black text-slate-400 ml-2 uppercase italic">Kata Sandi</label>
+                    <input id="auth-pass" class="input-pro" type="password" placeholder="••••••••">
+                </div>
+                
+                <button onclick="handleAuthSubmit()" id="btn-auth-main" class="btn-pro orange-grad shadow-indus mt-6">Masuk Dashboard</button>
+            </div>
+
+            <button onclick="toggleAuthMode()" id="btn-switch" class="mt-8 text-[10px] font-bold text-slate-300 underline uppercase block mx-auto tracking-widest">
+                Belum punya akun? Daftar
+            </button>
+            
+            <!-- TOMBOL UAT (Bypass Database untuk Demo Cepat) -->
+            <div class="mt-12 p-6 bg-slate-50 border-2 border-dashed border-slate-200 rounded-[2.5rem] text-center">
+                <p class="text-[9px] text-slate-400 font-black uppercase mb-4 italic tracking-widest">Bypass Demo UAT:</p>
+                <div class="flex gap-2">
+                    <button onclick="bypassTo('admin')" class="flex-1 py-3 bg-slate-800 text-white rounded-2xl text-[9px] font-black uppercase italic">Admin</button>
+                    <button onclick="bypassTo('user')" class="flex-1 py-3 border-2 border-orange-200 text-orange-500 rounded-2xl text-[9px] font-black uppercase font-black">Pelamar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ::MODUL 6 - MENU DASHBOARD PELAMAR :: -->
+        <div id="view-user" class="hidden bg-slate-50 min-h-screen fade-in pb-20">
+            <div class="orange-grad text-white p-10 pt-20 rounded-b-[4rem] text-center shadow-indus">
+                <div class="w-24 h-24 bg-white/20 rounded-full mx-auto mb-6 flex items-center justify-center text-5xl border-4 border-white/10 shadow-xl italic font-black">👤</div>
+                <h2 id="display-user-name" class="text-2xl font-black uppercase tracking-tight leading-none italic">Pelamar Baru</h2>
+                <p class="text-[10px] font-bold opacity-60 uppercase tracking-widest mt-2 italic italic">Status: Aktif</p>
+            </div>
+
+            <div class="p-8 -mt-10 space-y-4">
+                <div onclick="showPage('form')" class="bg-white p-7 rounded-[2.5rem] border border-slate-100 shadow-sm flex justify-between items-center active:scale-95 transition-all cursor-pointer">
+                    <div class="text-left"><h3 class="font-black text-sm text-slate-800 uppercase leading-none">Formulir Kerja</h3><p class="text-[10px] text-slate-400 mt-2 italic">Isi NIK & Pas Foto</p></div>
+                    <div class="text-3xl text-orange-500">📝</div>
+                </div>
+                <div class="bg-white p-7 rounded-[2.5rem] border border-slate-100 shadow-sm flex justify-between items-center opacity-40">
+                    <div class="text-left"><h3 class="font-black text-sm text-slate-800 uppercase leading-none italic">Hasil Seleksi</h3><p class="text-[10px] text-slate-400 mt-2 italic tracking-tighter">Dalam Proses Review</p></div>
+                    <div class="text-3xl">🏆</div>
+                </div>
+                <button onclick="location.reload()" class="w-full py-10 text-slate-300 font-bold uppercase text-[9px] tracking-[0.4em] mt-10">Logout Sistem</button>
+            </div>
+        </div>
+
+        <!-- ::MODUL 7 - FORM INPUT DATA & FOTO (::form input) :: -->
+        <div id="view-form" class="hidden bg-white min-h-screen fade-in pb-20">
+            <div class="orange-grad text-white p-6 sticky top-0 z-50 flex items-center gap-4 shadow-md">
+                <button onclick="showPage('user')" class="text-xl font-bold">←</button>
+                <h1 class="font-black uppercase text-sm tracking-widest italic">Formulir Rekrutmen</h1>
+            </div>
+            <div class="p-10 space-y-6">
+                <div><label class="text-[10px] font-black text-slate-400 ml-2 italic uppercase">NIK KTP (16 Digit)</label><input id="f-nik" class="input-pro" placeholder="3271..."></div>
+                <div><label class="text-[10px] font-black text-slate-400 ml-2 italic uppercase">No WhatsApp Aktif</label><input id="f-wa" class="input-pro" placeholder="0812..."></div>
+                <div><label class="text-[10px] font-black text-slate-400 ml-2 italic uppercase">Posisi Yang Dilamar</label>
+                    <select id="f-pos" class="input-pro">
+                        <option value="">Pilih Lowongan...</option>
+                        <option>Operator Sewing</option>
+                        <option>Operator Cutting</option>
+                        <option>Quality Control</option>
+                        <option>Staff Gudang</option>
+                    </select>
+                </div>
+                <label class="block w-full p-10 border-2 border-dashed border-slate-200 rounded-[2.5rem] text-center bg-slate-50 cursor-pointer" id="label-photo">
+                    <input type="file" class="hidden" accept="image/*" onchange="handlePhoto(this)">
+                    <div id="photo-icon" class="text-4xl mb-2">📷</div>
+                    <span id="photo-text" class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Ambil Foto Wajah</span>
+                </label>
+                <!-- (::form submit) -->
+                <button onclick="handleApplySubmit()" id="btn-apply-main" class="btn-pro orange-grad shadow-indus mt-6 font-black italic">Kirim Lamaran Sekarang</button>
+            </div>
+        </div>
+
+        <!-- ::MODUL 8 - MENU ADMIN (Pusat Kendali) :: -->
+        <div id="view-admin" class="hidden bg-slate-50 min-h-screen fade-in pb-24">
+            <div class="orange-grad text-white p-10 pt-20 rounded-b-[4rem] text-center shadow-indus relative">
+                <h2 class="text-2xl font-black uppercase leading-none tracking-tighter italic text-orange-200">ADMIN CENTER</h2>
+                <p class="text-[10px] font-bold opacity-30 uppercase mt-2 tracking-widest">Sistem Monitoring Industri</p>
+                <button onclick="location.reload()" class="mt-8 px-8 py-2 bg-white/10 rounded-full text-[9px] font-bold uppercase tracking-widest border border-white/10">Logout Admin</button>
+            </div>
+
+            <div class="p-8">
+                <div class="flex justify-between items-center mb-6 px-2">
+                    <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest italic">Database Pelamar</h3>
+                    <div class="flex items-center gap-2"><span class="text-[9px] font-bold text-orange-500 uppercase italic">Live Sync</span><div class="w-2 h-2 bg-orange-500 rounded-full animate-ping"></div></div>
+                </div>
+
+                <div id="admin-list" class="space-y-3">
+                    <!-- Data Dummy untuk Demo -->
+                    <p class="text-center py-20 text-slate-300 italic text-xs uppercase tracking-widest">Memuat Data Database...</p>
+                </div>
+            </div>
+        </div>
+
     </div>
-  );
 
-  if (view === 'auth') return (
-    <LoginRegister 
-      isSignup={isSignup} setIsSignup={setIsSignup}
-      email={email} setEmail={setEmail}
-      pass={pass} setPass={setPass}
-      name={name} setName={setName}
-      handleAuth={handleAuth} loading={loading}
-      dbStatus={dbStatus}
-    />
-  );
+    <!-- ::MODUL 9 - LOGIKA UTAMA (NATIVE ENGINE) :: -->
+    <script>
+        // 9.1 Config Database
+        const firebaseConfig = {
+            apiKey: "AIzaSyAg2NSb0rqD6BNtu96_7VJezhGiUlYyIZM",
+            authDomain: "hire-1a51d.firebaseapp.com",
+            projectId: "hire-1a51d",
+            storageBucket: "hire-1a51d.firebasestorage.app",
+            messagingSenderId: "370568295",
+            appId: "1:370568295:web:a0d38b16b3bde89cbbf8c2"
+        };
 
-  if (view === 'dashboard') return <UserDashboard profile={profile} setView={setView} />;
+        // 9.2 Inisialisasi Firebase Secara Aman
+        let db, auth;
+        try {
+            const app = firebase.initializeApp(firebaseConfig);
+            db = firebase.firestore(app);
+            auth = firebase.auth(app);
+        } catch (e) { console.warn("Firebase Shielded"); }
 
-  return null;
-}
+        let isSignup = false;
+        let base64Photo = "";
+        const PROJECT_ID = "v56_safe_master";
 
-```
+        // 9.3 Navigasi Tampilan (::modul menu)
+        function showPage(pageId) {
+            const views = ['splash', 'auth', 'user', 'form', 'admin'];
+            views.forEach(v => {
+                const el = document.getElementById('view-' + v);
+                if(el) el.classList.add('hidden');
+            });
+            const target = document.getElementById('view-' + pageId);
+            if(target) target.classList.remove('hidden');
+            window.scrollTo(0,0);
+        }
+
+        function toggleAuthMode() {
+            isSignup = !isSignup;
+            document.getElementById('auth-title').innerText = isSignup ? 'Daftar Akun' : 'Pintu Masuk';
+            document.getElementById('btn-auth-main').innerText = isSignup ? 'Daftar Sekarang' : 'Masuk Dashboard';
+            document.getElementById('btn-switch').innerText = isSignup ? 'Sudah punya akun? Login' : 'Belum punya akun? Daftar';
+            document.getElementById('reg-name-container').classList.toggle('hidden');
+        }
+
+        // 9.4 ::modul submit (Login & Daftar)
+        async function handleAuthSubmit() {
+            const email = document.getElementById('auth-email').value;
+            const pass = document.getElementById('auth-pass').value;
+            const name = document.getElementById('auth-name').value;
+            const btn = document.getElementById('btn-auth-main');
+
+            if(!email || !pass) return alert("Email & Password wajib diisi!");
+            
+            btn.innerHTML = `<span class="loader"></span> MENYINKRONKAN...`;
+            btn.disabled = true;
+
+            try {
+                if(isSignup) {
+                    const res = await auth.createUserWithEmailAndPassword(email, pass);
+                    const role = email.includes('admin') ? 'admin' : 'user';
+                    await db.collection('artifacts').doc(PROJECT_ID).collection('users').doc(res.user.uid).set({
+                        name: name || 'User', email, role, at: new Date().toISOString()
+                    });
+                } else {
+                    await auth.signInWithEmailAndPassword(email, pass);
+                }
+                location.reload();
+            } catch (err) {
+                alert("DIAGNOSTIK: " + err.message + "\n\nSaran: Gunakan 'Bypass Demo' jika Anda butuh presentasi sekarang.");
+                btn.innerHTML = isSignup ? 'Daftar Sekarang' : 'Masuk Dashboard';
+                btn.disabled = false;
+            }
+        }
+
+        // 9.5 ::modul form input foto
+        function handlePhoto(input) {
+            const file = input.files[0];
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => {
+                base64Photo = reader.result;
+                document.getElementById('photo-icon').innerText = "✅";
+                document.getElementById('photo-text').innerText = "FOTO TERSIMPAN";
+                document.getElementById('label-photo').style.background = "#fff7ed";
+                document.getElementById('label-photo').style.borderColor = "#f97316";
+            };
+        }
+
+        // 9.6 ::modul form submit lamaran
+        async function handleApplySubmit() {
+            const nik = document.getElementById('f-nik').value;
+            const wa = document.getElementById('f-wa').value;
+            const pos = document.getElementById('f-pos').value;
+            const btn = document.getElementById('btn-apply-main');
+
+            if(!nik || !wa || !pos || !base64Photo) return alert("Mohon lengkapi semua data dan foto!");
+
+            btn.innerHTML = `<span class="loader"></span> MENGIRIM...`;
+            btn.disabled = true;
+
+            try {
+                await db.collection('artifacts').doc(PROJECT_ID).collection('applicants').add({
+                    nik, wa, pos, photo: base64Photo, at: new Date().toISOString(), status: 'PROSES'
+                });
+                alert("BERHASIL: Lamaran Anda sudah masuk ke database pusat!");
+                showPage('user');
+            } catch (e) {
+                alert("Database Error: Anda sedang dalam mode Demo Offline.");
+                showPage('user');
+            }
+            btn.innerHTML = "Kirim Sekarang";
+            btn.disabled = false;
+        }
+
+        // 9.7 Bypass untuk UAT
+        function bypassTo(role) {
+            document.getElementById('display-user-name').innerText = "DEMO USER (UAT)";
+            showPage(role);
+        }
+
+        // Mulai Sinkronisasi Awal
+        window.onload = () => {
+            // Timer darurat jika Firebase tidak menjawab dalam 4 detik
+            setTimeout(() => {
+                const splash = document.getElementById('view-splash');
+                if(!splash.classList.contains('hidden')) {
+                    document.getElementById('emergency-btn').classList.remove('hidden');
+                }
+            }, 4000);
+
+            // Cek Login Status
+            auth.onAuthStateChanged(async (u) => {
+                if(u) {
+                    try {
+                        const snap = await db.collection('artifacts').doc(PROJECT_ID).collection('users').doc(u.uid).get();
+                        if(snap.exists && snap.data().role === 'admin') showPage('admin');
+                        else showPage('user');
+                    } catch (e) { showPage('user'); }
+                } else {
+                    showPage('auth');
+                }
+            });
+        };
+    </script>
+</body>
+</html>
