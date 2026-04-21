@@ -6,23 +6,22 @@
     <meta name="theme-color" content="#f97316">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>HIREPRO - Enterprise Recruitment Final</title>
+    <title>HIREPRO - Enterprise Recruitment System</title>
     
-    <!-- :: PWA MANIFEST :: -->
+    <!-- :: PWA CONFIG :: -->
     <script>
         const pwaManifest = {
-            "name": "HIREPRO Recruitment System",
+            "name": "HIREPRO Recruitment",
             "short_name": "HIREPRO",
             "start_url": ".",
             "display": "standalone",
             "background_color": "#f97316",
             "theme_color": "#f97316",
-            "icons": [{ "src": "https://cdn-icons-png.flaticon.com/512/2964/2964563.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }]
+            "icons": [{ "src": "https://cdn-icons-png.flaticon.com/512/2964/2964563.png", "sizes": "512x512", "type": "image/png" }]
         };
         const blob = new Blob([JSON.stringify(pwaManifest)], {type: 'application/json'});
-        const manifestURL = URL.createObjectURL(blob);
         const link = document.createElement('link');
-        link.rel = 'manifest'; link.href = manifestURL;
+        link.rel = 'manifest'; link.href = URL.createObjectURL(blob);
         document.head.appendChild(link);
     </script>
 
@@ -36,79 +35,82 @@
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
         
         :root { 
-            --primary: #f97316; /* Orange */
-            --dark: #1e293b;    /* Slate Dark */
-            --success: #10b981; /* Emerald */
-            --accent: #f8fafc;  /* Soft Background */
+            --primary: #f97316; 
+            --dark: #1e293b;    
+            --success: #10b981; 
+            --accent: #f8fafc;  
         }
 
-        /* FILOSOFI TEGAK: NO ITALIC */
+        /* FILOSOFI TEGAK */
         * { font-family: 'Plus Jakarta Sans', sans-serif; box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-style: normal !important; }
         body { background-color: var(--accent); margin: 0; padding: 0; color: var(--dark); overflow-x: hidden; }
         
-        .app-shell { max-width: 480px; margin: 0 auto; min-height: 100vh; background: white; position: relative; display: flex; flex-direction: column; box-shadow: 0 0 50px rgba(0,0,0,0.1); }
+        .app-shell { max-width: 480px; margin: 0 auto; min-height: 100vh; background: white; position: relative; display: flex; flex-direction: column; box-shadow: 0 0 60px rgba(0,0,0,0.1); }
         
         /* Header Profile (Ref Gambar 34254) */
         .header-profile { 
             background: linear-gradient(135deg, var(--primary) 0%, #ea580c 100%); 
-            border-radius: 0 0 45px 45px; padding: 60px 20px 40px; color: white; text-align: center; 
-            box-shadow: 0 15px 30px rgba(249, 115, 22, 0.2); transition: 0.5s;
+            border-radius: 0 0 45px 45px; padding: 60px 20px 45px; color: white; text-align: center; 
+            box-shadow: 0 15px 35px rgba(249, 115, 22, 0.2); transition: 0.5s;
         }
         .avatar-box { width: 90px; height: 90px; border: 4px solid white; border-radius: 50%; margin: 0 auto 15px; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; overflow: hidden; font-size: 40px; }
         .avatar-box img { width: 100%; height: 100%; object-fit: cover; }
 
+        /* Navigation */
         .bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 480px; background: white; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #f1f5f9; z-index: 100; padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
         .nav-item { display: flex; flex-direction: column; align-items: center; font-size: 10px; font-weight: 800; color: #94a3b8; cursor: pointer; }
         .nav-item.active { color: var(--primary); }
 
-        /* Form Styling */
-        .input-pro { width: 100%; padding: 16px; background: #f1f5f9; border: 2px solid transparent; border-radius: 14px; font-size: 14px; outline: none; transition: 0.3s; margin-bottom: 15px; }
-        .input-pro:focus { border-color: var(--primary); background: white; }
+        /* Form Inputs */
+        .input-pro { width: 100%; padding: 16px; background: #f1f5f9; border: 2px solid transparent; border-radius: 16px; font-size: 14px; outline: none; transition: 0.3s; margin-bottom: 15px; }
+        .input-pro:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.1); }
         .form-label { font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 6px; display: block; margin-left: 4px; }
         
-        .btn-orange { background: var(--primary); color: white; padding: 18px; border-radius: 18px; font-weight: 900; width: 100%; text-transform: uppercase; border: none; box-shadow: 0 10px 20px rgba(249, 115, 22, 0.2); cursor: pointer; }
-        .btn-outline { width: 100%; border: 2px solid var(--success); color: var(--success); background: white; padding: 15px; border-radius: 16px; font-weight: 800; font-size: 14px; margin-bottom: 12px; display: block; text-align: center; }
+        .btn-orange { background: var(--primary); color: white; padding: 18px; border-radius: 20px; font-weight: 900; width: 100%; text-transform: uppercase; border: none; box-shadow: 0 12px 24px rgba(249, 115, 22, 0.25); cursor: pointer; }
+        .btn-outline { width: 100%; border: 2.5px solid var(--success); color: var(--success); background: white; padding: 16px; border-radius: 18px; font-weight: 900; font-size: 14px; margin-bottom: 12px; display: block; text-align: center; }
 
-        .upload-card { border: 2px dashed #cbd5e1; border-radius: 18px; padding: 25px; text-align: center; background: #f8fafc; cursor: pointer; margin-bottom: 18px; transition: 0.2s; }
+        .upload-card { border: 2px dashed #cbd5e1; border-radius: 20px; padding: 25px; text-align: center; background: #f8fafc; cursor: pointer; margin-bottom: 18px; transition: 0.2s; }
         .upload-card.done { border-color: var(--success); background: #ecfdf5; color: var(--success); }
 
         .hidden { display: none !important; }
-        .card { background: white; border-radius: 28px; padding: 20px; border: 1px solid #f1f5f9; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
+        .card { background: white; border-radius: 30px; padding: 20px; border: 1px solid #f1f5f9; margin-bottom: 15px; }
         
         #view-splash { position: fixed; inset: 0; z-index: 99999; background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        #toast { position: fixed; top: 25px; left: 50%; transform: translateX(-50%); background: var(--dark); color: white; padding: 14px 24px; border-radius: 16px; font-size: 11px; font-weight: 800; z-index: 100001; display: none; text-align: center; width: 85%; }
+        #toast { position: fixed; top: 25px; left: 50%; transform: translateX(-50%); background: var(--dark); color: white; padding: 16px 28px; border-radius: 18px; font-size: 12px; font-weight: 800; z-index: 100001; display: none; text-align: center; width: 85%; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
         
         /* Modal Engine */
-        .modal-backdrop { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.85); z-index: 100005; display: none; align-items: center; justify-content: center; padding: 20px; overflow-y: auto; }
-        .modal-box { background: white; border-radius: 32px; padding: 30px; text-align: left; width: 100%; max-width: 440px; animation: popUp 0.3s ease-out; position: relative; }
+        .modal-backdrop { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.9); z-index: 100005; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .modal-box { background: white; border-radius: 35px; padding: 30px; text-align: left; width: 100%; max-width: 450px; animation: popUp 0.3s ease-out; position: relative; max-height: 90vh; overflow-y: auto; }
         @keyframes popUp { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         
-        .preview-img-square { width: 100%; height: 180px; object-fit: contain; border-radius: 16px; background: #f1f5f9; border: 1px solid #e2e8f0; margin-bottom: 10px; }
+        /* Theme Presets Admin */
+        .theme-pill { padding: 12px; border-radius: 15px; cursor: pointer; font-weight: 900; font-size: 10px; text-transform: uppercase; border: 2px solid #f1f5f9; text-align: center; }
+        .theme-pill.active { border-color: var(--primary); background: #fff7ed; color: var(--primary); }
     </style>
 </head>
 <body>
 
     <div id="toast">Notifikasi</div>
 
-    <!-- :: MODAL NOTIFIKASI UMUM :: -->
+    <!-- :: MODAL NOTIFIKASI :: -->
     <div id="modal-notif" class="modal-backdrop">
         <div class="modal-box text-center">
             <div class="text-6xl mb-6">✅</div>
-            <h3 class="text-xl font-black text-slate-800 uppercase mb-4 leading-tight">Berhasil Terkirim</h3>
-            <p class="text-xs text-slate-400 font-bold mb-8 uppercase">Berkas Anda telah diterima oleh database sistem. Pantau hasil seleksi secara berkala.</p>
-            <button onclick="closeModal('modal-notif')" class="btn-orange">Lanjutkan</button>
+            <h3 class="text-xl font-black text-slate-800 uppercase mb-4 leading-tight">Data Diterima!</h3>
+            <p class="text-xs text-slate-400 font-bold mb-8 uppercase leading-relaxed">Pendaftaran Anda sedang dalam proses peninjauan administrasi. Mohon tunggu informasi selanjutnya.</p>
+            <button onclick="closeModal('modal-notif'); showPage('user');" class="btn-orange">Pantau Dashboard</button>
         </div>
     </div>
 
-    <!-- :: MODAL DETAIL DOKUMEN PELAMAR (ADMIN) :: -->
-    <div id="modal-detail" class="modal-backdrop" onclick="if(event.target==this) closeModal('modal-detail')">
+    <!-- :: MODAL DETAIL BERKAS (ADMIN) :: -->
+    <div id="modal-detail" class="modal-backdrop">
         <div class="modal-box">
             <div class="flex justify-between items-center mb-6">
-                <h3 class="text-lg font-black text-slate-800 uppercase">Detail Pelamar</h3>
-                <button onclick="closeModal('modal-detail')" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center font-bold">✕</button>
+                <h3 class="text-lg font-black text-slate-800 uppercase">Profil Pelamar</h3>
+                <button onclick="closeModal('modal-detail')" class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center font-bold">✕</button>
             </div>
-            <div id="detail-content" class="space-y-4 max-h-[70vh] overflow-y-auto pr-2 text-sm font-bold">
-                <!-- Diisi oleh JS -->
+            <div id="detail-content" class="space-y-4 text-sm font-bold">
+                <!-- Diisi JS -->
             </div>
         </div>
     </div>
@@ -117,38 +119,43 @@
         
         <!-- :: 0. SPLASH :: -->
         <div id="view-splash" class="text-white text-center">
-            <img id="splash-logo" src="https://cdn-icons-png.flaticon.com/512/2964/2964563.png" class="w-28 h-28 rounded-3xl bg-white p-4 mb-6 animate-bounce shadow-2xl">
-            <h1 class="text-4xl font-black tracking-tighter uppercase leading-none">HIREPRO</h1>
-            <p class="text-[10px] font-bold tracking-[0.4em] opacity-40 uppercase mt-4">Industrial Recruitment Final</p>
+            <img id="splash-logo-img" src="https://cdn-icons-png.flaticon.com/512/2964/2964563.png" class="w-28 h-28 rounded-3xl bg-white p-4 mb-6 animate-bounce shadow-2xl">
+            <h1 id="splash-app-name" class="text-4xl font-black tracking-tighter uppercase leading-none">HIREPRO</h1>
+            <p class="text-[10px] font-bold tracking-[0.4em] opacity-40 uppercase mt-4">Enterprise Production v99</p>
         </div>
 
-        <!-- :: 1. AUTH :: -->
+        <!-- :: 1. AUTH (LOGIN/REGISTER) :: -->
         <div id="view-auth" class="hidden flex flex-col justify-center p-10 min-h-screen bg-white text-left">
             <div class="text-center mb-10">
-                <img id="auth-logo" src="https://cdn-icons-png.flaticon.com/512/2964/2964563.png" class="w-20 h-20 mx-auto mb-4 rounded-2xl shadow-lg border p-2 bg-white">
+                <img id="auth-logo-img" src="https://cdn-icons-png.flaticon.com/512/2964/2964563.png" class="w-20 h-20 mx-auto mb-4 rounded-2xl shadow-lg border p-2 bg-white">
                 <h2 id="auth-title" class="text-3xl font-black text-slate-800 tracking-tighter uppercase leading-none">MASUK SISTEM</h2>
-                <p id="auth-company" class="text-[10px] font-bold text-slate-400 mt-2 uppercase tracking-widest leading-none">PT SEPATU INDONESIA</p>
+                <p id="auth-company-name" class="text-[10px] font-bold text-slate-400 mt-2 uppercase tracking-widest leading-none">PT SEPATU INDONESIA</p>
             </div>
+            
             <div class="space-y-4">
                 <div id="reg-container" class="hidden">
-                    <label class="form-label">Nama Lengkap</label>
-                    <input id="auth-name" class="input-pro" placeholder="Nama Sesuai KTP">
+                    <label class="form-label">Nama Lengkap Sesuai KTP</label>
+                    <input id="auth-name" class="input-pro" placeholder="Masukkan Nama Lengkap">
                 </div>
-                <label class="form-label">Email Aktif</label>
+                <label class="form-label">Email Terdaftar</label>
                 <input id="auth-email" class="input-pro" placeholder="email@contoh.com">
                 <label class="form-label">Kata Sandi</label>
                 <input id="auth-pass" class="input-pro" type="password" placeholder="••••••••">
                 <button onclick="handleAuthSubmit()" id="btn-auth-main" class="btn-orange">Masuk Sekarang</button>
             </div>
-            <button onclick="showToast('Buka menu browser Anda > Pilih Tambahkan ke Layar Utama')" class="w-full py-4 mt-6 bg-slate-900 text-white rounded-3xl font-black text-[11px] uppercase tracking-widest border-4 border-orange-500/20 animate-pulse">PASANG APLIKASI HIREPRO</button>
-            <button onclick="contactHR()" class="mt-6 text-[9px] font-black text-slate-400 uppercase block mx-auto text-center">Lupa Password? Hubungi HR</button>
-            <button onclick="toggleAuthMode()" id="btn-switch" class="mt-4 text-[10px] font-bold text-slate-300 underline uppercase block mx-auto">Daftar Akun Baru</button>
+
+            <button onclick="showToast('Klik menu browser > Tambahkan ke Layar Utama')" class="w-full py-4 mt-8 bg-slate-900 text-white rounded-3xl font-black text-[11px] uppercase tracking-widest border-4 border-orange-500/20 animate-pulse">PASANG APLIKASI HIREPRO</button>
+            
+            <div class="flex flex-col gap-4 mt-8">
+                <button onclick="contactHR()" class="text-[9px] font-black text-slate-400 uppercase text-center underline">Bantuan / Lupa Password</button>
+                <button onclick="toggleAuthMode()" id="btn-switch" class="text-[10px] font-black text-slate-800 uppercase block text-center bg-slate-50 py-3 rounded-xl border border-dashed">Belum punya akun? Daftar Baru</button>
+            </div>
         </div>
 
         <!-- :: 2. DASHBOARD USER :: -->
-        <div id="view-user" class="hidden flex-col min-h-screen pb-20 bg-slate-50 fade-in text-left">
+        <div id="view-user" class="hidden flex flex-col min-h-screen pb-20 bg-slate-50 fade-in text-left">
             <div class="header-profile">
-                <div class="avatar-box" id="user-avatar-preview">👤</div>
+                <div class="avatar-box">👤</div>
                 <p class="text-sm font-bold opacity-80" id="greet-text">Selamat Siang</p>
                 <h1 class="text-2xl font-black uppercase tracking-tight leading-none" id="user-display-name">PELAMAR</h1>
             </div>
@@ -157,34 +164,37 @@
                     <h2 class="text-xl font-black text-slate-800 tracking-tight">Dashboard</h2>
                     <p id="date-now" class="text-[10px] font-bold text-slate-400 uppercase"></p>
                 </div>
+                <!-- Status Card -->
                 <div class="card bg-orange-50 border-orange-100 flex items-center justify-between mb-8 shadow-lg shadow-orange-100/50">
                     <div>
-                        <p class="text-[9px] font-black text-orange-400 uppercase tracking-widest mb-1 leading-none">Status</p>
-                        <h4 id="current-status" class="font-black text-slate-800 uppercase leading-tight">Mengecek...</h4>
+                        <p class="text-[9px] font-black text-orange-400 uppercase tracking-widest mb-1 leading-none">Status Pendaftaran</p>
+                        <h4 id="current-status" class="font-black text-slate-800 uppercase leading-tight">Mengecek Data...</h4>
                     </div>
-                    <div id="status-icon" class="text-3xl">⏳</div>
+                    <div id="status-icon" class="text-3xl">📋</div>
                 </div>
-                <div class="space-y-3">
+                <div class="space-y-4">
                     <button id="btn-isi-form" class="btn-outline hidden" onclick="showPage('form')">Isi Formulir Lamaran</button>
-                    <button id="btn-psikotes" class="btn-outline hidden !border-orange-500 !text-orange-500 animate-bounce" onclick="showToast('Ujian Tahap 2 Belum Dibuka')">Mulai Ujian Psikotes</button>
+                    <button id="btn-psikotes" class="btn-outline hidden !border-orange-500 !text-orange-500 animate-bounce" onclick="showToast('Modul Psikotes Segera Dimulai...')">Mulai Ujian Psikotes</button>
                     <button class="btn-outline bg-red-50 !text-red-500 !border-red-100" onclick="handleExit()">Keluar / Logout</button>
                 </div>
             </div>
             <div class="bottom-nav">
                 <div class="nav-item active"><span class="text-2xl">🏠</span><span>Dashboard</span></div>
-                <div class="nav-item" onclick="showToast('Selesaikan Tahap 1')"><span class="text-2xl">📋</span><span>Ujian</span></div>
+                <div class="nav-item" onclick="showToast('Selesaikan Tahap 1 Dahulu')"><span class="text-2xl">📋</span><span>Ujian</span></div>
                 <div class="nav-item" onclick="showToast('Pesan Kosong')"><span class="text-2xl">💬</span><span>Pesan</span></div>
                 <div class="nav-item" onclick="showToast('Hasil Belum Ada')"><span class="text-2xl">📊</span><span>Hasil</span></div>
             </div>
         </div>
 
-        <!-- :: 3. FORM REKRUTMEN :: -->
+        <!-- :: 3. FORM REKRUTMEN (REF GAMBAR 34258) :: -->
         <div id="view-form" class="hidden flex-col min-h-screen bg-white pb-20 fade-in text-left">
-            <div class="bg-orange-500 text-white p-6 flex items-center gap-4 sticky top-0 z-50 shadow-md">
+            <div class="bg-orange-500 text-white p-6 flex items-center gap-4 sticky top-0 z-50 shadow-md header-dynamic">
                 <button onclick="showPage('user')" class="text-xl font-bold">←</button>
                 <h1 class="font-black uppercase text-sm tracking-widest leading-none">Biodata Rekrutmen</h1>
             </div>
             <div class="p-8 space-y-2">
+                <h2 class="font-black text-lg text-slate-800 uppercase leading-tight mb-6">Lengkapi Formulir</h2>
+                
                 <label class="form-label">No KTP (NIK) <span>*</span></label>
                 <input id="f-nik" class="input-pro" placeholder="16 Digit NIK">
                 <label class="form-label">Nama Lengkap <span>*</span></label>
@@ -192,36 +202,36 @@
                 <label class="form-label">Nomor WhatsApp <span>*</span></label>
                 <input id="f-wa" class="input-pro" placeholder="08xxxxxxxx">
 
-                <label class="form-label">Provinsi <span>*</span></label>
+                <label class="form-label">Provinsi Domisili</label>
                 <select id="f-prov" class="input-pro" onchange="loadCities(this.value)"><option value="">Pilih Provinsi...</option></select>
-                <label class="form-label">Kabupaten / Kota <span>*</span></label>
+                <label class="form-label">Kabupaten / Kota</label>
                 <select id="f-kab" class="input-pro" onchange="loadDistricts(this.value)"><option value="">Pilih Provinsi Dahulu</option></select>
-                <label class="form-label">Kecamatan <span>*</span></label>
+                <label class="form-label">Kecamatan</label>
                 <select id="f-kec" class="input-pro"><option value="">Pilih Kabupaten Dahulu</option></select>
 
-                <label class="form-label">Alamat Lengkap <span>*</span></label>
+                <label class="form-label">Alamat Lengkap</label>
                 <textarea id="f-alamat" class="input-pro h-24 p-4" placeholder="Nama Jalan, Blok, No Rumah..."></textarea>
 
-                <label class="form-label">Posisi Dilamar <span>*</span></label>
+                <label class="form-label">Posisi Yang Dilamar <span>*</span></label>
                 <select id="f-pos" class="input-pro"></select>
 
-                <!-- SECTION UPLOAD (REF GAMBAR 34258) -->
-                <div class="pt-6 border-t mt-6">
+                <!-- SECTION UNGGAH BERKAS -->
+                <div class="pt-8 border-t mt-8 space-y-4">
                     <label class="form-label">Unggah Pas Foto 3x4</label>
                     <div class="upload-card" onclick="triggerUp('up-foto')" id="box-up-foto"><input type="file" id="up-foto" class="hidden" accept="image/*" onchange="handleFile(this, 'up-foto')"><div class="text-3xl">📷</div><p id="txt-up-foto" class="text-[9px] font-black uppercase mt-1">Pilih File Foto</p></div>
                     <label class="form-label">Unggah Foto KTP</label>
                     <div class="upload-card" onclick="triggerUp('up-ktp')" id="box-up-ktp"><input type="file" id="up-ktp" class="hidden" accept="image/*" onchange="handleFile(this, 'up-ktp')"><div class="text-3xl">💳</div><p id="txt-up-ktp" class="text-[9px] font-black uppercase mt-1">Pilih File KTP</p></div>
-                    <label class="form-label">Unggah Surat Lamaran</label>
-                    <div class="upload-card" onclick="triggerUp('up-lamaran')" id="box-up-lamaran"><input type="file" id="up-lamaran" class="hidden" accept="image/*" onchange="handleFile(this, 'up-lamaran')"><div class="text-3xl">📄</div><p id="txt-up-lamaran" class="text-[9px] font-black uppercase mt-1">Pilih File Lamaran</p></div>
-                    <label class="form-label">Unggah CV / Riwayat Hidup</label>
-                    <div class="upload-card" onclick="triggerUp('up-cv')" id="box-up-cv"><input type="file" id="up-cv" class="hidden" accept="image/*" onchange="handleFile(this, 'up-cv')"><div class="text-3xl">📂</div><p id="txt-up-cv" class="text-[9px] font-black uppercase mt-1">Pilih File CV</p></div>
+                    <label class="form-label">Surat Lamaran Kerja</label>
+                    <div class="upload-card" onclick="triggerUp('up-lamaran')" id="box-up-lamaran"><input type="file" id="up-lamaran" class="hidden" accept="image/*,.pdf" onchange="handleFile(this, 'up-lamaran')"><div class="text-3xl">📄</div><p id="txt-up-lamaran" class="text-[9px] font-black uppercase mt-1">Pilih File Lamaran</p></div>
+                    <label class="form-label">CV / Riwayat Hidup</label>
+                    <div class="upload-card" onclick="triggerUp('up-cv')" id="box-up-cv"><input type="file" id="up-cv" class="hidden" accept="image/*,.pdf" onchange="handleFile(this, 'up-cv')"><div class="text-3xl">📂</div><p id="txt-up-cv" class="text-[9px] font-black uppercase mt-1">Pilih File CV</p></div>
                 </div>
 
-                <button onclick="submitApplication()" id="btn-submit" class="btn-orange mt-10">Kirim Lamaran Sekarang</button>
+                <button onclick="submitApplication()" id="btn-submit" class="btn-orange mt-12 mb-10">Kirim Lamaran Sekarang</button>
             </div>
         </div>
 
-        <!-- :: 4. ADMIN :: -->
+        <!-- :: 4. ADMIN PANEL :: -->
         <div id="view-admin" class="hidden flex flex-col min-h-screen bg-slate-50 pb-20 fade-in text-left">
             <div class="header-profile !rounded-none !py-10">
                 <h1 class="text-2xl font-black uppercase tracking-tighter">ADMIN MASTER</h1>
@@ -237,42 +247,48 @@
                 <div id="sec-applicants" class="hidden space-y-3"><div id="list-applicants-admin"></div></div>
 
                 <div id="sec-master" class="hidden space-y-4">
-                    <div class="card border-2 border-orange-200">
+                    <div class="card border-2 border-orange-200 text-left">
                         <h3 class="font-black text-sm uppercase mb-4 leading-none">:: Kelola Lowongan</h3>
                         <div class="flex gap-2">
                             <input id="new-vacancy" class="flex-1 p-3 bg-slate-100 rounded-xl text-xs outline-none" placeholder="Loker Baru...">
                             <button onclick="addVacancy()" class="px-4 bg-slate-800 text-white rounded-xl font-bold text-[9px]">TAMBAH</button>
                         </div>
-                        <div id="list-vacancies-admin" class="mt-4 space-y-2"></div>
+                        <div id="list-vacancies-admin" class="mt-6 space-y-2"></div>
                     </div>
                 </div>
 
-                <div id="sec-settings" class="space-y-4 text-center">
+                <div id="sec-settings" class="space-y-4">
                     <div class="card border-2 border-orange-200">
-                        <label class="form-label text-left">Nama Perusahaan</label>
-                        <input id="set-name" class="input-pro">
-                        <label class="form-label text-left">Nomor WA HR Admin</label>
-                        <input id="set-wa" class="input-pro">
-                        <label class="form-label text-left">Ganti Logo (Unggah HP)</label>
+                        <label class="form-label text-left">Identitas Sistem</label>
+                        <input id="set-name" class="input-pro" placeholder="Nama Perusahaan">
+                        <input id="set-wa" class="input-pro" placeholder="Nomor WA HR (62...)">
+                        
+                        <label class="form-label text-left mt-4">Preset Tema Warna</label>
+                        <div class="grid grid-cols-3 gap-2 mb-6">
+                            <div class="theme-pill" onclick="applyPreset('#f97316')" style="background: #f97316; color: white;">Orange</div>
+                            <div class="theme-pill" onclick="applyPreset('#2563eb')" style="background: #2563eb; color: white;">Blue</div>
+                            <div class="theme-pill" onclick="applyPreset('#10b981')" style="background: #10b981; color: white;">Green</div>
+                        </div>
+
+                        <label class="form-label text-left">Logo Baru (Unggah HP)</label>
                         <div class="flex items-center gap-4 mb-4">
                             <img id="set-logo-preview" src="" class="w-16 h-16 rounded-xl border bg-white object-contain">
-                            <label class="flex-1 py-3 bg-slate-100 border text-slate-500 rounded-xl text-[10px] font-black uppercase cursor-pointer">Pilih File<input type="file" class="hidden" onchange="handleLogoUpload(this)"></label>
+                            <label class="flex-1 py-3 bg-slate-100 border text-slate-500 rounded-xl text-center text-[10px] font-black uppercase cursor-pointer">Pilih File<input type="file" class="hidden" onchange="handleLogoUpload(this)"></label>
                         </div>
-                        <label class="form-label text-left">Warna Tema</label>
-                        <input id="set-color" type="color" class="w-full h-12 rounded-xl mb-6 cursor-pointer border">
+                        
                         <button onclick="saveGlobalSet()" class="btn-orange">Simpan Perubahan</button>
                     </div>
                 </div>
             </div>
-            <button onclick="handleExit()" class="mx-12 p-4 bg-slate-200 rounded-2xl text-[9px] font-black uppercase mb-10 shadow-sm">Logout Panel Admin</button>
+            <button onclick="handleExit()" class="mx-12 p-4 bg-slate-200 rounded-2xl text-[9px] font-black uppercase mb-10 shadow-sm">Keluar Panel Admin</button>
         </div>
 
     </div>
 
     <!-- :: SCRIPT ENGINE :: -->
     <script>
-        let MASTER = { companyName: "PT SEPATU INDONESIA", logoUrl: "https://cdn-icons-png.flaticon.com/512/2964/2964563.png", adminWA: "6288902312290", themeColor: "#f97316", vacancies: ["Operator Sewing", "QC Inspector", "Leader Line"] };
-        const DB_ID = "v98_final_industrial_master"; 
+        let MASTER = { companyName: "PT SEPATU INDONESIA", logoUrl: "https://cdn-icons-png.flaticon.com/512/2964/2964563.png", adminWA: "6288902312290", themeColor: "#f97316", vacancies: ["Operator Sewing", "QC Inspector", "Leader Line", "Warehouse", "HR Admin"] };
+        const DB_ID = "v99_industrial_final_stage1"; 
         const firebaseConfig = { apiKey: "AIzaSyAg2NSb0rqD6BNtu96_7VJezhGiUlYyIZM", authDomain: "hire-1a51d.firebaseapp.com", projectId: "hire-1a51d", storageBucket: "hire-1a51d.firebasestorage.app", messagingSenderId: "370568295", appId: "1:370568295:web:a0d38b16b3bde89cbbf8c2" };
         const app = firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore(app);
@@ -308,16 +324,15 @@
         function applyIdent(data) {
             if(!data) return; MASTER = {...MASTER, ...data};
             document.title = MASTER.companyName;
-            document.getElementById('auth-logo').src = MASTER.logoUrl;
-            document.getElementById('splash-logo').src = MASTER.logoUrl;
+            document.getElementById('auth-logo-img').src = MASTER.logoUrl;
+            document.getElementById('splash-logo-img').src = MASTER.logoUrl;
             document.getElementById('set-logo-preview').src = MASTER.logoUrl;
-            document.getElementById('auth-company').innerText = MASTER.companyName;
+            document.getElementById('auth-company-name').innerText = MASTER.companyName;
             document.getElementById('admin-subtitle').innerText = "KONTROL - " + MASTER.companyName;
             document.getElementById('set-name').value = MASTER.companyName;
             document.getElementById('set-wa').value = MASTER.adminWA;
-            document.getElementById('set-color').value = MASTER.themeColor;
             document.documentElement.style.setProperty('--primary', MASTER.themeColor);
-            document.querySelectorAll('.header-profile').forEach(e => e.style.background = `linear-gradient(135deg, ${MASTER.themeColor} 0%, #ea580c 100%)`);
+            document.querySelectorAll('.header-profile, .header-dynamic').forEach(e => e.style.background = `linear-gradient(135deg, ${MASTER.themeColor} 0%, #ea580c 100%)`);
         }
 
         function refreshMasterUI() {
@@ -363,19 +378,25 @@
             const nik = document.getElementById('f-nik').value;
             if(!nik || nik.length < 16) return showToast("NIK Harus 16 Digit!");
             const u = auth.currentUser || JSON.parse(localStorage.getItem('uat_session'));
-            await db.collection('artifacts').doc(DB_ID).collection('applicants').add({
-                uid: u.uid, nik: nik, name: document.getElementById('f-name').value,
-                pos: document.getElementById('f-pos').value, 
-                wa: document.getElementById('f-wa').value,
-                prov: document.getElementById('f-prov').options[document.getElementById('f-prov').selectedIndex].text,
-                kota: document.getElementById('f-kab').options[document.getElementById('f-kab').selectedIndex].text,
-                kec: document.getElementById('f-kec').options[document.getElementById('f-kec').selectedIndex].text,
-                alamat: document.getElementById('f-alamat').value,
-                files: currentFiles,
-                status: 'MENUNGGU_ADM', 
-                at: new Date().toISOString()
-            });
-            document.getElementById('modal-notif').style.display = 'flex';
+            
+            document.getElementById('btn-submit').innerText = "MENGIRIM...";
+            document.getElementById('btn-submit').disabled = true;
+
+            try {
+                await db.collection('artifacts').doc(DB_ID).collection('applicants').add({
+                    uid: u.uid, nik: nik, name: document.getElementById('f-name').value,
+                    pos: document.getElementById('f-pos').value, 
+                    wa: document.getElementById('f-wa').value,
+                    prov: document.getElementById('f-prov').options[document.getElementById('f-prov').selectedIndex]?.text || "",
+                    kota: document.getElementById('f-kab').options[document.getElementById('f-kab').selectedIndex]?.text || "",
+                    kec: document.getElementById('f-kec').options[document.getElementById('f-kec').selectedIndex]?.text || "",
+                    alamat: document.getElementById('f-alamat').value,
+                    files: currentFiles,
+                    status: 'MENUNGGU_ADM', 
+                    at: new Date().toISOString()
+                });
+                document.getElementById('modal-notif').style.display = 'flex';
+            } catch(e) { showToast("Error Database."); document.getElementById('btn-submit').innerText = "Kirim Lagi"; document.getElementById('btn-submit').disabled = false; }
         }
 
         function startLiveSync(uid) {
@@ -399,7 +420,7 @@
         function listenAdmin() {
             db.collection('artifacts').doc(DB_ID).collection('applicants').onSnapshot(snap => {
                 const container = document.getElementById('list-applicants-admin');
-                if(snap.empty) { container.innerHTML = '<p class="text-center py-20 text-slate-300 font-bold text-[10px]">Basis data kosong</p>'; return; }
+                if(snap.empty) { container.innerHTML = '<p class="text-center py-20 text-slate-300 font-bold text-[10px] uppercase">Basis data kosong</p>'; return; }
                 container.innerHTML = snap.docs.map(doc => {
                     const d = doc.data();
                     const isLolos = d.status === 'LOLOS_ADMINISTRASI';
@@ -409,8 +430,8 @@
                             <button onclick="updateStat('${doc.id}', 'LOLOS_ADMINISTRASI')" class="${isLolos?'bg-emerald-100 text-emerald-600':'bg-emerald-600 text-white'} px-4 py-2 rounded-xl text-[8px] font-black uppercase">${isLolos?'LOLOS ADM':'LOLOSKAN'}</button>
                         </div>
                         <div class="grid grid-cols-2 gap-2">
-                             <button onclick="viewApplicantDetail('${doc.id}')" class="bg-slate-800 text-white py-3 rounded-xl text-[8px] font-black uppercase">Detail & Berkas</button>
-                             <button onclick="checkPass('${d.uid}')" class="bg-slate-100 text-slate-500 py-3 rounded-xl text-[8px] font-black uppercase">Lihat Password</button>
+                             <button onclick="viewApplicantDetail('${doc.id}')" class="bg-slate-800 text-white py-3 rounded-xl text-[8px] font-black uppercase">Detail & Dokumen</button>
+                             <button onclick="checkPass('${d.uid}')" class="bg-slate-100 text-slate-500 py-3 rounded-xl text-[8px] font-black uppercase">Buka Pass</button>
                         </div>
                     </div>`;
                 }).join('');
@@ -422,15 +443,18 @@
             if(!snap.exists) return;
             const d = snap.data();
             let content = `
-                <div class="border-b pb-4"><p class="text-[10px] text-slate-400">NIK</p><p>${d.nik}</p></div>
-                <div class="border-b pb-4"><p class="text-[10px] text-slate-400">NOMOR WA</p><p>${d.wa}</p></div>
-                <div class="border-b pb-4"><p class="text-[10px] text-slate-400">ALAMAT</p><p>${d.kec}, ${d.kota}, ${d.prov}<br>${d.alamat}</p></div>
+                <div class="bg-slate-50 p-4 rounded-2xl border">
+                    <p class="text-[9px] text-slate-400 uppercase">NIK / WA</p>
+                    <p>${d.nik} / ${d.wa}</p>
+                    <p class="text-[9px] text-slate-400 uppercase mt-2">Alamat Lengkap</p>
+                    <p>${d.kec}, ${d.kota}, ${d.prov}<br>${d.alamat}</p>
+                </div>
                 <div class="space-y-4 pt-4">
-                    <p class="text-slate-800 uppercase tracking-widest text-[10px]">Berkas Unggahan:</p>
-                    ${d.files?.['up-foto'] ? `<div><p class="text-[9px] mb-2 uppercase">Pas Foto:</p><img src="${d.files['up-foto']}" class="preview-img-square"></div>` : ''}
-                    ${d.files?.['up-ktp'] ? `<button onclick="openFile('${d.files['up-ktp']}')" class="w-full p-4 bg-slate-100 rounded-2xl text-[10px] uppercase">Lihat Foto KTP</button>` : ''}
-                    ${d.files?.['up-lamaran'] ? `<button onclick="openFile('${d.files['up-lamaran']}')" class="w-full p-4 bg-slate-100 rounded-2xl text-[10px] uppercase">Lihat Surat Lamaran</button>` : ''}
-                    ${d.files?.['up-cv'] ? `<button onclick="openFile('${d.files['up-cv']}')" class="w-full p-4 bg-slate-100 rounded-2xl text-[10px] uppercase">Lihat Berkas CV</button>` : ''}
+                    <p class="text-slate-800 uppercase tracking-widest text-[10px]">Arsip Berkas:</p>
+                    ${d.files?.['up-foto'] ? `<div><p class="text-[9px] mb-2 uppercase">Pas Foto:</p><img src="${d.files['up-foto']}" class="w-full h-40 object-contain bg-slate-100 rounded-2xl border"></div>` : ''}
+                    ${d.files?.['up-ktp'] ? `<button onclick="openFile('${d.files['up-ktp']}')" class="w-full p-4 bg-slate-100 rounded-2xl text-[9px] uppercase border">Buka Foto KTP</button>` : ''}
+                    ${d.files?.['up-lamaran'] ? `<button onclick="openFile('${d.files['up-lamaran']}')" class="w-full p-4 bg-slate-100 rounded-2xl text-[9px] uppercase border">Buka Surat Lamaran</button>` : ''}
+                    ${d.files?.['up-cv'] ? `<button onclick="openFile('${d.files['up-cv']}')" class="w-full p-4 bg-slate-100 rounded-2xl text-[9px] uppercase border">Buka File CV</button>` : ''}
                 </div>
             `;
             document.getElementById('detail-content').innerHTML = content;
@@ -439,11 +463,11 @@
 
         function openFile(data) { const w = window.open(); w.document.write(`<img src="${data}" style="max-width:100%">`); }
         async function checkPass(uid) { const s = await db.collection('artifacts').doc(DB_ID).collection('users').doc(uid).get(); if(s.exists) showToast("Password: " + s.data().pass); }
-        async function updateStat(id, stat) { await db.collection('artifacts').doc(DB_ID).collection('applicants').doc(id).update({ status: stat }); showToast("Status Diperbarui!"); }
+        async function updateStat(id, stat) { await db.collection('artifacts').doc(DB_ID).collection('applicants').doc(id).update({ status: stat }); showToast("Pelamar Diloloskan!"); }
 
         window.onload = () => {
             setTimeout(() => { if(document.getElementById('view-splash').style.display !== 'none') showPage('auth'); }, 2500);
-            const saved = localStorage.getItem('uat_98_m');
+            const saved = localStorage.getItem('uat_99_m');
             if(saved) { MASTER = JSON.parse(saved); applyIdent(MASTER); refreshMasterUI(); }
             db.collection('artifacts').doc(DB_ID).collection('public').doc('master').onSnapshot(s => { if(s.exists) { MASTER = s.data(); applyIdent(MASTER); refreshMasterUI(); } });
             loadProv(); refreshMasterUI();
@@ -468,15 +492,16 @@
         };
 
         let isReg = false;
-        function toggleAuthMode() { isReg = !isReg; document.getElementById('auth-title').innerText = isReg ? "DAFTAR AKUN" : "MASUK SISTEM"; document.getElementById('reg-container').classList.toggle('hidden'); document.getElementById('btn-auth-main').innerText = isReg ? "DAFTAR SEKARANG" : "MASUK SEKARANG"; }
+        function toggleAuthMode() { isReg = !isReg; document.getElementById('auth-title').innerText = isReg ? "DAFTAR AKUN" : "MASUK SISTEM"; document.getElementById('reg-container').classList.toggle('hidden'); document.getElementById('btn-auth-main').innerText = isReg ? "DAFTAR AKUN" : "MASUK SEKARANG"; }
         function handleExit() { auth.signOut(); localStorage.removeItem('uat_session'); location.reload(); }
-        function showToast(m) { const t = document.getElementById('toast'); t.innerText = m; t.style.display = 'block'; setTimeout(() => t.style.display='none', 3500); }
+        function showToast(m) { const t = document.getElementById('toast'); t.innerText = m; t.style.display = 'block'; setTimeout(() => t.style.display='none', 4000); }
         function contactHR() { window.open(`https://wa.me/${MASTER.adminWA}?text=Halo%20Admin%20HR%20HIREPRO%2C%20saya%20lupa%20password%20akun%20saya.`); }
         function switchTab(t) { ['applicants', 'master', 'settings'].forEach(s => { document.getElementById('sec-' + s).classList.add('hidden'); document.getElementById('tab-' + s.substring(0,3)).classList.remove('bg-orange-500', 'text-white'); }); document.getElementById('sec-' + t).classList.remove('hidden'); document.getElementById('tab-' + t.substring(0,3)).classList.add('bg-orange-500', 'text-white'); if(t==='applicants') listenAdmin(); }
         function triggerUp(id) { document.getElementById(id).click(); }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        function applyPreset(c) { MASTER.themeColor = c; applyIdent(MASTER); showToast("Preset Tema Terpilih!"); }
         function handleLogoUpload(i) { const r = new FileReader(); r.readAsDataURL(i.files[0]); r.onload = () => { MASTER.logoUrl = r.result; document.getElementById('set-logo-preview').src = r.result; showToast("Logo Terpilih!"); }; }
-        async function saveGlobalSet() { MASTER.companyName = document.getElementById('set-name').value; MASTER.adminWA = document.getElementById('set-wa').value; MASTER.themeColor = document.getElementById('set-color').value; await syncDB(); applyIdent(MASTER); showToast("Setelan Disimpan!"); }
+        async function saveGlobalSet() { MASTER.companyName = document.getElementById('set-name').value; MASTER.adminWA = document.getElementById('set-wa').value; await syncDB(); applyIdent(MASTER); showToast("Setelan Disimpan!"); }
     </script>
 </body>
 </html>
