@@ -6,9 +6,9 @@
     <meta name="theme-color" content="#f97316">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>HIREPRO - Sistem Rekrutmen Industri</title>
+    <title>HIREPRO - Enterprise System v93</title>
     
-    <!-- :: LIBRARY UTAMA :: -->
+    <!-- :: LIBRARIES :: -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
@@ -19,237 +19,240 @@
         
         :root { --primary: #f97316; --dark: #0f172a; --success: #1abc9c; }
 
-        /* FILOSOFI TEGAK: MENGHAPUS SEMUA GAYA MIRING */
-        * { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            box-sizing: border-box; 
-            -webkit-tap-highlight-color: transparent; 
-            font-style: normal !important; 
-        }
-        
+        /* FILOSOFI TEGAK: NO ITALIC */
+        * { font-family: 'Plus Jakarta Sans', sans-serif; box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-style: normal !important; }
         body { background-color: #f8fafc; margin: 0; padding: 0; color: var(--dark); overflow-x: hidden; }
         
-        .app-shell { max-width: 480px; margin: 0 auto; min-height: 100vh; background: white; position: relative; display: flex; flex-direction: column; }
+        .app-shell { max-width: 480px; margin: 0 auto; min-height: 100vh; background: white; position: relative; display: flex; flex-direction: column; box-shadow: 0 0 50px rgba(0,0,0,0.1); }
         
-        /* Layout Sesuai Gambar 34254 */
-        .header-curve { 
-            background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); 
-            border-radius: 0 0 40px 40px; 
-            padding: 70px 20px 40px 20px; 
-            color: white; 
-            text-align: center; 
-            box-shadow: 0 10px 25px rgba(249, 115, 22, 0.2);
+        /* Layout Mobile Profile (Ref Gambar 34254) */
+        .header-profile { 
+            background: linear-gradient(135deg, var(--primary) 0%, #ea580c 100%); 
+            border-radius: 0 0 40px 40px; padding: 60px 20px 40px; color: white; text-align: center; 
+            box-shadow: 0 10px 25px rgba(249, 115, 22, 0.2); transition: 0.5s;
         }
-        
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 480px; background: white; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #f1f5f9; z-index: 100; padding-bottom: calc(15px + env(safe-area-inset-bottom)); }
-        .nav-item { display: flex; flex-direction: column; align-items: center; font-size: 10px; font-weight: 700; color: #94a3b8; cursor: pointer; }
+        .avatar-main { width: 90px; height: 90px; border: 3px solid white; border-radius: 50%; margin: 0 auto 15px; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; overflow: hidden; font-size: 40px; }
+        .avatar-main img { width: 100%; height: 100%; object-fit: cover; }
+
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 480px; background: white; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #f1f5f9; z-index: 100; padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
+        .nav-item { display: flex; flex-direction: column; align-items: center; font-size: 10px; font-weight: 800; color: #94a3b8; cursor: pointer; }
         .nav-item.active { color: var(--primary); }
-        
-        .btn-orange { background: var(--primary); color: white; border: none; padding: 18px; border-radius: 20px; font-weight: 800; text-transform: uppercase; width: 100%; cursor: pointer; box-shadow: 0 10px 20px rgba(249, 115, 22, 0.2); }
-        .menu-btn { width: 100%; border: 2px solid var(--success); color: var(--success); background: white; padding: 15px; border-radius: 14px; font-weight: 700; font-size: 14px; margin-bottom: 12px; text-align: center; display: block; }
-        .btn-red { border-color: #ef4444 !important; color: white !important; background: #ef4444 !important; }
 
-        .hidden { display: none !important; }
-        .card { background: white; border-radius: 20px; padding: 20px; border: 1px solid #f1f5f9; margin-bottom: 15px; }
-
-        /* Form Styling Sesuai Gambar 34258 */
-        .form-label { font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-left: 4px; display: block; margin-bottom: 6px; }
-        .form-label span { color: #ef4444; }
+        /* Form Details (Ref Gambar 34258) */
+        .form-label { font-size: 11px; font-weight: 800; color: #475569; text-transform: uppercase; margin-bottom: 6px; display: block; }
         .input-pro { width: 100%; padding: 14px; background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 12px; font-size: 14px; outline: none; margin-bottom: 15px; }
         .input-pro:focus { border-color: var(--primary); background: white; }
 
+        .btn-main { background: var(--primary); color: white; padding: 18px; border-radius: 16px; font-weight: 900; width: 100%; text-transform: uppercase; cursor: pointer; border: none; box-shadow: 0 10px 20px rgba(249, 115, 22, 0.2); }
+        .btn-outline { width: 100%; border: 2px solid var(--success); color: var(--success); background: white; padding: 15px; border-radius: 14px; font-weight: 800; font-size: 14px; margin-bottom: 12px; display: block; text-align: center; }
+
+        .hidden { display: none !important; }
+        .card { background: white; border-radius: 24px; padding: 20px; border: 1px solid #f1f5f9; margin-bottom: 15px; }
+        
+        #view-splash { position: fixed; inset: 0; z-index: 99999; background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        #toast { position: fixed; top: 30px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 14px 24px; border-radius: 14px; font-size: 11px; font-weight: 700; z-index: 100001; display: none; text-align: center; width: 85%; }
+        
         .upload-card { border: 2px dashed #e2e8f0; border-radius: 16px; padding: 20px; text-align: center; background: #f8fafc; cursor: pointer; margin-bottom: 15px; }
         .upload-card.ready { border-color: var(--success); background: #f0fdfa; }
 
-        #toast { position: fixed; top: 30px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 14px 24px; border-radius: 14px; font-size: 11px; font-weight: 700; z-index: 10000; display: none; text-align: center; width: 85%; }
-        
-        /* Splash Screen Force - Muncul Instan */
-        #view-splash { position: fixed; inset: 0; z-index: 9999; background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .modal-backdrop { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.8); z-index: 100005; display: none; align-items: center; justify-content: center; padding: 30px; }
+        .modal-box { background: white; border-radius: 32px; padding: 40px 30px; text-align: center; width: 100%; max-width: 400px; animation: popUp 0.3s ease-out; }
     </style>
 </head>
 <body>
 
     <div id="toast">Notifikasi</div>
 
+    <!-- :: MODAL NOTIFIKASI :: -->
+    <div id="modal-notif" class="modal-backdrop">
+        <div class="modal-box">
+            <div class="text-6xl mb-6">🔍</div>
+            <h3 class="text-xl font-black text-slate-800 uppercase mb-4">Berkas Dikirim!</h3>
+            <p class="text-xs text-slate-400 font-bold leading-relaxed mb-8 uppercase">Lamaran Anda sedang dalam tahap Seleksi Administrasi. Mohon pantau Dashboard secara berkala.</p>
+            <button onclick="document.getElementById('modal-notif').style.display='none'; showPage('user');" class="btn-main shadow-lg">Pantau Hasil</button>
+        </div>
+    </div>
+
     <div class="app-shell">
         
-        <!-- :: SPLASH SCREEN :: -->
-        <div id="view-splash" class="text-white p-10 text-center">
+        <!-- :: 0. SPLASH :: -->
+        <div id="view-splash" class="text-white text-center">
             <img id="splash-logo" src="https://cdn-icons-png.flaticon.com/512/2964/2964563.png" class="w-28 h-28 rounded-3xl bg-white p-4 mb-6 animate-bounce shadow-2xl">
-            <h1 id="splash-name" class="text-4xl font-black tracking-tighter uppercase leading-none">HIREPRO</h1>
-            <p class="text-[10px] font-bold tracking-[0.4em] opacity-40 uppercase mt-4">Enterprise Edition v78</p>
+            <h1 class="text-4xl font-black tracking-tighter uppercase leading-none">HIREPRO</h1>
+            <p class="text-[10px] font-bold tracking-[0.4em] opacity-40 uppercase mt-4">v93 Data Persistence Master</p>
         </div>
 
-        <!-- :: HALAMAN AUTH (LOGIN/DAFTAR) :: -->
-        <div id="view-auth" class="hidden flex-col justify-center p-10 min-h-screen bg-white">
+        <!-- :: 1. AUTH (DAFTAR/LOGIN) :: -->
+        <div id="view-auth" class="hidden flex flex-col justify-center p-10 min-h-screen bg-white text-left">
             <div class="text-center mb-8">
-                <img id="auth-logo" src="https://cdn-icons-png.flaticon.com/512/2964/2964563.png" class="w-20 h-20 mx-auto mb-4 rounded-2xl shadow-lg">
+                <img id="auth-logo" src="https://cdn-icons-png.flaticon.com/512/2964/2964563.png" class="w-20 h-20 mx-auto mb-4 rounded-2xl shadow-lg border p-2 bg-white">
                 <h2 id="auth-title" class="text-3xl font-black text-slate-800 tracking-tighter uppercase leading-none">MASUK SISTEM</h2>
                 <p id="auth-company" class="text-[10px] font-bold text-slate-400 mt-2 uppercase tracking-widest leading-none">PT SEPATU INDONESIA</p>
             </div>
             
-            <div class="space-y-4 text-left">
-                <div id="reg-name-container" class="hidden">
-                    <label class="form-label">Nama Lengkap</label>
-                    <input id="auth-name" class="input-pro" placeholder="Sesuai KTP">
+            <div class="space-y-4">
+                <div id="reg-container" class="hidden">
+                    <label class="form-label">Nama Lengkap Sesuai KTP</label>
+                    <input id="auth-name" class="input-pro" placeholder="Masukkan Nama Lengkap">
                 </div>
-                <div>
-                    <label class="form-label">Email Perusahaan</label>
-                    <input id="auth-email" class="input-pro" placeholder="nama@email.com">
-                </div>
-                <div>
-                    <label class="form-label">Kata Sandi</label>
-                    <input id="auth-pass" class="input-pro" type="password" placeholder="••••••••">
-                </div>
-                <button onclick="handleAuthSubmit()" id="btn-auth-main" class="btn-orange">Masuk Dashboard</button>
+                <label class="form-label">Email Terdaftar</label>
+                <input id="auth-email" class="input-pro" placeholder="nama@email.com">
+                <label class="form-label">Kata Sandi</label>
+                <input id="auth-pass" class="input-pro" type="password" placeholder="••••••••">
+                <button onclick="handleAuth()" id="btn-auth-main" class="btn-main shadow-xl">Masuk Sekarang</button>
             </div>
 
-            <!-- TOMBOL PASANG APLIKASI (FIXED) -->
-            <div id="pwa-area" class="mt-8">
-                <button onclick="triggerInstall()" class="w-full py-4 bg-slate-900 text-white rounded-3xl font-black text-[11px] uppercase tracking-widest animate-pulse border-4 border-orange-500/20">
-                    PASANG APLIKASI HIREPRO
-                </button>
-            </div>
+            <button onclick="showToast('Klik menu browser (titik 3), pilih Tambahkan ke Layar Utama')" class="w-full py-4 mt-6 bg-slate-900 text-white rounded-3xl font-black text-[11px] uppercase tracking-widest border-4 border-orange-500/20 animate-pulse">PASANG APLIKASI HIREPRO</button>
 
-            <button onclick="toggleMode()" class="mt-8 text-[10px] font-bold text-slate-300 underline uppercase block mx-auto">
+            <!-- RESET PASSWORD DYNAMIS -->
+            <button onclick="contactHR()" class="mt-6 text-[9px] font-black text-slate-400 uppercase block mx-auto text-center">
+                Lupa Password? Hubungi HR Admin
+            </button>
+
+            <button onclick="toggleAuthMode()" id="btn-switch" class="mt-4 text-[10px] font-bold text-slate-300 underline uppercase block mx-auto">
                 Belum punya akun? Daftar Baru
             </button>
 
-            <div class="mt-8 p-6 bg-slate-50 border-2 border-dashed border-slate-200 rounded-[2.5rem] text-center">
-                <p class="text-[9px] text-slate-400 font-black uppercase mb-4 tracking-widest">Akses Demo Cepat:</p>
+            <div class="mt-10 p-6 bg-slate-50 border-2 border-dashed border-slate-200 rounded-[2.5rem] text-center">
                 <div class="flex gap-2">
-                    <button onclick="bypassTo('admin')" class="flex-1 py-3 bg-slate-800 text-white rounded-2xl text-[9px] font-black uppercase">Admin</button>
-                    <button onclick="bypassTo('user')" class="flex-1 py-3 border-2 border-orange-200 text-orange-500 rounded-2xl text-[9px] font-black uppercase">Pelamar</button>
+                    <button onclick="bypass('admin')" class="flex-1 py-3 bg-slate-800 text-white rounded-2xl text-[9px] font-black uppercase">Admin</button>
+                    <button onclick="bypass('user')" class="flex-1 py-3 border-2 border-orange-200 text-orange-500 rounded-2xl text-[9px] font-black uppercase">Pelamar</button>
                 </div>
             </div>
         </div>
 
-        <!-- :: DASHBOARD PELAMAR :: -->
-        <div id="view-user" class="hidden flex-col min-h-screen pb-20 bg-slate-50">
-            <div class="header-curve">
+        <!-- :: 2. DASHBOARD PELAMAR (FIXED PERSISTENCE) :: -->
+        <div id="view-user" class="hidden flex-col min-h-screen pb-20 bg-slate-50 fade-in text-left">
+            <div class="header-profile">
+                <div class="avatar-circle">👤</div>
                 <p class="text-sm font-bold opacity-80" id="greet-text">Selamat Siang</p>
-                <h1 class="text-2xl font-black uppercase tracking-tight leading-none" id="user-display-name">PELAMAR</h1>
+                <h1 class="text-2xl font-black uppercase tracking-tight leading-none" id="user-display-name">MEMUAT...</h1>
             </div>
-            <div class="p-6 flex-1 text-left">
+            <div class="p-6 flex-1">
                 <div class="flex justify-between items-center mb-6 px-1">
-                    <h2 class="text-xl font-black text-slate-800">Dashboard</h2>
-                    <p class="text-[10px] font-bold text-slate-400" id="date-now"></p>
+                    <h2 class="text-xl font-black text-slate-800 tracking-tight">Dashboard</h2>
+                    <p id="date-now" class="text-[10px] font-bold text-slate-400 uppercase"></p>
                 </div>
-                <div class="card bg-orange-50 border-orange-100 flex items-center justify-between mb-6 shadow-md shadow-orange-100/30">
-                    <div><p class="text-[9px] font-black text-orange-400 uppercase tracking-widest">Status Terakhir</p><h4 class="font-black text-slate-800 uppercase" id="current-status">Menunggu Lamaran</h4></div>
-                    <div class="text-3xl">⏳</div>
+                <!-- Card Status (Terhubung Real-time ke Database) -->
+                <div class="card bg-orange-50 border-orange-100 flex items-center justify-between mb-8 shadow-lg shadow-orange-100/50">
+                    <div>
+                        <p class="text-[9px] font-black text-orange-400 uppercase tracking-widest mb-1 leading-none">Status Tahap 1</p>
+                        <h4 id="current-status" class="font-black text-slate-800 uppercase leading-tight">Menunggu Pengisian</h4>
+                    </div>
+                    <div id="status-icon" class="text-3xl">⏳</div>
                 </div>
                 <div class="space-y-3">
-                    <button class="menu-btn" onclick="showPage('form')">Formulir Lamaran</button>
-                    <button class="menu-btn" onclick="showToast('Modul Lowongan Segera Aktif')">Lowongan Aktif</button>
-                    <button class="menu-btn btn-red" onclick="handleExit()">Keluar</button>
+                    <button id="btn-isi-form" class="btn-outline" onclick="showPage('form')">Isi Formulir Lamaran</button>
+                    <button id="btn-psikotes" class="btn-outline hidden !border-orange-500 !text-orange-500 animate-bounce" onclick="showToast('Modul Psikotes Segera Aktif!')">Mulai Ujian Psikotes</button>
+                    <button class="btn-outline bg-red-50 !text-red-500 !border-red-100" onclick="handleExit()">Keluar / Logout</button>
                 </div>
             </div>
             <div class="bottom-nav">
-                <div class="nav-item active" onclick="showPage('user')"><span class="text-2xl">🏠</span><span>Beranda</span></div>
-                <div class="nav-item" onclick="showToast('Ujian Belum Dibuka')"><span class="text-2xl">📋</span><span>Ujian</span></div>
+                <div class="nav-item active"><span class="text-2xl">🏠</span><span>Dashboard</span></div>
+                <div class="nav-item" onclick="showToast('Selesaikan Tahap 1 Dahulu')"><span class="text-2xl">📋</span><span>Ujian</span></div>
                 <div class="nav-item" onclick="showToast('Pesan Kosong')"><span class="text-2xl">💬</span><span>Pesan</span></div>
-                <div class="nav-item" onclick="showToast('Hasil Belum Ada')"><span class="text-2xl">📊</span><span>Hasil</span></div>
+                <div class="nav-item" onclick="showToast('Hasil Belum Keluar')"><span class="text-2xl">📊</span><span>Hasil</span></div>
             </div>
         </div>
 
-        <!-- :: FORMULIR DETAIL (SESUAI GAMBAR 34258) :: -->
-        <div id="view-form" class="hidden flex-col min-h-screen bg-white pb-20 text-left">
+        <!-- :: 3. FORM REKRUTMEN :: -->
+        <div id="view-form" class="hidden flex-col min-h-screen bg-white pb-20 fade-in text-left">
             <div class="bg-orange-500 text-white p-6 flex items-center gap-4 sticky top-0 z-50 shadow-md">
                 <button onclick="showPage('user')" class="text-xl font-bold">←</button>
                 <h1 class="font-black uppercase text-sm tracking-widest leading-none">Biodata Rekrutmen</h1>
             </div>
             <div class="p-8 space-y-2">
-                <h2 class="font-black text-lg text-slate-800 uppercase">Isi Lamaran Kerja</h2>
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="font-black text-lg text-slate-800 uppercase leading-tight">Isi Data Diri</h2>
+                    <button onclick="fillAsev()" class="bg-slate-100 px-4 py-2 rounded-xl text-[8px] font-black text-slate-500 uppercase border">Data Dummy Asev</button>
+                </div>
                 
                 <label class="form-label">No KTP (NIK) <span>*</span></label>
                 <input id="f-nik" class="input-pro" placeholder="16 Digit NIK">
-                
                 <label class="form-label">Nama Lengkap <span>*</span></label>
-                <input id="f-name-form" class="input-pro" placeholder="Sesuai KTP">
-                
-                <div class="grid grid-cols-2 gap-4">
-                    <div><label class="form-label">Provinsi <span>*</span></label><input id="f-prov" class="input-pro" placeholder="Provinsi"></div>
-                    <div><label class="form-label">Kota <span>*</span></label><input id="f-kota" class="input-pro" placeholder="Kota"></div>
-                </div>
+                <input id="f-name" class="input-pro" placeholder="Sesuai KTP">
+                <label class="form-label">Nomor WhatsApp <span>*</span></label>
+                <input id="f-wa" class="input-pro" placeholder="08xxxxxxxx">
 
-                <div class="grid grid-cols-2 gap-4">
-                    <div><label class="form-label">Kecamatan <span>*</span></label><input id="f-kec" class="input-pro" placeholder="Kecamatan"></div>
-                    <div><label class="form-label">Desa <span>*</span></label><input id="f-desa" class="input-pro" placeholder="Desa"></div>
-                </div>
-
-                <label class="form-label">Departemen <span>*</span></label>
-                <select id="f-dept" class="input-pro" onchange="updateJabatan()">
-                    <option value="">Pilih Departemen...</option>
-                    <option>Produksi</option><option>QC</option><option>Sewing</option><option>Cutting</option>
+                <label class="form-label">Provinsi Domisili <span>*</span></label>
+                <select id="f-prov" class="input-pro" onchange="loadCities(this.value)">
+                    <option value="">Pilih Provinsi...</option>
                 </select>
 
-                <label class="form-label">Jabatan <span>*</span></label>
-                <select id="f-pos" class="input-pro"><option>Pilih Departemen</option></select>
+                <label class="form-label">Kabupaten / Kota <span>*</span></label>
+                <select id="f-kab" class="input-pro" onchange="loadDistricts(this.value)">
+                    <option value="">Pilih Provinsi Dahulu</option>
+                </select>
 
-                <label class="form-label">Pas Foto 3x4 <span>*</span></label>
-                <div class="upload-card" onclick="document.getElementById('up-foto').click()" id="box-foto">
-                    <input type="file" class="hidden" id="up-foto" accept="image/*" onchange="handleFileUI(this, 'foto')">
-                    <div class="text-2xl mb-1">📷</div><p class="text-[9px] font-bold text-slate-400 uppercase" id="txt-foto">Tambah Foto...</p>
-                </div>
+                <label class="form-label">Kecamatan <span>*</span></label>
+                <select id="f-kec" class="input-pro">
+                    <option value="">Pilih Kabupaten Dahulu</option>
+                </select>
 
-                <label class="form-label">Foto KTP <span>*</span></label>
-                <div class="upload-card" onclick="document.getElementById('up-ktp').click()" id="box-ktp">
-                    <input type="file" class="hidden" id="up-ktp" accept="image/*" onchange="handleFileUI(this, 'ktp')">
-                    <div class="text-2xl mb-1">💳</div><p class="text-[9px] font-bold text-slate-400 uppercase" id="txt-ktp">Tambah KTP...</p>
-                </div>
+                <label class="form-label">Alamat Lengkap <span>*</span></label>
+                <textarea id="f-alamat" class="input-pro h-24 p-4" placeholder="Nama Jalan, Blok, No Rumah..."></textarea>
 
-                <button onclick="showToast('Mengirim Lamaran...')" class="btn-orange mt-6">Kirim Lamaran</button>
+                <label class="form-label">Posisi Yang Dilamar <span>*</span></label>
+                <select id="f-pos" class="input-pro"></select>
+
+                <button onclick="submitApplication()" id="btn-submit" class="btn-main mt-10">Kirim Lamaran Sekarang</button>
             </div>
         </div>
 
-        <!-- :: PANEL ADMIN :: -->
-        <div id="view-admin" class="hidden flex-col min-h-screen bg-slate-50 pb-20 text-left">
-            <div class="header-curve">
-                <h1 class="text-2xl font-black uppercase text-orange-100 tracking-tighter">ADMIN MASTER</h1>
-                <p id="admin-subtitle" class="text-[10px] font-bold opacity-60 uppercase mt-2">Control Center</p>
+        <!-- :: 4. ADMIN MASTER :: -->
+        <div id="view-admin" class="hidden flex-col min-h-screen bg-slate-50 pb-20 fade-in text-left">
+            <div class="header-profile !rounded-none !py-10">
+                <h1 class="text-2xl font-black uppercase tracking-tighter">ADMIN MASTER</h1>
+                <p id="admin-subtitle" class="text-[10px] font-bold opacity-60 uppercase mt-1"></p>
             </div>
             <div class="p-6">
-                <div class="grid grid-cols-2 gap-2 mb-6">
-                    <button onclick="switchAdminTab('applicants')" class="p-3 bg-white border border-orange-500 text-orange-500 rounded-xl font-black text-[9px] uppercase">Pelamar</button>
-                    <button onclick="switchAdminTab('settings')" class="p-3 bg-orange-500 text-white rounded-xl font-black text-[9px] uppercase shadow-md">Pengaturan</button>
+                <div class="grid grid-cols-3 gap-1 mb-6">
+                    <button onclick="switchTab('applicants')" id="tab-app" class="p-3 bg-white border border-orange-500 text-orange-500 rounded-xl font-black text-[9px] uppercase">Pelamar</button>
+                    <button onclick="switchTab('master')" id="tab-mas" class="p-3 bg-white border border-orange-500 text-orange-500 rounded-xl font-black text-[9px] uppercase shadow-md !bg-orange-500 !text-white">Isian Data</button>
+                    <button onclick="switchTab('settings')" id="tab-set" class="p-3 bg-white border border-orange-500 text-orange-500 rounded-xl font-black text-[9px] uppercase">Setelan</button>
                 </div>
-                <div id="admin-sec-applicants"><div id="admin-list-container" class="space-y-3"></div></div>
-                <div id="admin-sec-settings" class="hidden space-y-4">
+
+                <div id="sec-applicants" class="hidden space-y-3"><div id="list-applicants-admin"></div></div>
+
+                <div id="sec-master" class="space-y-4">
                     <div class="card border-2 border-orange-200">
-                        <label class="form-label">Nama Perusahaan</label><input id="set-company-name" class="input-pro">
-                        <label class="form-label">Ganti Logo</label>
-                        <div class="flex items-center gap-4 mb-4">
-                            <img id="set-logo-preview" src="" class="w-14 h-14 rounded-xl border-2 border-slate-100 object-cover bg-white">
-                            <label class="flex-1 py-3 bg-slate-100 border border-slate-200 text-slate-500 rounded-xl text-center text-[10px] font-black uppercase cursor-pointer">Pilih File<input type="file" class="hidden" onchange="handleAdminLogo(this)"></label>
+                        <h3 class="font-black text-sm text-slate-800 uppercase mb-4 leading-none">:: Kelola Lowongan</h3>
+                        <div class="flex gap-2">
+                            <input id="new-pos" class="flex-1 p-3 bg-slate-100 rounded-xl text-xs outline-none" placeholder="Tambah Posisi Baru...">
+                            <button onclick="addPos()" class="px-4 bg-slate-800 text-white rounded-xl font-bold text-[9px]">TAMBAH</button>
                         </div>
-                        <button onclick="saveAdminSettings()" class="w-full py-4 bg-slate-800 text-white rounded-xl font-bold text-xs uppercase shadow-lg">Simpan</button>
+                        <div id="list-pos-admin" class="mt-6 space-y-2"></div>
+                    </div>
+                </div>
+
+                <div id="sec-settings" class="hidden space-y-4">
+                    <div class="card border-2 border-orange-200">
+                        <label class="form-label">Nama Perusahaan</label>
+                        <input id="set-name" class="input-pro">
+                        <label class="form-label">WA Admin HR (Contoh: 62889...)</label>
+                        <input id="set-wa" class="input-pro">
+                        <label class="form-label">Logo (Ganti dari HP)</label>
+                        <input type="file" class="input-pro" onchange="handleLogoUpload(this)">
+                        <button onclick="saveSet()" class="btn-main">Simpan Setelan</button>
                     </div>
                 </div>
             </div>
-            <button onclick="handleExit()" class="mx-8 p-4 bg-slate-200 rounded-2xl text-[9px] font-black uppercase mb-10 shadow-sm">Logout Panel</button>
+            <button onclick="handleExit()" class="mx-12 p-4 bg-slate-200 rounded-2xl text-[9px] font-black uppercase mb-10 shadow-sm">Keluar Admin</button>
         </div>
 
     </div>
 
-    <!-- :: LOGIKA ENGINE :: -->
+    <!-- :: SCRIPT ENGINE :: -->
     <script>
-        // 1. NAVIGATION ENGINE (FAST BOOT)
-        function showPage(id) {
-            document.getElementById('view-splash').style.display = 'none';
-            ['view-auth', 'view-user', 'view-form', 'view-admin'].forEach(v => {
-                document.getElementById(v).classList.add('hidden');
-                document.getElementById(v).classList.remove('flex');
-            });
-            const target = document.getElementById('view-' + id);
-            if(target) {
-                target.classList.remove('hidden');
-                target.classList.add('flex');
-            }
-            window.scrollTo(0,0);
-        }
+        // 1. DATA PERMANEN (DATA TIDAK AKAN HILANG JIKA DB_ID SAMA)
+        let MASTER = {
+            companyName: "PT SEPATU INDONESIA",
+            logoUrl: "https://cdn-icons-png.flaticon.com/512/2964/2964563.png",
+            adminWA: "6288902312290",
+            vacancies: ["Operator Sewing", "QC Inspector", "Leader Line", "IT Support", "Finance", "HR Admin"]
+        };
 
-        // 2. FIREBASE & AUTH
+        const DB_ID = "v93_industrial_master"; // JANGKAR DATABASE ANDA
         const firebaseConfig = {
             apiKey: "AIzaSyAg2NSb0rqD6BNtu96_7VJezhGiUlYyIZM",
             authDomain: "hire-1a51d.firebaseapp.com",
@@ -258,91 +261,177 @@
             messagingSenderId: "370568295",
             appId: "1:370568295:web:a0d38b16b3bde89cbbf8c2"
         };
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore(app);
+        const auth = firebase.auth(app);
 
-        let db, auth;
-        try {
-            const app = firebase.initializeApp(firebaseConfig);
-            db = firebase.firestore(app);
-            auth = firebase.auth(app);
-        } catch (e) { console.error("Firebase Offline"); }
-
-        // 3. UI HANDLERS
-        function handleFileUI(input, type) {
-            const reader = new FileReader();
-            reader.readAsDataURL(input.files[0]);
-            reader.onload = () => {
-                document.getElementById('box-' + type).classList.add('ready');
-                document.getElementById('txt-' + type).innerText = "FILE OK";
-            };
+        // 2. CORE NAVIGATION
+        function showPage(id) {
+            document.getElementById('view-splash').style.display = 'none';
+            ['view-auth', 'view-user', 'view-form', 'view-admin'].forEach(v => document.getElementById(v).classList.add('hidden'));
+            const target = document.getElementById('view-' + id);
+            if(target) target.classList.remove('hidden');
+            if(id === 'user' || id === 'admin') target.classList.add('flex');
+            window.scrollTo(0,0);
         }
 
-        function updateJabatan() {
-            const dept = document.getElementById('f-dept').value;
-            const pos = document.getElementById('f-pos');
-            const data = { 'Produksi':['Operator','Foreman'], 'QC':['QC Line','QC Lab'], 'Sewing':['Operator Sewing'], 'Cutting':['Marker','Cutter'] };
-            pos.innerHTML = (data[dept] || ['Pilih Departemen']).map(j => `<option>${j}</option>`).join('');
+        // 3. ADDRESS AUTOMATION
+        async function loadProv() {
+            const res = await fetch('https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json');
+            const data = await res.json();
+            document.getElementById('f-prov').innerHTML = '<option value="">Pilih Provinsi...</option>' + data.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+        }
+        async function loadCities(pid) {
+            if(!pid) return;
+            const res = await fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/regencies/${pid}.json`);
+            const data = await res.json();
+            document.getElementById('f-kab').innerHTML = '<option value="">Pilih Kota...</option>' + data.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+        }
+        async function loadDistricts(kid) {
+            if(!kid) return;
+            const res = await fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/districts/${kid}.json`);
+            const data = await res.json();
+            document.getElementById('f-kec').innerHTML = data.map(k => `<option value="${k.name}">${k.name}</option>`).join('');
         }
 
-        async function handleAuthSubmit() {
+        // 4. IDENTITY & PERSISTENCE
+        function applyIdent(data) {
+            if(!data) return; MASTER = {...MASTER, ...data};
+            document.title = MASTER.companyName;
+            document.getElementById('auth-logo').src = MASTER.logoUrl;
+            document.getElementById('splash-logo').src = MASTER.logoUrl;
+            document.getElementById('auth-company').innerText = MASTER.companyName;
+            document.getElementById('admin-subtitle').innerText = "KONTROL - " + MASTER.companyName;
+            document.getElementById('set-name').value = MASTER.companyName;
+            document.getElementById('set-wa').value = MASTER.adminWA;
+        }
+
+        function refreshMasterUI() {
+            document.getElementById('f-pos').innerHTML = MASTER.vacancies.map(v => `<option value="${v}">${v}</option>`).join('');
+            document.getElementById('list-pos-admin').innerHTML = MASTER.vacancies.map((v, i) => `
+                <div class="flex justify-between items-center p-3 bg-white border rounded-xl shadow-sm">
+                    <span class="text-xs font-bold uppercase">${v}</span>
+                    <button onclick="delPos(${i})" class="text-[8px] font-black text-red-500 bg-red-50 px-2 py-1 rounded-md">HAPUS</button>
+                </div>
+            `).join('');
+        }
+
+        async function addPos() { const v = document.getElementById('new-pos').value; if(v) { MASTER.vacancies.push(v); document.getElementById('new-pos').value = ""; await syncDB(); refreshMasterUI(); } }
+        async function delPos(i) { MASTER.vacancies.splice(i, 1); await syncDB(); refreshMasterUI(); }
+        async function syncDB() { try { await db.collection('artifacts').doc(DB_ID).collection('public').doc('master').set(MASTER); } catch(e) { localStorage.setItem('m_uat_93', JSON.stringify(MASTER)); } }
+
+        // 5. REAL IDENTITY LOGIC (NO MORE USER DEMO)
+        async function handleAuth() {
             const email = document.getElementById('auth-email').value;
             const pass = document.getElementById('auth-pass').value;
-            if(!email || !pass) return showToast("Isi Email & Sandi!");
+            const name = document.getElementById('auth-name').value;
+            if(!email || !pass) return showToast("Lengkapi Data!");
+
             try {
-                await auth.signInWithEmailAndPassword(email, pass);
+                if(isReg) {
+                    const res = await auth.createUserWithEmailAndPassword(email, pass);
+                    // SIMPAN NAMA ASLI KE DATABASE
+                    await db.collection('artifacts').doc(DB_ID).collection('users').doc(res.user.uid).set({ name, email, role: 'user' });
+                } else { await auth.signInWithEmailAndPassword(email, pass); }
                 location.reload();
-            } catch (err) {
-                showToast("Email/Sandi Salah - Mode Demo Aktif");
-                setTimeout(() => showPage('user'), 1000);
-            }
+            } catch (e) { showToast(e.message); }
         }
 
-        function triggerInstall() {
-            showToast("Klik menu browser (titik 3), pilih 'Tambahkan ke Layar Utama'");
+        function startLiveSync(uid) {
+            // MENDENGARKAN STATUS LAMARAN SECARA LIVE
+            db.collection('artifacts').doc(DB_ID).collection('applicants').where('uid', '==', uid).onSnapshot(snap => {
+                if(!snap.empty) {
+                    const d = snap.docs[0].data();
+                    const statusText = d.status === 'MENUNGGU_ADM' ? 'SELEKSI ADMINISTRASI (TAHAP 1)' : d.status.replace('_', ' ');
+                    document.getElementById('current-status').innerText = statusText;
+                    document.getElementById('status-icon').innerText = d.status === 'LOLOS_ADMINISTRASI' ? '✅' : '🔍';
+                    if(d.status === 'LOLOS_ADMINISTRASI') {
+                        document.getElementById('btn-psikotes').classList.remove('hidden');
+                        document.getElementById('btn-isi-form').classList.add('hidden');
+                    }
+                }
+            });
         }
 
-        function showToast(msg) {
-            const t = document.getElementById('toast');
-            t.innerText = msg; t.style.display = 'block';
-            setTimeout(() => t.style.display = 'none', 3000);
+        // 6. APPLICATION FLOW
+        async function submitApplication() {
+            const nik = document.getElementById('f-nik').value;
+            const btn = document.getElementById('btn-submit');
+            if(!nik || nik.length < 16) return showToast("NIK Harus 16 Digit!");
+
+            try {
+                const snap = await db.collection('artifacts').doc(DB_ID).collection('applicants').where('nik', '==', nik).get();
+                if(!snap.empty) return showToast("NIK Ini Sudah Pernah Melamar!");
+
+                await db.collection('artifacts').doc(DB_ID).collection('applicants').add({
+                    uid: auth.currentUser.uid,
+                    nik: nik,
+                    name: document.getElementById('f-name').value,
+                    pos: document.getElementById('f-pos').value,
+                    status: 'MENUNGGU_ADM', 
+                    at: new Date().toISOString()
+                });
+                document.getElementById('modal-notif').style.display = 'flex';
+            } catch(e) { showToast("Gagal menyimpan."); }
         }
 
-        function handleExit() { if(auth.currentUser) auth.signOut(); location.reload(); }
-        function bypassTo(role) { document.getElementById('user-display-name').innerText = "DEMO USER"; showPage(role); }
-        function toggleMode() {
-            let t = document.getElementById('auth-title');
-            t.innerText = t.innerText === 'MASUK SISTEM' ? 'DAFTAR AKUN' : 'MASUK SISTEM';
-            document.getElementById('reg-name-container').classList.toggle('hidden');
+        // 7. ADMIN ACTION
+        function listenAdmin() {
+            db.collection('artifacts').doc(DB_ID).collection('applicants').onSnapshot(snap => {
+                const container = document.getElementById('list-applicants-admin');
+                if(snap.empty) { container.innerHTML = '<p class="text-center py-20 text-slate-300 font-black text-[10px]">Basis data kosong</p>'; return; }
+                container.innerHTML = snap.docs.map(doc => {
+                    const d = doc.data();
+                    const isLolos = d.status === 'LOLOS_ADMINISTRASI';
+                    return `<div class="card flex items-center justify-between border-2 border-slate-50">
+                        <div class="text-left"><h4 class="font-black text-sm uppercase leading-none">${d.name}</h4><p class="text-[9px] font-bold text-orange-500 mt-1 uppercase">${d.pos} - ${d.status.replace('_',' ')}</p></div>
+                        <button onclick="updateStat('${doc.id}', 'LOLOS_ADMINISTRASI')" class="${isLolos?'bg-emerald-100 text-emerald-600':'bg-emerald-600 text-white'} px-4 py-2 rounded-xl text-[8px] font-black uppercase">${isLolos?'LOLOS ADM':'LOLOSKAN'}</button>
+                    </div>`;
+                }).join('');
+            });
         }
+        async function updateStat(id, stat) { await db.collection('artifacts').doc(DB_ID).collection('applicants').doc(id).update({ status: stat }); showToast("Pelamar Diloloskan Tahap 1!"); }
 
-        function switchAdminTab(tab) {
-            document.getElementById('admin-sec-applicants').style.display = (tab === 'applicants') ? 'block' : 'none';
-            document.getElementById('admin-sec-settings').style.display = (tab === 'settings') ? 'block' : 'none';
-        }
-
-        // 4. BOOTLOADER
+        // 8. BOOTLOADER
         window.onload = () => {
-            // Watchdog anti-blank: Paksa pindah halaman setelah 2 detik
-            setTimeout(() => {
-                const splash = document.getElementById('view-splash');
-                if(splash && splash.style.display !== 'none') showPage('auth');
-            }, 2500);
+            setTimeout(() => { if(document.getElementById('view-splash').style.display !== 'none') showPage('auth'); }, 2500);
+            
+            const localM = localStorage.getItem('m_uat_93');
+            if(localM) { MASTER = JSON.parse(localM); refreshMasterUI(); applyIdent(MASTER); }
 
+            db.collection('artifacts').doc(DB_ID).collection('public').doc('master').onSnapshot(s => { if(s.exists) { MASTER = s.data(); refreshMasterUI(); applyIdent(MASTER); } });
+            
+            loadProv();
+            refreshMasterUI();
             const now = new Date();
-            const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-            const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-            document.getElementById('date-now').innerText = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]}`;
+            document.getElementById('date-now').innerText = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 
-            auth.onAuthStateChanged(async (u) => {
+            auth.onAuthStateChanged(u => {
                 if(u) {
-                    db.collection('artifacts').doc('v78_prod').collection('users').doc(u.uid).get().then(snap => {
-                        if(snap.exists && snap.data().role === 'admin') showPage('admin');
-                        else showPage('user');
+                    db.collection('artifacts').doc(DB_ID).collection('users').doc(u.uid).get().then(snap => {
+                        if(snap.exists && snap.data().role === 'admin') { showPage('admin'); listenAdmin(); }
+                        else { 
+                            // AMBIL NAMA ASLI DARI DATABASE USERS
+                            const realName = snap.exists ? snap.data().name : "PELAMAR";
+                            document.getElementById('user-display-name').innerText = realName.toUpperCase();
+                            showPage('user'); startLiveSync(u.uid); 
+                        }
                     }).catch(() => showPage('user'));
-                } else {
-                    showPage('auth');
                 }
             });
         };
+
+        // HELPERS
+        let isReg = false;
+        function toggleAuthMode() { isReg = !isReg; document.getElementById('auth-title').innerText = isReg ? "DAFTAR AKUN" : "MASUK SISTEM"; document.getElementById('reg-container').classList.toggle('hidden'); document.getElementById('btn-auth-main').innerText = isReg ? "DAFTAR SEKARANG" : "MASUK SEKARANG"; }
+        function contactHR() { window.open(`https://wa.me/${MASTER.adminWA}?text=Halo%20HR%20Admin%2C%20saya%20lupa%20password%20akun%20saya.%20Mohon%20bantuannya.`); }
+        function handleExit() { auth.signOut(); location.reload(); }
+        function showToast(m) { const t = document.getElementById('toast'); t.innerText = m; t.style.display = 'block'; setTimeout(() => t.style.display='none', 3000); }
+        function switchTab(t) { ['applicants', 'master', 'settings'].forEach(s => { document.getElementById('sec-' + s).classList.add('hidden'); document.getElementById('tab-' + s.substring(0,3)).classList.remove('bg-orange-500', 'text-white'); }); document.getElementById('sec-' + t).classList.remove('hidden'); document.getElementById('tab-' + t.substring(0,3)).classList.add('bg-orange-500', 'text-white'); }
+        function handleLogoUpload(i) { const r = new FileReader(); r.readAsDataURL(i.files[0]); r.onload = () => { MASTER.logoUrl = r.result; showToast("Logo Terpilih!"); }; }
+        async function saveSet() { MASTER.companyName = document.getElementById('set-name').value; MASTER.adminWA = document.getElementById('set-wa').value; await syncDB(); applyIdent(MASTER); showToast("Setelan Disimpan!"); }
+        function fillAsev() { document.getElementById('f-nik').value = "3210000000123456"; document.getElementById('f-name').value = "ASEV GUMASEV"; document.getElementById('f-wa').value = "08123456789"; document.getElementById('f-alamat').value = "JL. MERDEKA NO. 10, GEDEBAGE, BANDUNG"; showToast("Data Dummy Siap!"); }
+        function bypass(r) { document.getElementById('user-display-name').innerText = r==='admin'?"ADMIN MASTER":"USER UAT"; showPage(r); if(r==='admin') listenAdmin(); }
     </script>
 </body>
 </html>
