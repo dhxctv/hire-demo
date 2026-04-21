@@ -6,9 +6,9 @@
     <meta name="theme-color" content="#f97316">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>HIREPRO - Sistem Manajemen Rekrutmen</title>
+    <title>HIREPRO - Sistem Rekrutmen Industri</title>
     
-    <!-- ::MODUL 1 - LIBRARY UTAMA :: -->
+    <!-- :: LIBRARIES :: -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
@@ -23,8 +23,14 @@
             --success: #1abc9c;
         }
 
-        /* FILOSOFI TEGAK: MENGHAPUS SEMUA GAYA MIRING */
-        * { font-family: 'Plus Jakarta Sans', sans-serif; box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-style: normal !important; }
+        /* FILOSOFI TEGAK: NO ITALIC PERMISSION */
+        * { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            box-sizing: border-box; 
+            -webkit-tap-highlight-color: transparent; 
+            font-style: normal !important; 
+        }
+        
         body { background-color: #f8fafc; margin: 0; padding: 0; color: var(--dark); overflow-x: hidden; }
         
         .app-shell { max-width: 480px; margin: 0 auto; min-height: 100vh; background: white; position: relative; display: flex; flex-direction: column; box-shadow: 0 0 50px rgba(0,0,0,0.05); }
@@ -36,15 +42,14 @@
             color: white; 
             text-align: center; 
             box-shadow: 0 10px 25px rgba(249, 115, 22, 0.2);
-            transition: 0.5s;
         }
         
         .bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 480px; background: white; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #f1f5f9; z-index: 100; padding-bottom: calc(15px + env(safe-area-inset-bottom)); }
         .nav-item { display: flex; flex-direction: column; align-items: center; font-size: 10px; font-weight: 700; color: #94a3b8; cursor: pointer; }
         .nav-item.active { color: var(--primary); }
         
-        .btn-orange { background: var(--primary); color: white; border: none; padding: 18px; border-radius: 20px; font-weight: 800; text-transform: uppercase; width: 100%; box-shadow: 0 10px 20px rgba(249, 115, 22, 0.2); cursor: pointer; transition: 0.3s; }
-        .menu-btn { width: 100%; border: 2px solid var(--success); color: var(--success); background: white; padding: 15px; border-radius: 14px; font-weight: 700; font-size: 14px; margin-bottom: 12px; text-align: center; display: block; transition: 0.2s; }
+        .btn-orange { background: var(--primary); color: white; border: none; padding: 18px; border-radius: 20px; font-weight: 800; text-transform: uppercase; width: 100%; box-shadow: 0 10px 20px rgba(249, 115, 22, 0.2); cursor: pointer; }
+        .menu-btn { width: 100%; border: 2px solid var(--success); color: var(--success); background: white; padding: 15px; border-radius: 14px; font-weight: 700; font-size: 14px; margin-bottom: 12px; text-align: center; display: block; }
         .btn-red { border-color: #ef4444 !important; color: white !important; background: #ef4444 !important; }
 
         .hidden { display: none !important; }
@@ -52,58 +57,63 @@
 
         #toast { position: fixed; top: 30px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 14px 24px; border-radius: 14px; font-size: 11px; font-weight: 700; z-index: 2000; display: none; text-align: center; width: 85%; }
         
-        .fade-in { animation: fadeIn 0.4s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; } }
+        .input-pro { width: 100%; padding: 14px; background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 12px; font-size: 14px; outline: none; margin-bottom: 15px; }
+        .input-pro:focus { border-color: var(--primary); background: white; }
+        .form-label { font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-left: 4px; display: block; margin-bottom: 6px; }
+        .form-label span { color: #ef4444; }
 
-        .splash-logo-img { width: 120px; height: 120px; object-fit: contain; margin: 0 auto; border-radius: 24px; background: white; padding: 10px; }
-        .orange-grad { background: linear-gradient(135deg, var(--primary) 0%, #ea580c 100%); transition: 0.5s; }
-        .input-admin { width: 100%; padding: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; font-size: 13px; outline: none; margin-bottom: 10px; }
+        .upload-card { border: 2px dashed #e2e8f0; border-radius: 16px; padding: 20px; text-align: center; background: #f8fafc; cursor: pointer; margin-bottom: 15px; }
+        .upload-card.ready { border-color: var(--success); background: #f0fdfa; }
+
+        /* Splash Screen Force Visibility */
+        #view-splash { display: flex; position: fixed; inset: 0; z-index: 9999; background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); flex-direction: column; align-items: center; justify-content: center; }
     </style>
 </head>
 <body>
 
     <div id="toast">Notifikasi</div>
 
-    <div class="app-shell" id="app">
+    <div class="app-shell" id="app-main">
         
-        <!-- ::MODUL 2 - SPLASH SCREEN (WATCHDOG PROTECTED) :: -->
-        <div id="view-splash" class="h-screen orange-grad flex flex-col items-center justify-center text-white p-10 text-center">
-            <div class="relative">
-                <img id="splash-logo" src="https://cdn-icons-png.flaticon.com/512/2964/2964563.png" class="splash-logo-img mb-6 animate-bounce shadow-2xl">
-            </div>
+        <!-- :: SPLASH SCREEN (INDEPENDENT) :: -->
+        <div id="view-splash" class="text-white p-10 text-center">
+            <img id="splash-logo" src="https://cdn-icons-png.flaticon.com/512/2964/2964563.png" class="w-28 h-28 rounded-3xl bg-white p-4 mb-6 animate-bounce shadow-2xl">
             <h1 id="splash-name" class="text-4xl font-black tracking-tighter uppercase leading-none">HIREPRO</h1>
-            <p class="text-[10px] font-bold tracking-[0.4em] opacity-40 uppercase mt-4">Sistem Rekrutmen Tegak v72</p>
+            <p class="text-[10px] font-bold tracking-[0.4em] opacity-40 uppercase mt-4">Enterprise Edition v76</p>
+            <!-- Tombol Paksa yang diletakkan di luar skrip utama -->
+            <button onclick="document.getElementById('view-splash').style.display='none'; document.getElementById('view-auth').style.display='flex';" class="mt-12 px-8 py-3 bg-white/10 rounded-full text-[10px] font-bold uppercase border border-white/20 active:bg-white active:text-orange-600 transition-all">Lewati Splash Screen</button>
         </div>
 
-        <!-- ::MODUL 3 - HALAMAN AUTH (LOGIN/DAFTAR) :: -->
-        <div id="view-auth" class="hidden flex flex-col justify-center p-10 min-h-screen fade-in bg-white">
+        <!-- :: HALAMAN AUTH (LOGIN/DAFTAR) :: -->
+        <div id="view-auth" class="hidden flex-col justify-center p-10 min-h-screen bg-white">
             <div class="text-center mb-8">
-                <img id="auth-logo" src="https://cdn-icons-png.flaticon.com/512/2964/2964563.png" class="splash-logo-img mb-4 shadow-xl">
+                <img id="auth-logo" src="https://cdn-icons-png.flaticon.com/512/2964/2964563.png" class="w-20 h-20 mx-auto mb-4 rounded-2xl shadow-lg">
                 <h2 id="auth-title" class="text-3xl font-black text-slate-800 tracking-tighter uppercase leading-none">MASUK SISTEM</h2>
-                <p id="auth-company" class="text-[10px] font-bold text-slate-400 mt-2 uppercase tracking-widest leading-none"></p>
+                <p id="auth-company" class="text-[10px] font-bold text-slate-400 mt-2 uppercase tracking-widest leading-none">PT SEPATU INDONESIA</p>
             </div>
             
             <div class="space-y-4 text-left">
                 <div id="reg-name-container" class="hidden">
-                    <label class="text-[10px] font-black text-slate-400 ml-2 uppercase">Nama Lengkap</label>
-                    <input id="auth-name" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:border-orange-500" placeholder="Sesuai KTP">
+                    <label class="form-label">Nama Lengkap</label>
+                    <input id="auth-name" class="input-pro" placeholder="Sesuai KTP">
                 </div>
                 <div>
-                    <label class="text-[10px] font-black text-slate-400 ml-2 uppercase">Email Perusahaan</label>
-                    <input id="auth-email" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:border-orange-500" placeholder="nama@email.com">
+                    <label class="form-label">Email Perusahaan</label>
+                    <input id="auth-email" class="input-pro" placeholder="nama@email.com">
                 </div>
                 <div>
-                    <label class="text-[10px] font-black text-slate-400 ml-2 uppercase">Kata Sandi</label>
-                    <input id="auth-pass" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:border-orange-500" type="password" placeholder="••••••••">
+                    <label class="form-label">Kata Sandi</label>
+                    <input id="auth-pass" class="input-pro" type="password" placeholder="••••••••">
                 </div>
                 <button onclick="handleAuthSubmit()" id="btn-auth-main" class="btn-orange">Masuk Dashboard</button>
             </div>
 
-            <!-- TOMBOL PASANG APLIKASI (PWA) -->
-            <div id="pwa-install-area" class="hidden mt-8">
-                <button onclick="triggerPWA()" class="w-full py-4 bg-slate-50 border-2 border-orange-500 text-orange-500 rounded-3xl font-black text-[11px] uppercase tracking-widest animate-pulse">
-                    Pasang Aplikasi <span class="short-name-ref">HIREPRO</span>
+            <!-- MENU PASANG APLIKASI (PWA MANUAL) -->
+            <div id="pwa-install-area" class="mt-8">
+                <button onclick="triggerPWAInstallation()" class="w-full py-4 bg-slate-900 text-white rounded-3xl font-black text-[11px] uppercase tracking-widest animate-pulse border-4 border-orange-500/20">
+                    Pasang Aplikasi HIREPRO
                 </button>
+                <p class="text-[8px] text-slate-400 mt-2 text-center uppercase">Agar muncul di menu HP Anda tanpa browser</p>
             </div>
 
             <button onclick="toggleAuthMode()" id="btn-switch" class="mt-8 text-[10px] font-bold text-slate-300 underline uppercase block mx-auto">
@@ -119,8 +129,8 @@
             </div>
         </div>
 
-        <!-- ::MODUL 4 - DASHBOARD PELAMAR :: -->
-        <div id="view-user" class="hidden flex-col min-h-screen pb-20 fade-in bg-slate-50">
+        <!-- :: DASHBOARD PELAMAR :: -->
+        <div id="view-user" class="hidden flex-col min-h-screen pb-20 bg-slate-50">
             <div class="header-curve">
                 <p class="text-sm font-bold opacity-80" id="greet-text">Selamat Siang</p>
                 <h1 class="text-2xl font-black uppercase tracking-tight leading-none" id="user-display-name">PELAMAR</h1>
@@ -152,93 +162,119 @@
             </div>
         </div>
 
-        <!-- ::MODUL 5 - ADMIN PANEL :: -->
-        <div id="view-admin" class="hidden flex-col min-h-screen bg-slate-50 pb-20 fade-in">
-            <div class="header-curve">
-                <h1 class="text-2xl font-black uppercase italic text-orange-100 tracking-tighter">ADMIN MASTER</h1>
-                <p id="admin-subtitle" class="text-[10px] font-bold opacity-60 uppercase mt-2"></p>
-            </div>
-            <div class="p-6">
-                <div class="grid grid-cols-3 gap-2 mb-6">
-                    <button onclick="switchAdminTab('applicants')" class="p-3 bg-white border border-orange-500 text-orange-500 rounded-xl font-black text-[9px] uppercase">Pelamar</button>
-                    <button onclick="switchAdminTab('vacancies')" class="p-3 bg-white border border-orange-500 text-orange-500 rounded-xl font-black text-[9px] uppercase">Lowongan</button>
-                    <button onclick="switchAdminTab('settings')" class="p-3 bg-orange-500 text-white rounded-xl font-black text-[9px] uppercase shadow-md">Pengaturan</button>
-                </div>
-
-                <div id="admin-sec-applicants" class="fade-in"><div id="admin-list-container" class="space-y-3"></div></div>
-                
-                <div id="admin-sec-settings" class="hidden fade-in space-y-4 text-left">
-                    <div class="card border-2 border-orange-200">
-                        <h3 class="font-black text-sm text-slate-800 uppercase mb-4">:: Pengaturan Perusahaan</h3>
-                        
-                        <label class="text-[9px] font-bold text-slate-400 uppercase">Nama Perusahaan</label>
-                        <input id="set-company-name" class="input-admin">
-                        
-                        <label class="text-[9px] font-bold text-slate-400 uppercase">Logo Perusahaan (Upload)</label>
-                        <div class="flex items-center gap-4 mb-4">
-                            <img id="set-logo-preview" src="" class="w-14 h-14 rounded-xl border-2 border-slate-100 object-cover bg-white">
-                            <label class="flex-1 py-3 bg-slate-100 border border-slate-200 text-slate-500 rounded-xl text-center text-[10px] font-black uppercase cursor-pointer">
-                                Ganti Logo
-                                <input type="file" class="hidden" accept="image/*" onchange="handleLogoUpload(this)">
-                            </label>
-                        </div>
-                        
-                        <label class="text-[9px] font-bold text-slate-400 uppercase">Warna Tema Aplikasi</label>
-                        <input id="set-theme-color" type="color" class="w-full h-12 rounded-xl mb-4 cursor-pointer" value="#f97316">
-                        
-                        <button onclick="saveGlobalSettings()" class="w-full py-4 bg-slate-800 text-white rounded-xl font-bold text-xs uppercase shadow-lg">Simpan & Terapkan</button>
-                    </div>
-                </div>
-            </div>
-            <button onclick="handleExit()" class="mx-8 p-4 bg-slate-200 rounded-2xl text-[9px] font-black uppercase mb-10 shadow-sm">Keluar Admin</button>
-        </div>
-
-        <!-- MODUL FORM ::MODUL 5 :: -->
-        <div id="view-form" class="hidden flex-col min-h-screen bg-white pb-20 fade-in text-left">
-            <div class="bg-orange-500 text-white p-6 flex items-center gap-4 sticky top-0 z-50 shadow-md orange-grad">
+        <!-- :: FORMULIR DETAIL (REFERENSI GAMBAR 34258) :: -->
+        <div id="view-form" class="hidden flex-col min-h-screen bg-white pb-20 text-left">
+            <div class="bg-orange-500 text-white p-6 flex items-center gap-4 sticky top-0 z-50 shadow-md" style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);">
                 <button onclick="showPage('user')" class="text-xl font-bold">←</button>
                 <h1 class="font-black uppercase text-sm tracking-widest leading-none">Biodata Rekrutmen</h1>
             </div>
-            <div class="p-8 space-y-6">
-                <div><label class="text-[10px] font-black text-slate-400 uppercase">NIK KTP (16 Digit)</label><input id="f-nik" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-orange-500" placeholder="NIK"></div>
-                <div><label class="text-[10px] font-black text-slate-400 uppercase">WhatsApp</label><input id="f-wa" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-orange-500" placeholder="08xxxx"></div>
-                <div><label class="text-[10px] font-black text-slate-400 uppercase">Posisi Lamaran</label><select id="f-pos" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-orange-500"></select></div>
-                <label class="block w-full p-10 border-2 border-dashed border-slate-200 rounded-2xl text-center bg-slate-50 cursor-pointer" id="photo-box">
-                    <input type="file" class="hidden" accept="image/*" onchange="handlePhoto(this)">
-                    <div id="photo-icon" class="text-4xl mb-2">📷</div>
-                    <span id="photo-text" class="text-[10px] font-black text-slate-400 uppercase">Ambil Foto Selfie</span>
-                </label>
-                <button onclick="submitApplication()" id="btn-submit" class="btn-orange">Kirim Lamaran Sekarang</button>
+            <div class="p-8 space-y-2">
+                <h2 class="font-black text-lg text-slate-800 uppercase">Isi Lamaran Kerja</h2>
+                <p class="text-[10px] text-slate-400 mb-6">Lengkapi data Anda dengan benar.</p>
+                
+                <label class="form-label">NIK (Nomor Induk Kependudukan) <span>*</span></label>
+                <input id="f-nik" class="input-pro" placeholder="16 Digit NIK">
+                
+                <label class="form-label">Nama Lengkap <span>*</span></label>
+                <input id="f-name-form" class="input-pro" placeholder="Sesuai KTP">
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="form-label">Provinsi <span>*</span></label><input id="f-prov" class="input-pro" placeholder="Provinsi"></div>
+                    <div><label class="form-label">Kota <span>*</span></label><input id="f-kota" class="input-pro" placeholder="Kota"></div>
+                </div>
+
+                <label class="form-label">Alamat Lengkap Domisili <span>*</span></label>
+                <textarea id="f-alamat" class="input-pro h-24 p-4" placeholder="Jl. Contoh No..."></textarea>
+
+                <label class="form-label">Departemen <span>*</span></label>
+                <select id="f-dept" class="input-pro" onchange="updateJabatanUI()">
+                    <option value="">Pilih Departemen...</option>
+                    <option>Produksi</option><option>QC</option><option>Sewing</option><option>Cutting</option>
+                </select>
+
+                <label class="form-label">Jabatan <span>*</span></label>
+                <select id="f-pos" class="input-pro"><option>Pilih Departemen</option></select>
+
+                <label class="form-label">Unggah Pas Foto <span>*</span></label>
+                <div class="upload-card" onclick="document.getElementById('up-foto').click()" id="box-foto">
+                    <input type="file" class="hidden" id="up-foto" accept="image/*" onchange="handleFileUI(this, 'foto')">
+                    <div class="text-2xl mb-1">📷</div><p class="text-[9px] font-bold text-slate-400 uppercase" id="txt-foto">Tambah Foto...</p>
+                </div>
+
+                <label class="form-label">Unggah Berkas CV <span>*</span></label>
+                <div class="upload-card" onclick="document.getElementById('up-cv').click()" id="box-cv">
+                    <input type="file" class="hidden" id="up-cv" onchange="handleFileUI(this, 'cv')">
+                    <div class="text-2xl mb-1">📂</div><p class="text-[9px] font-bold text-slate-400 uppercase" id="txt-cv">Tambah CV...</p>
+                </div>
+
+                <button onclick="submitApplicationUI()" id="btn-submit" class="btn-orange mt-6 shadow-xl shadow-orange-100">Kirim Lamaran</button>
             </div>
         </div>
 
-        <!-- MODUL JOBS & PSIKOTES -->
-        <div id="view-jobs" class="hidden bg-slate-50 min-h-screen fade-in pb-20 text-left">
-            <div class="bg-orange-500 text-white p-6 flex items-center gap-4 orange-grad"><button onclick="showPage('user')" class="text-xl font-bold">←</button><h1 class="font-black uppercase text-sm tracking-widest">Loker Aktif</h1></div>
-            <div class="p-6" id="job-info-list"></div>
-        </div>
-
-        <div id="view-psikotes" class="hidden bg-white min-h-screen fade-in flex-col">
-            <div class="bg-orange-500 text-white p-6 flex items-center gap-4 orange-grad"><button onclick="showPage('user')" class="text-xl font-bold">←</button><h1 class="font-black uppercase text-sm tracking-widest">Ujian Online</h1></div>
-            <div class="p-10 flex flex-col items-center justify-center flex-1 text-center">
-                <div class="text-7xl mb-6">🧠</div>
-                <h2 class="text-xl font-black text-slate-800 uppercase">Tes Logika Dasar</h2>
-                <button class="btn-orange mt-10" onclick="showToast('Menunggu Verifikasi HRD')">Mulai Sekarang</button>
+        <!-- :: ADMIN MASTER PANEL :: -->
+        <div id="view-admin" class="hidden flex-col min-h-screen bg-slate-50 pb-20 text-left">
+            <div class="header-curve">
+                <h1 class="text-2xl font-black uppercase text-orange-100 tracking-tighter">ADMIN MASTER</h1>
+                <p id="admin-subtitle" class="text-[10px] font-bold opacity-60 uppercase mt-2">Kontrol Sistem</p>
             </div>
+            <div class="p-6">
+                <div class="grid grid-cols-2 gap-2 mb-6">
+                    <button onclick="switchAdminTab('applicants')" class="p-3 bg-white border border-orange-500 text-orange-500 rounded-xl font-black text-[9px] uppercase">Pelamar</button>
+                    <button onclick="switchAdminTab('settings')" class="p-3 bg-orange-500 text-white rounded-xl font-black text-[9px] uppercase shadow-md">Pengaturan</button>
+                </div>
+                <div id="admin-sec-applicants"><div id="admin-list-container" class="space-y-3"></div></div>
+                <div id="admin-sec-settings" class="hidden space-y-4">
+                    <div class="card border-2 border-orange-200">
+                        <label class="form-label">Nama Perusahaan</label>
+                        <input id="set-company-name" class="input-pro">
+                        <label class="form-label">Ganti Logo (Unggah Galeri)</label>
+                        <div class="flex items-center gap-4 mb-4">
+                            <img id="set-logo-preview" src="" class="w-14 h-14 rounded-xl border-2 border-slate-100 object-cover bg-white">
+                            <label class="flex-1 py-3 bg-slate-100 border border-slate-200 text-slate-500 rounded-xl text-center text-[10px] font-black uppercase cursor-pointer">Pilih File <input type="file" class="hidden" onchange="handleAdminLogoUI(this)"></label>
+                        </div>
+                        <button onclick="saveAdminSettings()" class="w-full py-4 bg-slate-800 text-white rounded-xl font-bold text-xs uppercase shadow-lg">Simpan</button>
+                    </div>
+                </div>
+            </div>
+            <button onclick="handleExit()" class="mx-8 p-4 bg-slate-200 rounded-2xl text-[9px] font-black uppercase mb-10 shadow-sm">Logout Panel</button>
         </div>
 
     </div>
 
-    <!-- ::MODUL 7 - LOGIKA ENGINE :: -->
+    <!-- :: LOGIKA ENGINE :: -->
     <script>
-        // Konfigurasi Standar
-        let APP_STATE = {
-            companyName: "PT SEPATU INDONESIA",
-            shortName: "HIREPRO",
-            logoUrl: "https://cdn-icons-png.flaticon.com/512/2964/2964563.png",
-            themeColor: "#f97316"
-        };
+        // Fungsi Navigasi Teratas (Agar Tombol Paksa Bisa Langsung Jalan)
+        function showPage(id) {
+            document.getElementById('view-splash').style.display = 'none';
+            ['view-auth', 'view-user', 'view-form', 'view-admin'].forEach(v => {
+                document.getElementById(v).style.display = 'none';
+            });
+            const target = document.getElementById('view-' + id);
+            if(target) {
+                target.style.display = (id === 'user' || id === 'admin') ? 'flex' : 'flex';
+                target.classList.add('fade-in');
+            }
+            window.scrollTo(0,0);
+        }
 
+        // PWA Logic (Manual Install)
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+        });
+
+        async function triggerPWAInstallation() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') deferredPrompt = null;
+            } else {
+                showToast("Buka Menu Browser Anda, Pilih 'Tambahkan ke Layar Utama'");
+            }
+        }
+
+        // Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyAg2NSb0rqD6BNtu96_7VJezhGiUlYyIZM",
             authDomain: "hire-1a51d.firebaseapp.com",
@@ -253,123 +289,60 @@
             const app = firebase.initializeApp(firebaseConfig);
             db = firebase.firestore(app);
             auth = firebase.auth(app);
-        } catch (e) { console.warn("Modul Offline"); }
+        } catch (e) { console.error("Database Shielded"); }
 
-        const DB_ID = "v72_professional_final";
-
-        // Terapkan Logo & Identitas (Fix Splash)
-        function applyIdentity(data) {
+        // Identitas & Tampilan
+        function applyIdentityUI(data) {
             if(!data) return;
-            APP_STATE = data;
-            document.title = data.companyName;
             document.getElementById('splash-logo').src = data.logoUrl;
             document.getElementById('auth-logo').src = data.logoUrl;
             document.getElementById('set-logo-preview').src = data.logoUrl;
-            document.getElementById('splash-name').innerText = data.shortName;
             document.getElementById('auth-company').innerText = data.companyName;
-            document.getElementById('admin-subtitle').innerText = "KONTROL SISTEM - " + data.shortName;
-            document.querySelectorAll('.short-name-ref').forEach(el => el.innerText = data.shortName);
-            document.documentElement.style.setProperty('--primary', data.themeColor);
-            document.querySelectorAll('.orange-grad, .bg-orange-500').forEach(el => {
-                el.style.background = `linear-gradient(135deg, ${data.themeColor} 0%, #ea580c 100%)`;
-            });
             document.getElementById('set-company-name').value = data.companyName;
-            document.getElementById('set-theme-color').value = data.themeColor;
+            document.getElementById('splash-name').innerText = data.companyName.split(' ')[0];
         }
 
-        // :: PWA LOGIC (INSTALL BUTTON FIX) ::
-        let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            document.getElementById('pwa-install-area').classList.remove('hidden');
-        });
-
-        async function triggerPWA() {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') document.getElementById('pwa-install-area').classList.add('hidden');
-                deferredPrompt = null;
-            } else {
-                showToast("Klik menu browser Anda, lalu pilih 'Tambahkan ke Layar Utama'");
-            }
-        }
-
-        // :: LOGO UPLOAD LOGIC ::
-        function handleLogoUpload(input) {
-            const file = input.files[0];
-            if(!file) return;
+        function handleFileUI(input, type) {
             const reader = new FileReader();
-            reader.readAsDataURL(file);
+            reader.readAsDataURL(input.files[0]);
             reader.onload = () => {
-                const base64 = reader.result;
-                document.getElementById('set-logo-preview').src = base64;
-                APP_STATE.logoUrl = base64; 
-                showToast("Logo Terunggah! Klik Simpan untuk Terapkan.");
+                document.getElementById('box-' + type).classList.add('ready');
+                document.getElementById('txt-' + type).innerText = "BERKAS SIAP";
             };
         }
 
-        async function saveGlobalSettings() {
-            const newData = {
-                companyName: document.getElementById('set-company-name').value,
-                logoUrl: document.getElementById('set-logo-preview').src,
-                themeColor: document.getElementById('set-theme-color').value,
-                shortName: document.getElementById('set-company-name').value.split(' ')[0]
-            };
-            showToast("Menyimpan...");
-            try {
-                await db.collection('artifacts').doc(DB_ID).collection('public').doc('settings').set(newData);
-                localStorage.setItem('hirepro_v72_local', JSON.stringify(newData));
-                applyIdentity(newData);
-                showToast("Data Berhasil Disimpan!");
-            } catch (e) {
-                localStorage.setItem('hirepro_v72_local', JSON.stringify(newData));
-                applyIdentity(newData);
-                showToast("Tersimpan secara lokal");
-            }
-        }
-
-        // Utils
-        function showPage(id) {
-            const views = ['splash', 'auth', 'user', 'form', 'admin', 'jobs', 'psikotes'];
-            views.forEach(v => {
-                const el = document.getElementById('view-' + v);
-                if(el) el.classList.add('hidden');
-            });
-            const target = document.getElementById('view-' + id);
-            if(target) target.classList.remove('hidden');
-            if(id === 'user' || id === 'admin') target.classList.add('flex');
-            window.scrollTo(0,0);
-        }
-
-        function switchAdminTab(tab) {
-            document.getElementById('admin-sec-applicants').classList.toggle('hidden', tab !== 'applicants');
-            document.getElementById('admin-sec-settings').classList.toggle('hidden', tab !== 'settings');
+        function updateJabatanUI() {
+            const dept = document.getElementById('f-dept').value;
+            const pos = document.getElementById('f-pos');
+            const data = { 'Produksi':['Operator','Foreman'], 'QC':['QC Line','QC Lab'], 'Sewing':['Sample Maker','Operator Sewing'], 'Cutting':['Marker','Cutting Man'] };
+            pos.innerHTML = (data[dept] || ['Pilih Departemen']).map(j => `<option>${j}</option>`).join('');
         }
 
         async function handleAuthSubmit() {
             const email = document.getElementById('auth-email').value;
             const pass = document.getElementById('auth-pass').value;
-            if(!email || !pass) return showToast("Data Belum Lengkap!");
-            showToast("Menghubungkan ke Server...");
+            if(!email || !pass) return showToast("Harap isi data!");
             try {
                 await auth.signInWithEmailAndPassword(email, pass);
                 location.reload();
             } catch (err) {
-                showToast("Mode Demo Aktif: " + err.message);
-                setTimeout(() => bypassTo('user'), 1500);
+                showToast("Menggunakan Mode Demo");
+                setTimeout(() => showPage('user'), 1000);
             }
         }
 
         function showToast(msg) {
             const t = document.getElementById('toast');
             t.innerText = msg; t.style.display = 'block';
-            setTimeout(() => t.style.display = 'none', 4000);
+            setTimeout(() => t.style.display = 'none', 3000);
         }
 
         function handleExit() { if(auth.currentUser) auth.signOut(); location.reload(); }
-        function bypassTo(role) { document.getElementById('user-display-name').innerText = "DEDE HARDIYANTO (UAT)"; showPage(role); }
+        function bypassTo(role) { document.getElementById('user-display-name').innerText = "DEMO USER"; showPage(role); }
+        function switchAdminTab(tab) {
+            document.getElementById('admin-sec-applicants').style.display = (tab === 'applicants') ? 'block' : 'none';
+            document.getElementById('admin-sec-settings').style.display = (tab === 'settings') ? 'block' : 'none';
+        }
 
         function toggleAuthMode() {
             let title = document.getElementById('auth-title');
@@ -377,60 +350,28 @@
             document.getElementById('reg-name-container').classList.toggle('hidden');
         }
 
-        let globalVacancies = ['Operator Sewing', 'Operator Cutting', 'Quality Control'];
-        function refreshVacancies() {
-            document.getElementById('f-pos').innerHTML = globalVacancies.map(v => `<option value="${v}">${v}</option>`).join('');
-            document.getElementById('job-info-list').innerHTML = globalVacancies.map(v => `<div class="card fade-in"><h3 class="font-black text-orange-500 uppercase">${v}</h3><p class="text-[10px] text-slate-400 mt-1">SMA/K Sederajat, Disiplin, Bersedia Lembur.</p><button class="mt-4 text-[10px] font-black text-orange-500 underline uppercase" onclick="showPage('form')">Lamar Sekarang</button></div>`).join('');
-        }
-
-        function handlePhoto(input) {
-            const reader = new FileReader();
-            reader.readAsDataURL(input.files[0]);
-            reader.onload = () => {
-                document.getElementById('photo-icon').innerText = "✅";
-                document.getElementById('photo-text').innerText = "FOTO TERSIMPAN";
-            };
-        }
-
         window.onload = () => {
-            // :: WATCHDOG TIMER :: (MENCEGAH STUCK)
-            const watchdog = setTimeout(() => {
+            // Watchdog anti-stuck
+            setTimeout(() => {
                 const splash = document.getElementById('view-splash');
-                if(!splash.classList.contains('hidden')) {
-                    console.log("Database lambat, memaksa masuk ke halaman Login.");
-                    showPage('auth');
-                }
-            }, 4000);
+                if(splash.style.display !== 'none') showPage('auth');
+            }, 5000);
 
-            // Load Local Identity
-            const localCfg = localStorage.getItem('hirepro_v72_local');
-            if(localCfg) applyIdentity(JSON.parse(localCfg));
-            else applyIdentity(APP_STATE);
+            const saved = localStorage.getItem('hirepro_v76_cfg');
+            if(saved) applyIdentityUI(JSON.parse(saved));
 
-            // Sync DB Config
-            db.collection('artifacts').doc(DB_ID).collection('public').doc('settings').get().then(s => {
-                if(s.exists) {
-                    clearTimeout(watchdog); // Database merespon, hentikan timer darurat
-                    applyIdentity(s.data());
-                }
-            });
-
-            refreshVacancies();
-            
             const now = new Date();
             const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
             const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-            document.getElementById('date-now').innerText = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+            document.getElementById('date-now').innerText = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]}`;
 
             auth.onAuthStateChanged(async (u) => {
-                clearTimeout(watchdog); // Login merespon, hentikan timer darurat
                 if(u) {
-                    const snap = await db.collection('artifacts').doc(DB_ID).collection('users').doc(u.uid).get();
-                    if(snap.exists && snap.data().role === 'admin') showPage('admin');
-                    else showPage('user');
-                } else {
-                    showPage('auth');
-                }
+                    db.collection('artifacts').doc('v76_prod').collection('users').doc(u.uid).get().then(snap => {
+                        if(snap.exists && snap.data().role === 'admin') showPage('admin');
+                        else showPage('user');
+                    }).catch(() => showPage('user'));
+                } else showPage('auth');
             });
         };
     </script>
