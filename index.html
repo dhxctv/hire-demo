@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#f97316">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>HIREPRO - Sistem Manajemen Rekrutmen</title>
     
     <!-- ::MODUL 1 - LIBRARY UTAMA :: -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -21,7 +23,8 @@
             --success: #1abc9c;
         }
 
-        * { font-family: 'Plus Jakarta Sans', sans-serif; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        /* FILOSOFI TEGAK: MENGHAPUS SEMUA GAYA MIRING */
+        * { font-family: 'Plus Jakarta Sans', sans-serif; box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-style: normal !important; }
         body { background-color: #f8fafc; margin: 0; padding: 0; color: var(--dark); overflow-x: hidden; }
         
         .app-shell { max-width: 480px; margin: 0 auto; min-height: 100vh; background: white; position: relative; display: flex; flex-direction: column; box-shadow: 0 0 50px rgba(0,0,0,0.05); }
@@ -40,26 +43,21 @@
         .nav-item { display: flex; flex-direction: column; align-items: center; font-size: 10px; font-weight: 700; color: #94a3b8; cursor: pointer; }
         .nav-item.active { color: var(--primary); }
         
-        .menu-btn { width: 100%; border: 2px solid var(--success); color: var(--success); background: white; padding: 15px; border-radius: 14px; font-weight: 700; font-size: 14px; margin-bottom: 12px; text-align: center; display: block; transition: 0.2s; text-decoration: none; cursor: pointer; }
-        .btn-red { border-color: #ef4444 !important; color: white !important; background: #ef4444 !important; }
         .btn-orange { background: var(--primary); color: white; border: none; padding: 18px; border-radius: 20px; font-weight: 800; text-transform: uppercase; width: 100%; box-shadow: 0 10px 20px rgba(249, 115, 22, 0.2); cursor: pointer; transition: 0.3s; }
+        .menu-btn { width: 100%; border: 2px solid var(--success); color: var(--success); background: white; padding: 15px; border-radius: 14px; font-weight: 700; font-size: 14px; margin-bottom: 12px; text-align: center; display: block; transition: 0.2s; }
+        .btn-red { border-color: #ef4444 !important; color: white !important; background: #ef4444 !important; }
 
         .hidden { display: none !important; }
-        .card { background: white; border-radius: 20px; padding: 20px; border: 1px solid #f1f5f9; margin-bottom: 15px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); }
+        .card { background: white; border-radius: 20px; padding: 20px; border: 1px solid #f1f5f9; margin-bottom: 15px; }
 
         #toast { position: fixed; top: 30px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 14px 24px; border-radius: 14px; font-size: 11px; font-weight: 700; z-index: 2000; display: none; text-align: center; width: 85%; }
         
         .fade-in { animation: fadeIn 0.4s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; } }
 
-        .logo-box { width: 100px; height: 100px; object-fit: contain; margin: 0 auto; border-radius: 20px; }
+        .splash-logo-img { width: 120px; height: 120px; object-fit: contain; margin: 0 auto; border-radius: 24px; background: white; padding: 10px; }
         .orange-grad { background: linear-gradient(135deg, var(--primary) 0%, #ea580c 100%); transition: 0.5s; }
-
         .input-admin { width: 100%; padding: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; font-size: 13px; outline: none; margin-bottom: 10px; }
-        .input-admin:focus { border-color: var(--primary); }
-
-        /* Preview Logo Style */
-        .preview-logo { width: 60px; height: 60px; border-radius: 12px; object-fit: cover; border: 2px solid #e2e8f0; }
     </style>
 </head>
 <body>
@@ -68,46 +66,55 @@
 
     <div class="app-shell" id="app">
         
-        <!-- ::MODUL 2 - SPLASH SCREEN :: -->
+        <!-- ::MODUL 2 - SPLASH SCREEN (WATCHDOG PROTECTED) :: -->
         <div id="view-splash" class="h-screen orange-grad flex flex-col items-center justify-center text-white p-10 text-center">
-            <img id="splash-logo" src="https://cdn-icons-png.flaticon.com/512/2964/2964563.png" class="logo-box mb-6 animate-bounce shadow-2xl">
-            <h1 id="splash-name" class="text-4xl font-black tracking-tighter uppercase italic leading-none"></h1>
-            <p class="text-[10px] font-bold tracking-[0.4em] opacity-40 uppercase mt-4 italic">Enterprise v70 LOCAL</p>
+            <div class="relative">
+                <img id="splash-logo" src="https://cdn-icons-png.flaticon.com/512/2964/2964563.png" class="splash-logo-img mb-6 animate-bounce shadow-2xl">
+            </div>
+            <h1 id="splash-name" class="text-4xl font-black tracking-tighter uppercase leading-none">HIREPRO</h1>
+            <p class="text-[10px] font-bold tracking-[0.4em] opacity-40 uppercase mt-4">Sistem Rekrutmen Tegak v72</p>
         </div>
 
-        <!-- ::MODUL 3 - HALAMAN AUTH :: -->
+        <!-- ::MODUL 3 - HALAMAN AUTH (LOGIN/DAFTAR) :: -->
         <div id="view-auth" class="hidden flex flex-col justify-center p-10 min-h-screen fade-in bg-white">
             <div class="text-center mb-8">
-                <img id="auth-logo" src="https://cdn-icons-png.flaticon.com/512/2964/2964563.png" class="logo-box mb-4 shadow-xl shadow-orange-100/50">
-                <h2 id="auth-title" class="text-3xl font-black text-slate-800 tracking-tighter uppercase italic leading-none">MASUK SISTEM</h2>
-                <p id="auth-company" class="text-[10px] font-bold text-slate-400 mt-2 uppercase tracking-widest italic"></p>
+                <img id="auth-logo" src="https://cdn-icons-png.flaticon.com/512/2964/2964563.png" class="splash-logo-img mb-4 shadow-xl">
+                <h2 id="auth-title" class="text-3xl font-black text-slate-800 tracking-tighter uppercase leading-none">MASUK SISTEM</h2>
+                <p id="auth-company" class="text-[10px] font-bold text-slate-400 mt-2 uppercase tracking-widest leading-none"></p>
             </div>
             
             <div class="space-y-4 text-left">
                 <div id="reg-name-container" class="hidden">
-                    <label class="text-[10px] font-black text-slate-400 ml-2 uppercase italic">Nama Lengkap</label>
+                    <label class="text-[10px] font-black text-slate-400 ml-2 uppercase">Nama Lengkap</label>
                     <input id="auth-name" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:border-orange-500" placeholder="Sesuai KTP">
                 </div>
                 <div>
-                    <label class="text-[10px] font-black text-slate-400 ml-2 uppercase italic">Email Terdaftar</label>
+                    <label class="text-[10px] font-black text-slate-400 ml-2 uppercase">Email Perusahaan</label>
                     <input id="auth-email" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:border-orange-500" placeholder="nama@email.com">
                 </div>
                 <div>
-                    <label class="text-[10px] font-black text-slate-400 ml-2 uppercase italic">Kata Sandi</label>
+                    <label class="text-[10px] font-black text-slate-400 ml-2 uppercase">Kata Sandi</label>
                     <input id="auth-pass" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:border-orange-500" type="password" placeholder="••••••••">
                 </div>
-                <button onclick="handleAuthSubmit()" id="btn-auth-main" class="btn-orange shadow-orange-200">Masuk Dashboard</button>
+                <button onclick="handleAuthSubmit()" id="btn-auth-main" class="btn-orange">Masuk Dashboard</button>
+            </div>
+
+            <!-- TOMBOL PASANG APLIKASI (PWA) -->
+            <div id="pwa-install-area" class="hidden mt-8">
+                <button onclick="triggerPWA()" class="w-full py-4 bg-slate-50 border-2 border-orange-500 text-orange-500 rounded-3xl font-black text-[11px] uppercase tracking-widest animate-pulse">
+                    Pasang Aplikasi <span class="short-name-ref">HIREPRO</span>
+                </button>
             </div>
 
             <button onclick="toggleAuthMode()" id="btn-switch" class="mt-8 text-[10px] font-bold text-slate-300 underline uppercase block mx-auto">
-                Belum punya akun? Daftar
+                Belum punya akun? Daftar Baru
             </button>
 
-            <div class="mt-12 p-6 bg-slate-50 border-2 border-dashed border-slate-200 rounded-[2.5rem] text-center">
-                <p class="text-[9px] text-slate-400 font-black uppercase mb-4 tracking-widest italic">Akses Demo:</p>
+            <div class="mt-8 p-6 bg-slate-50 border-2 border-dashed border-slate-200 rounded-[2.5rem] text-center">
+                <p class="text-[9px] text-slate-400 font-black uppercase mb-4 tracking-widest">Akses Demo Cepat:</p>
                 <div class="flex gap-2">
-                    <button onclick="bypassTo('admin')" class="flex-1 py-3 bg-slate-800 text-white rounded-2xl text-[9px] font-black uppercase italic">Admin</button>
-                    <button onclick="bypassTo('user')" class="flex-1 py-3 border-2 border-orange-200 text-orange-500 rounded-2xl text-[9px] font-black uppercase font-black">Pelamar</button>
+                    <button onclick="bypassTo('admin')" class="flex-1 py-3 bg-slate-800 text-white rounded-2xl text-[9px] font-black uppercase">Admin</button>
+                    <button onclick="bypassTo('user')" class="flex-1 py-3 border-2 border-orange-200 text-orange-500 rounded-2xl text-[9px] font-black uppercase">Pelamar</button>
                 </div>
             </div>
         </div>
@@ -118,9 +125,9 @@
                 <p class="text-sm font-bold opacity-80" id="greet-text">Selamat Siang</p>
                 <h1 class="text-2xl font-black uppercase tracking-tight leading-none" id="user-display-name">PELAMAR</h1>
             </div>
-            <div class="p-6 flex-1">
+            <div class="p-6 flex-1 text-left">
                 <div class="flex justify-between items-center mb-6 px-1">
-                    <h2 class="text-xl font-black text-slate-800 italic">Dashboard</h2>
+                    <h2 class="text-xl font-black text-slate-800">Dashboard</h2>
                     <p class="text-[10px] font-bold text-slate-400" id="date-now"></p>
                 </div>
                 <div class="card bg-orange-50 border-orange-100 flex items-center justify-between mb-6 shadow-md shadow-orange-100/30">
@@ -128,7 +135,7 @@
                         <p class="text-[9px] font-black text-orange-400 uppercase tracking-widest">Status Terakhir</p>
                         <h4 class="font-black text-slate-800 uppercase" id="current-status">Menunggu Lamaran</h4>
                     </div>
-                    <div class="text-3xl" id="status-icon">⏳</div>
+                    <div class="text-3xl">⏳</div>
                 </div>
                 <div class="space-y-3">
                     <button class="menu-btn" onclick="showPage('form')">Formulir Lamaran</button>
@@ -145,32 +152,12 @@
             </div>
         </div>
 
-        <!-- ::MODUL 5 - FORM INPUT :: -->
-        <div id="view-form" class="hidden flex-col min-h-screen bg-white pb-20 fade-in text-left">
-            <div class="bg-orange-500 text-white p-6 flex items-center gap-4 sticky top-0 z-50 shadow-md header-dynamic">
-                <button onclick="showPage('user')" class="text-xl font-bold">←</button>
-                <h1 class="font-black uppercase text-sm tracking-widest italic">Biodata Rekrutmen</h1>
-            </div>
-            <div class="p-8 space-y-6">
-                <div><label class="text-[10px] font-black text-slate-400 uppercase italic">NIK KTP (16 Digit)</label><input id="f-nik" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-orange-500" placeholder="NIK"></div>
-                <div><label class="text-[10px] font-black text-slate-400 uppercase italic">WhatsApp Aktif</label><input id="f-wa" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-orange-500" placeholder="08xxxx"></div>
-                <div><label class="text-[10px] font-black text-slate-400 uppercase italic">Posisi Dilamar</label><select id="f-pos" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-orange-500"></select></div>
-                <label class="block w-full p-10 border-2 border-dashed border-slate-200 rounded-2xl text-center bg-slate-50 cursor-pointer" id="photo-box">
-                    <input type="file" class="hidden" accept="image/*" onchange="handlePhoto(this)">
-                    <div id="photo-icon" class="text-4xl mb-2">📷</div>
-                    <span id="photo-text" class="text-[10px] font-black text-slate-400 uppercase">Upload Pas Foto</span>
-                </label>
-                <button onclick="submitApplication()" id="btn-submit" class="btn-orange">Kirim Sekarang</button>
-            </div>
-        </div>
-
-        <!-- ::MODUL 6 - ADMIN MASTER PANEL :: -->
+        <!-- ::MODUL 5 - ADMIN PANEL :: -->
         <div id="view-admin" class="hidden flex-col min-h-screen bg-slate-50 pb-20 fade-in">
             <div class="header-curve">
                 <h1 class="text-2xl font-black uppercase italic text-orange-100 tracking-tighter">ADMIN MASTER</h1>
-                <p id="admin-subtitle" class="text-[10px] font-bold opacity-60 uppercase mt-2 italic">Control Center</p>
+                <p id="admin-subtitle" class="text-[10px] font-bold opacity-60 uppercase mt-2"></p>
             </div>
-            
             <div class="p-6">
                 <div class="grid grid-cols-3 gap-2 mb-6">
                     <button onclick="switchAdminTab('applicants')" class="p-3 bg-white border border-orange-500 text-orange-500 rounded-xl font-black text-[9px] uppercase">Pelamar</button>
@@ -179,55 +166,64 @@
                 </div>
 
                 <div id="admin-sec-applicants" class="fade-in"><div id="admin-list-container" class="space-y-3"></div></div>
-                <div id="admin-sec-vacancies" class="hidden fade-in space-y-4">
-                    <div class="card border-2 border-orange-200">
-                        <h3 class="font-black text-sm text-slate-800 uppercase mb-4 italic">:: Tambah Lowongan</h3>
-                        <input id="input-new-job" class="input-admin" placeholder="Nama posisi...">
-                        <button onclick="addVacancy()" class="w-full py-3 bg-slate-800 text-white rounded-xl font-bold text-xs uppercase">Aktifkan</button>
-                    </div>
-                    <div id="vacancy-list-admin" class="space-y-2"></div>
-                </div>
-
-                <!-- :: BAGIAN 3: PENGATURAN IDENTITAS (DENGAN UPLOAD LOGO LOKAL) :: -->
+                
                 <div id="admin-sec-settings" class="hidden fade-in space-y-4 text-left">
                     <div class="card border-2 border-orange-200">
-                        <h3 class="font-black text-sm text-slate-800 uppercase mb-4 italic">:: Pengaturan Perusahaan</h3>
+                        <h3 class="font-black text-sm text-slate-800 uppercase mb-4">:: Pengaturan Perusahaan</h3>
                         
-                        <label class="text-[9px] font-bold text-slate-400 uppercase ml-1">Nama Perusahaan</label>
+                        <label class="text-[9px] font-bold text-slate-400 uppercase">Nama Perusahaan</label>
                         <input id="set-company-name" class="input-admin">
                         
-                        <label class="text-[9px] font-bold text-slate-400 uppercase ml-1">Logo Perusahaan (Upload dari HP)</label>
+                        <label class="text-[9px] font-bold text-slate-400 uppercase">Logo Perusahaan (Upload)</label>
                         <div class="flex items-center gap-4 mb-4">
-                            <img id="set-logo-preview" src="" class="preview-logo">
+                            <img id="set-logo-preview" src="" class="w-14 h-14 rounded-xl border-2 border-slate-100 object-cover bg-white">
                             <label class="flex-1 py-3 bg-slate-100 border border-slate-200 text-slate-500 rounded-xl text-center text-[10px] font-black uppercase cursor-pointer">
-                                Pilih Logo dari Galeri
+                                Ganti Logo
                                 <input type="file" class="hidden" accept="image/*" onchange="handleLogoUpload(this)">
                             </label>
                         </div>
                         
-                        <label class="text-[9px] font-bold text-slate-400 uppercase ml-1">Warna Tema Aplikasi</label>
+                        <label class="text-[9px] font-bold text-slate-400 uppercase">Warna Tema Aplikasi</label>
                         <input id="set-theme-color" type="color" class="w-full h-12 rounded-xl mb-4 cursor-pointer" value="#f97316">
                         
                         <button onclick="saveGlobalSettings()" class="w-full py-4 bg-slate-800 text-white rounded-xl font-bold text-xs uppercase shadow-lg">Simpan & Terapkan</button>
                     </div>
-                    <p class="text-[8px] text-slate-400 text-center uppercase italic">*Logo akan disimpan secara permanen di database tanpa perlu domain gambar.</p>
                 </div>
             </div>
-            <button onclick="handleExit()" class="mx-8 p-4 bg-slate-200 rounded-2xl text-[9px] font-black uppercase mb-10 shadow-sm">Keluar Panel</button>
+            <button onclick="handleExit()" class="mx-8 p-4 bg-slate-200 rounded-2xl text-[9px] font-black uppercase mb-10 shadow-sm">Keluar Admin</button>
         </div>
 
-        <!-- Extra Views -->
-        <div id="view-jobs" class="hidden bg-slate-50 min-h-screen fade-in pb-20">
-            <div class="bg-orange-500 text-white p-6 flex items-center gap-4 header-dynamic"><button onclick="showPage('user')" class="text-xl font-bold">←</button><h1 class="font-black uppercase text-sm tracking-widest italic">Loker Tersedia</h1></div>
+        <!-- MODUL FORM ::MODUL 5 :: -->
+        <div id="view-form" class="hidden flex-col min-h-screen bg-white pb-20 fade-in text-left">
+            <div class="bg-orange-500 text-white p-6 flex items-center gap-4 sticky top-0 z-50 shadow-md orange-grad">
+                <button onclick="showPage('user')" class="text-xl font-bold">←</button>
+                <h1 class="font-black uppercase text-sm tracking-widest leading-none">Biodata Rekrutmen</h1>
+            </div>
+            <div class="p-8 space-y-6">
+                <div><label class="text-[10px] font-black text-slate-400 uppercase">NIK KTP (16 Digit)</label><input id="f-nik" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-orange-500" placeholder="NIK"></div>
+                <div><label class="text-[10px] font-black text-slate-400 uppercase">WhatsApp</label><input id="f-wa" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-orange-500" placeholder="08xxxx"></div>
+                <div><label class="text-[10px] font-black text-slate-400 uppercase">Posisi Lamaran</label><select id="f-pos" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-orange-500"></select></div>
+                <label class="block w-full p-10 border-2 border-dashed border-slate-200 rounded-2xl text-center bg-slate-50 cursor-pointer" id="photo-box">
+                    <input type="file" class="hidden" accept="image/*" onchange="handlePhoto(this)">
+                    <div id="photo-icon" class="text-4xl mb-2">📷</div>
+                    <span id="photo-text" class="text-[10px] font-black text-slate-400 uppercase">Ambil Foto Selfie</span>
+                </label>
+                <button onclick="submitApplication()" id="btn-submit" class="btn-orange">Kirim Lamaran Sekarang</button>
+            </div>
+        </div>
+
+        <!-- MODUL JOBS & PSIKOTES -->
+        <div id="view-jobs" class="hidden bg-slate-50 min-h-screen fade-in pb-20 text-left">
+            <div class="bg-orange-500 text-white p-6 flex items-center gap-4 orange-grad"><button onclick="showPage('user')" class="text-xl font-bold">←</button><h1 class="font-black uppercase text-sm tracking-widest">Loker Aktif</h1></div>
             <div class="p-6" id="job-info-list"></div>
         </div>
 
         <div id="view-psikotes" class="hidden bg-white min-h-screen fade-in flex-col">
-            <div class="bg-orange-500 text-white p-6 flex items-center gap-4 header-dynamic"><button onclick="showPage('user')" class="text-xl font-bold">←</button><h1 class="font-black uppercase text-sm tracking-widest italic">Ujian Online</h1></div>
+            <div class="bg-orange-500 text-white p-6 flex items-center gap-4 orange-grad"><button onclick="showPage('user')" class="text-xl font-bold">←</button><h1 class="font-black uppercase text-sm tracking-widest">Ujian Online</h1></div>
             <div class="p-10 flex flex-col items-center justify-center flex-1 text-center">
                 <div class="text-7xl mb-6">🧠</div>
-                <h2 class="text-xl font-black text-slate-800 uppercase italic">Tes Logika</h2>
-                <button class="btn-orange mt-10" onclick="showToast('Sesi Ujian Belum Aktif')">Mulai Sekarang</button>
+                <h2 class="text-xl font-black text-slate-800 uppercase">Tes Logika Dasar</h2>
+                <button class="btn-orange mt-10" onclick="showToast('Menunggu Verifikasi HRD')">Mulai Sekarang</button>
             </div>
         </div>
 
@@ -235,7 +231,7 @@
 
     <!-- ::MODUL 7 - LOGIKA ENGINE :: -->
     <script>
-        // State Global
+        // Konfigurasi Standar
         let APP_STATE = {
             companyName: "PT SEPATU INDONESIA",
             shortName: "HIREPRO",
@@ -259,39 +255,57 @@
             auth = firebase.auth(app);
         } catch (e) { console.warn("Modul Offline"); }
 
-        const DB_ID = "v70_ultimate_local";
+        const DB_ID = "v72_professional_final";
 
-        // Fungsi Terapkan Identitas
+        // Terapkan Logo & Identitas (Fix Splash)
         function applyIdentity(data) {
+            if(!data) return;
             APP_STATE = data;
             document.title = data.companyName;
             document.getElementById('splash-logo').src = data.logoUrl;
             document.getElementById('auth-logo').src = data.logoUrl;
             document.getElementById('set-logo-preview').src = data.logoUrl;
-            document.getElementById('splash-name').innerText = data.companyName;
+            document.getElementById('splash-name').innerText = data.shortName;
             document.getElementById('auth-company').innerText = data.companyName;
-            
+            document.getElementById('admin-subtitle').innerText = "KONTROL SISTEM - " + data.shortName;
+            document.querySelectorAll('.short-name-ref').forEach(el => el.innerText = data.shortName);
             document.documentElement.style.setProperty('--primary', data.themeColor);
-            document.querySelectorAll('.orange-grad, .bg-orange-500, .header-dynamic').forEach(el => {
+            document.querySelectorAll('.orange-grad, .bg-orange-500').forEach(el => {
                 el.style.background = `linear-gradient(135deg, ${data.themeColor} 0%, #ea580c 100%)`;
             });
-
             document.getElementById('set-company-name').value = data.companyName;
             document.getElementById('set-theme-color').value = data.themeColor;
         }
 
-        // :: FUNGSI UPLOAD LOGO LOKAL KE BASE64 ::
+        // :: PWA LOGIC (INSTALL BUTTON FIX) ::
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('pwa-install-area').classList.remove('hidden');
+        });
+
+        async function triggerPWA() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') document.getElementById('pwa-install-area').classList.add('hidden');
+                deferredPrompt = null;
+            } else {
+                showToast("Klik menu browser Anda, lalu pilih 'Tambahkan ke Layar Utama'");
+            }
+        }
+
+        // :: LOGO UPLOAD LOGIC ::
         function handleLogoUpload(input) {
             const file = input.files[0];
             if(!file) return;
-            
             const reader = new FileReader();
             reader.readAsDataURL(file);
             reader.onload = () => {
                 const base64 = reader.result;
                 document.getElementById('set-logo-preview').src = base64;
-                // Simpan sementara ke APP_STATE agar bisa dipratinjau
-                APP_STATE.logoUrl = base64;
+                APP_STATE.logoUrl = base64; 
                 showToast("Logo Terunggah! Klik Simpan untuk Terapkan.");
             };
         }
@@ -303,32 +317,70 @@
                 themeColor: document.getElementById('set-theme-color').value,
                 shortName: document.getElementById('set-company-name').value.split(' ')[0]
             };
-            
-            showToast("Menyimpan Konfigurasi...");
+            showToast("Menyimpan...");
             try {
                 await db.collection('artifacts').doc(DB_ID).collection('public').doc('settings').set(newData);
-                localStorage.setItem('hirepro_local_v70', JSON.stringify(newData));
+                localStorage.setItem('hirepro_v72_local', JSON.stringify(newData));
                 applyIdentity(newData);
-                showToast("Sistem Berhasil Diperbarui!");
+                showToast("Data Berhasil Disimpan!");
             } catch (e) {
-                localStorage.setItem('hirepro_local_v70', JSON.stringify(newData));
+                localStorage.setItem('hirepro_v72_local', JSON.stringify(newData));
                 applyIdentity(newData);
-                showToast("Tersimpan di HP Anda (Offline)");
+                showToast("Tersimpan secara lokal");
             }
         }
 
-        // Page Navigation
+        // Utils
         function showPage(id) {
             const views = ['splash', 'auth', 'user', 'form', 'admin', 'jobs', 'psikotes'];
-            views.forEach(v => document.getElementById('view-' + v).classList.add('hidden'));
-            document.getElementById('view-' + id).classList.remove('hidden');
+            views.forEach(v => {
+                const el = document.getElementById('view-' + v);
+                if(el) el.classList.add('hidden');
+            });
+            const target = document.getElementById('view-' + id);
+            if(target) target.classList.remove('hidden');
+            if(id === 'user' || id === 'admin') target.classList.add('flex');
             window.scrollTo(0,0);
         }
 
         function switchAdminTab(tab) {
             document.getElementById('admin-sec-applicants').classList.toggle('hidden', tab !== 'applicants');
-            document.getElementById('admin-sec-vacancies').classList.toggle('hidden', tab !== 'vacancies');
             document.getElementById('admin-sec-settings').classList.toggle('hidden', tab !== 'settings');
+        }
+
+        async function handleAuthSubmit() {
+            const email = document.getElementById('auth-email').value;
+            const pass = document.getElementById('auth-pass').value;
+            if(!email || !pass) return showToast("Data Belum Lengkap!");
+            showToast("Menghubungkan ke Server...");
+            try {
+                await auth.signInWithEmailAndPassword(email, pass);
+                location.reload();
+            } catch (err) {
+                showToast("Mode Demo Aktif: " + err.message);
+                setTimeout(() => bypassTo('user'), 1500);
+            }
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.innerText = msg; t.style.display = 'block';
+            setTimeout(() => t.style.display = 'none', 4000);
+        }
+
+        function handleExit() { if(auth.currentUser) auth.signOut(); location.reload(); }
+        function bypassTo(role) { document.getElementById('user-display-name').innerText = "DEDE HARDIYANTO (UAT)"; showPage(role); }
+
+        function toggleAuthMode() {
+            let title = document.getElementById('auth-title');
+            title.innerText = title.innerText === 'MASUK SISTEM' ? 'DAFTAR AKUN' : 'MASUK SISTEM';
+            document.getElementById('reg-name-container').classList.toggle('hidden');
+        }
+
+        let globalVacancies = ['Operator Sewing', 'Operator Cutting', 'Quality Control'];
+        function refreshVacancies() {
+            document.getElementById('f-pos').innerHTML = globalVacancies.map(v => `<option value="${v}">${v}</option>`).join('');
+            document.getElementById('job-info-list').innerHTML = globalVacancies.map(v => `<div class="card fade-in"><h3 class="font-black text-orange-500 uppercase">${v}</h3><p class="text-[10px] text-slate-400 mt-1">SMA/K Sederajat, Disiplin, Bersedia Lembur.</p><button class="mt-4 text-[10px] font-black text-orange-500 underline uppercase" onclick="showPage('form')">Lamar Sekarang</button></div>`).join('');
         }
 
         function handlePhoto(input) {
@@ -336,72 +388,50 @@
             reader.readAsDataURL(input.files[0]);
             reader.onload = () => {
                 document.getElementById('photo-icon').innerText = "✅";
-                document.getElementById('photo-text').innerText = "FOTO SIAP";
-                window.currentUserPhoto = reader.result;
+                document.getElementById('photo-text').innerText = "FOTO TERSIMPAN";
             };
         }
 
-        async function handleAuthSubmit() {
-            const email = document.getElementById('auth-email').value;
-            const pass = document.getElementById('auth-pass').value;
-            if(!email || !pass) return showToast("Lengkapi data!");
-            showToast("Menghubungkan...");
-            try {
-                await auth.signInWithEmailAndPassword(email, pass);
-                location.reload();
-            } catch (err) {
-                showToast("Masuk sebagai Demo");
-                setTimeout(() => bypassTo('user'), 1500);
-            }
-        }
-
-        let globalVacancies = ['Operator Sewing', 'Operator Cutting', 'Quality Control'];
-        function refreshVacancies() {
-            document.getElementById('f-pos').innerHTML = globalVacancies.map(v => `<option value="${v}">${v}</option>`).join('');
-            document.getElementById('job-info-list').innerHTML = globalVacancies.map(v => `<div class="card fade-in"><h3 class="font-black text-orange-500 uppercase">${v}</h3><p class="text-[10px] text-slate-400 mt-1">Syarat: Pendidikan SMA/K, Min. 18 thn.</p><button class="mt-4 text-[10px] font-black text-orange-500 underline" onclick="showPage('form')">Lamar</button></div>`).join('');
-            document.getElementById('vacancy-list-admin').innerHTML = globalVacancies.map((v, i) => `<div class="flex justify-between items-center p-3 bg-white rounded-xl border mb-2"><span class="text-xs font-bold text-slate-600">${v}</span><button onclick="globalVacancies.splice(${i},1);refreshVacancies();" class="text-red-500 text-[10px] font-black">Hapus</button></div>`).join('');
-        }
-
-        function addVacancy() {
-            let inp = document.getElementById('input-new-job');
-            if(!inp.value) return;
-            globalVacancies.push(inp.value);
-            inp.value = ""; refreshVacancies(); showToast("Lowongan Diaktifkan!");
-        }
-
-        function showToast(msg) {
-            const t = document.getElementById('toast');
-            t.innerText = msg; t.style.display = 'block';
-            setTimeout(() => t.style.display = 'none', 3500);
-        }
-
-        function handleExit() { if(auth.currentUser) auth.signOut(); location.reload(); }
-        function bypassTo(role) { document.getElementById('user-display-name').innerText = "DEY MAHARDHIKA (UAT)"; showPage(role); }
-
         window.onload = () => {
-            const localCfg = localStorage.getItem('hirepro_local_v70');
+            // :: WATCHDOG TIMER :: (MENCEGAH STUCK)
+            const watchdog = setTimeout(() => {
+                const splash = document.getElementById('view-splash');
+                if(!splash.classList.contains('hidden')) {
+                    console.log("Database lambat, memaksa masuk ke halaman Login.");
+                    showPage('auth');
+                }
+            }, 4000);
+
+            // Load Local Identity
+            const localCfg = localStorage.getItem('hirepro_v72_local');
             if(localCfg) applyIdentity(JSON.parse(localCfg));
             else applyIdentity(APP_STATE);
 
+            // Sync DB Config
             db.collection('artifacts').doc(DB_ID).collection('public').doc('settings').get().then(s => {
-                if(s.exists) applyIdentity(s.data());
+                if(s.exists) {
+                    clearTimeout(watchdog); // Database merespon, hentikan timer darurat
+                    applyIdentity(s.data());
+                }
             });
 
             refreshVacancies();
+            
             const now = new Date();
             const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
             const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
             document.getElementById('date-now').innerText = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
 
-            setTimeout(() => {
-                auth.onAuthStateChanged(async (u) => {
-                    if(u) {
-                        const snap = await db.collection('artifacts').doc(DB_ID).collection('users').doc(u.uid).get();
-                        if(snap.exists && snap.data().role === 'admin') showPage('admin');
-                        else showPage('user');
-                    } else showPage('auth');
-                });
-            }, 2000);
+            auth.onAuthStateChanged(async (u) => {
+                clearTimeout(watchdog); // Login merespon, hentikan timer darurat
+                if(u) {
+                    const snap = await db.collection('artifacts').doc(DB_ID).collection('users').doc(u.uid).get();
+                    if(snap.exists && snap.data().role === 'admin') showPage('admin');
+                    else showPage('user');
+                } else {
+                    showPage('auth');
+                }
+            });
         };
     </script>
 </body>
