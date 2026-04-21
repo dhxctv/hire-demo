@@ -8,10 +8,10 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>HIREPRO - Sistem Rekrutmen Industri</title>
 
-    <!-- ::MODUL PWA MANIFEST (Simulasi) :: -->
-    <link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogIkhJUkVQUk8gUmVjcnVpdG1lbnQiLAogICJzaG9ydF9uYW1lIjogIkhJUkVQUk8iLAogICJzdGFydF91cmwiOiAiLiIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiI2Y5NzMxNiIsCiAgInRoZW1lX2NvbG9yIjogIiNmOTczMTYiLAogICJpY29ucyI6IFsKICAgIHsKICAgICAgInNyYyI6ICJodHRwczovL2Nkbi1pY29ucy1wbmcuZmxhdGljb24uY29tLzUxMi8yOTY0LzI5NjQ1NjMucG5nIiwKICAgICAgInNpemVzIjogIjUxMng1MTIiLAogICAgICAidHlwZSI6ICJpbWFnZS9wbmciCiAgICB9CiAgXQp9">
+    <!-- ::MODUL PWA MANIFEST :: -->
+    <link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogIkhJUkVQUk8gUmVjcnVpdG1lbnQiLAogICJzaG9ydF9uYW1lIjogIkhJUkVQUk8iLAogICJzdGFydF91cmwiOiAiLi8iLAogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiNmOTczMTYiLAogICJ0aGVtZV9jb2xvciI6ICIjZjk3MzE2IiwKICAiaWNvbnMiOiBbCiAgICB7CiAgICAgICJzcmMiOiAiaHR0cHM6Ly9jZG4taWNvbnMtcG5nLmZsYXRpY29uLmNvbS81MTIvMjk2NC8yOTY0NTYzLnBuZyIsCiAgICAgICJzaXplcyI6IjUxMng1MTIiLAogICAgICAidHlwZSI6ICJpbWFnZS9wbmciLAogICAgICAicHVycG9zZSI6ICJhbnkgbWFza2FibGUiCiAgICB9CiAgXQp9">
     
-    <!-- ::MODUL 1 - LIBRARY & SDK :: -->
+    <!-- ::MODUL 1 - LIBRARY UTAMA :: -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
@@ -20,16 +20,14 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
         
-        /* ::MODUL 2 - DESIGN TOKENS (TEMA INDUSTRI ORANGE) :: */
         :root {
             --primary: #f97316; 
             --dark: #0f172a;
             --success: #1abc9c;
-            --bg: #f8fafc;
         }
 
         * { font-family: 'Plus Jakarta Sans', sans-serif; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { background-color: var(--bg); margin: 0; padding: 0; color: var(--dark); overflow-x: hidden; user-select: none; }
+        body { background-color: #f8fafc; margin: 0; padding: 0; color: var(--dark); overflow-x: hidden; }
         
         /* App Shell */
         .app-shell { max-width: 480px; margin: 0 auto; min-height: 100vh; background: white; position: relative; display: flex; flex-direction: column; box-shadow: 0 0 50px rgba(0,0,0,0.05); }
@@ -49,16 +47,15 @@
         .nav-item { display: flex; flex-direction: column; align-items: center; font-size: 10px; font-weight: 700; color: #94a3b8; cursor: pointer; }
         .nav-item.active { color: var(--primary); }
         
-        /* Tombol Menu */
-        .menu-btn { width: 100%; border: 2px solid var(--success); color: var(--success); background: white; padding: 15px; border-radius: 14px; font-weight: 700; font-size: 14px; margin-bottom: 12px; text-align: center; display: block; transition: 0.2s; }
-        .menu-btn:active { background: #f0fdfa; transform: scale(0.97); }
+        /* Buttons */
+        .menu-btn { width: 100%; border: 2px solid var(--success); color: var(--success); background: white; padding: 15px; border-radius: 14px; font-weight: 700; font-size: 14px; margin-bottom: 12px; text-align: center; display: block; transition: 0.2s; text-decoration: none; cursor: pointer; }
         .btn-red { border-color: #ef4444 !important; color: white !important; background: #ef4444 !important; }
         .btn-orange { background: var(--primary); color: white; border: none; padding: 18px; border-radius: 20px; font-weight: 800; text-transform: uppercase; width: 100%; box-shadow: 0 10px 20px rgba(249, 115, 22, 0.2); cursor: pointer; }
 
         .hidden { display: none !important; }
         .card { background: white; border-radius: 20px; padding: 20px; border: 1px solid #f1f5f9; margin-bottom: 15px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); }
 
-        #toast { position: fixed; top: 30px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 14px 24px; border-radius: 14px; font-size: 11px; font-weight: 700; z-index: 2000; display: none; text-align: center; width: 80%; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+        #toast { position: fixed; top: 30px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 14px 24px; border-radius: 14px; font-size: 11px; font-weight: 700; z-index: 2000; display: none; text-align: center; width: 85%; }
         
         .fade-in { animation: fadeIn 0.4s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -70,16 +67,16 @@
 
     <div class="app-shell" id="app">
         
-        <!-- ::MODUL 3 - SPLASH SCREEN PWA :: -->
+        <!-- ::MODUL 3 - SPLASH SCREEN :: -->
         <div id="view-splash" class="h-screen orange-grad flex flex-col items-center justify-center text-white p-10 text-center">
-            <div class="text-8xl mb-4">👟</div>
+            <div class="text-8xl mb-4 animate-pulse">👟</div>
             <h1 class="text-4xl font-black tracking-tighter uppercase italic">HIREPRO</h1>
-            <p class="text-[10px] font-bold tracking-[0.4em] opacity-40 uppercase mt-4">Enterprise PWA v64</p>
+            <p class="text-[10px] font-bold tracking-[0.4em] opacity-40 uppercase mt-4">Enterprise PWA v66</p>
         </div>
 
-        <!-- ::MODUL 4 - HALAMAN AUTH (LOGIN/DAFTAR) :: -->
+        <!-- ::MODUL 4 - HALAMAN LOGIN/DAFTAR :: -->
         <div id="view-auth" class="hidden flex flex-col justify-center p-10 min-h-screen fade-in bg-white">
-            <div class="text-center mb-10">
+            <div class="text-center mb-8">
                 <div class="text-7xl mb-4 flex justify-center w-full">💼</div>
                 <h2 id="auth-title" class="text-3xl font-black text-slate-800 tracking-tighter uppercase italic leading-none">MASUK SISTEM</h2>
                 <p class="text-[10px] font-bold text-slate-400 mt-2 uppercase tracking-widest italic">Portal Rekrutmen Industri</p>
@@ -98,16 +95,21 @@
                     <label class="text-[10px] font-black text-slate-400 ml-2 uppercase italic">Kata Sandi</label>
                     <input id="auth-pass" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:border-orange-500" type="password" placeholder="••••••••">
                 </div>
-                <button onclick="handleAuthSubmit()" id="btn-auth-main" class="btn-orange">Masuk Sekarang</button>
+                <button onclick="handleAuthSubmit()" id="btn-auth-main" class="btn-orange">Masuk Dashboard</button>
             </div>
 
             <button onclick="toggleAuthMode()" id="btn-switch" class="mt-8 text-[10px] font-bold text-slate-300 underline uppercase block mx-auto">
                 Belum punya akun? Daftar
             </button>
 
-            <!-- BYPASS UAT (SANGAT PENTING) -->
+            <!-- TOMBOL INSTAL PWA -->
+            <button id="btn-install" class="hidden mt-10 w-full py-4 bg-slate-50 border-2 border-orange-500 text-orange-500 rounded-3xl font-black text-[11px] uppercase tracking-widest italic">
+                Pasang Aplikasi HIREPRO
+            </button>
+
+            <!-- BYPASS UAT -->
             <div class="mt-12 p-6 bg-slate-50 border-2 border-dashed border-slate-200 rounded-[2.5rem] text-center">
-                <p class="text-[9px] text-slate-400 font-black uppercase mb-4 tracking-widest italic">Demo Presentasi Cepat:</p>
+                <p class="text-[9px] text-slate-400 font-black uppercase mb-4 tracking-widest italic">Akses Demo Cepat:</p>
                 <div class="flex gap-2">
                     <button onclick="bypassTo('admin')" class="flex-1 py-3 bg-slate-800 text-white rounded-2xl text-[9px] font-black uppercase italic">Mode Admin</button>
                     <button onclick="bypassTo('user')" class="flex-1 py-3 border-2 border-orange-200 text-orange-500 rounded-2xl text-[9px] font-black uppercase font-black">Mode Pelamar</button>
@@ -119,37 +121,35 @@
         <div id="view-user" class="hidden flex-col min-h-screen pb-20 fade-in bg-slate-50">
             <div class="header-curve">
                 <p class="text-sm font-bold opacity-80" id="greet-text">Selamat Siang</p>
-                <h1 class="text-2xl font-black uppercase tracking-tight leading-none" id="user-display-name">DEDE HARDIYANTO</h1>
+                <h1 class="text-2xl font-black uppercase tracking-tight leading-none" id="user-display-name">NAMA PELAMAR</h1>
             </div>
 
             <div class="p-6 flex-1">
                 <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-xl font-black text-slate-800">Dashboard</h2>
-                    <p class="text-[10px] font-bold text-slate-400" id="date-now">Memuat Hari...</p>
+                    <h2 class="text-xl font-black text-slate-800 italic">Dashboard</h2>
+                    <p class="text-[10px] font-bold text-slate-400" id="date-now">Hari Ini</p>
                 </div>
 
-                <!-- Tracking Status Card -->
-                <div class="card bg-orange-50 border-orange-100 flex items-center justify-between mb-6">
+                <div class="card bg-orange-50 border-orange-100 flex items-center justify-between mb-6 shadow-md shadow-orange-100">
                     <div>
-                        <p class="text-[9px] font-black text-orange-400 uppercase">Status Terakhir</p>
-                        <h4 class="font-black text-slate-800 uppercase" id="current-status">Belum Ada Lamaran</h4>
+                        <p class="text-[9px] font-black text-orange-400 uppercase tracking-widest">Status Terakhir</p>
+                        <h4 class="font-black text-slate-800 uppercase" id="current-status">Menunggu Lamaran</h4>
                     </div>
                     <div class="text-3xl" id="status-icon">⏳</div>
                 </div>
 
                 <div class="space-y-3">
                     <button class="menu-btn" onclick="showPage('form')">Formulir Lamaran</button>
-                    <button class="menu-btn" onclick="showPage('jobs')">Lowongan Tersedia</button>
+                    <button class="menu-btn" onclick="showPage('jobs')">Lowongan Aktif</button>
                     <button class="menu-btn" onclick="showPage('psikotes')">Ujian Psikotes</button>
                     <button class="menu-btn btn-red" onclick="handleExit()">Keluar</button>
                 </div>
             </div>
 
-            <!-- Navigasi Bawah -->
             <div class="bottom-nav">
                 <div class="nav-item active" onclick="showPage('user')"><span class="text-2xl">🏠</span><span>Beranda</span></div>
                 <div class="nav-item" onclick="showPage('psikotes')"><span class="text-2xl">📋</span><span>Ujian</span></div>
-                <div class="nav-item" onclick="showToast('Pesan: Masih Kosong')"><span class="text-2xl">💬</span><span>Pesan</span></div>
+                <div class="nav-item" onclick="showToast('Fitur Pesan Segera Hadir')"><span class="text-2xl">💬</span><span>Pesan</span></div>
                 <div class="nav-item" onclick="showToast('Hasil Belum Ada')"><span class="text-2xl">📊</span><span>Hasil</span></div>
             </div>
         </div>
@@ -158,14 +158,13 @@
         <div id="view-form" class="hidden flex-col min-h-screen bg-white pb-20 fade-in">
             <div class="bg-orange-500 text-white p-6 flex items-center gap-4 sticky top-0 z-50 shadow-md">
                 <button onclick="showPage('user')" class="text-xl font-bold">←</button>
-                <h1 class="font-black uppercase text-sm tracking-widest leading-none">Isi Data Pelamar</h1>
+                <h1 class="font-black uppercase text-sm tracking-widest italic">Biodata Rekrutmen</h1>
             </div>
             <div class="p-8 space-y-6 text-left">
-                <div><label class="text-[10px] font-black text-slate-400 uppercase italic">NIK KTP (16 Digit)</label><input id="f-nik" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-orange-500" placeholder="3271xxxxxxxxxxxx"></div>
-                <div><label class="text-[10px] font-black text-slate-400 uppercase italic">WhatsApp Aktif</label><input id="f-wa" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-orange-500" placeholder="0812xxxxxxxx"></div>
+                <div><label class="text-[10px] font-black text-slate-400 uppercase italic">NIK KTP (16 Digit)</label><input id="f-nik" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-orange-500" placeholder="16 Digit"></div>
+                <div><label class="text-[10px] font-black text-slate-400 uppercase italic">WhatsApp Aktif</label><input id="f-wa" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-orange-500" placeholder="08xxxx"></div>
                 <div><label class="text-[10px] font-black text-slate-400 uppercase italic">Posisi Dilamar</label>
                     <select id="f-pos" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-orange-500">
-                        <!-- Otomatis diatur Admin -->
                     </select>
                 </div>
                 <label class="block w-full p-10 border-2 border-dashed border-slate-200 rounded-2xl text-center bg-slate-50 cursor-pointer" id="photo-box">
@@ -173,7 +172,7 @@
                     <div id="photo-icon" class="text-4xl mb-2">📷</div>
                     <span id="photo-text" class="text-[10px] font-black text-slate-400 uppercase">Lampirkan Foto Wajah</span>
                 </label>
-                <button onclick="submitApplication()" id="btn-submit" class="btn-orange">Kirim Lamaran</button>
+                <button onclick="submitApplication()" id="btn-submit" class="btn-orange">Kirim Lamaran Sekarang</button>
             </div>
         </div>
 
@@ -181,65 +180,80 @@
         <div id="view-admin" class="hidden flex-col min-h-screen bg-slate-50 pb-20 fade-in">
             <div class="header-curve">
                 <h1 class="text-2xl font-black uppercase italic text-orange-100 tracking-tighter">ADMIN MASTER</h1>
-                <p class="text-[10px] font-bold opacity-60 uppercase mt-2">Pusat Kendali Opsi Pelamar</p>
+                <p class="text-[10px] font-bold opacity-60 uppercase mt-2 italic">Production Recruitment Control</p>
             </div>
             
             <div class="p-6">
-                <!-- Tab Navigasi Admin -->
                 <div class="grid grid-cols-2 gap-3 mb-6">
-                    <button onclick="switchAdminTab('applicants')" class="p-4 bg-white border border-orange-500 text-orange-500 rounded-2xl font-black text-[10px] uppercase shadow-sm">Data Pelamar</button>
-                    <button onclick="switchAdminTab('vacancies')" class="p-4 bg-orange-500 text-white rounded-2xl font-black text-[10px] uppercase shadow-md">Kelola Isian</button>
+                    <button onclick="switchAdminTab('applicants')" class="p-4 bg-white border border-orange-500 text-orange-500 rounded-2xl font-black text-[10px] uppercase shadow-sm">Daftar Pelamar</button>
+                    <button onclick="switchAdminTab('vacancies')" class="p-4 bg-orange-500 text-white rounded-2xl font-black text-[10px] uppercase shadow-md">Kelola Lowongan</button>
                 </div>
 
-                <!-- Bagian 1: Database Pelamar -->
                 <div id="admin-sec-applicants" class="fade-in">
-                    <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 italic">:: Monitoring Masuk</h3>
                     <div id="admin-list-container" class="space-y-3">
-                        <!-- Data tampil di sini -->
                     </div>
                 </div>
 
-                <!-- Bagian 2: Kelola Isian (Admin mengatur apa yang dilihat pelamar) -->
+                <!-- MENU ADMIN MENGATUR ISIAN PELAMAR -->
                 <div id="admin-sec-vacancies" class="hidden fade-in space-y-4">
                     <div class="card border-2 border-orange-200">
-                        <h3 class="font-black text-sm text-slate-800 uppercase mb-4 italic">Edit Pilihan Lowongan</h3>
-                        <p class="text-[9px] text-slate-400 mb-3 uppercase font-bold">Isian ini akan muncul di form pelamar:</p>
-                        <input id="input-new-job" class="w-full p-4 bg-slate-50 border rounded-xl outline-none text-sm mb-3" placeholder="Nama posisi baru...">
-                        <button onclick="addVacancy()" class="w-full py-3 bg-slate-800 text-white rounded-xl font-bold text-xs uppercase shadow-lg">Simpan Isian</button>
+                        <h3 class="font-black text-sm text-slate-800 uppercase mb-4 italic">:: Atur Isian Lowongan</h3>
+                        <p class="text-[9px] text-slate-400 mb-2 font-bold uppercase">Tambah posisi baru untuk dipilih pelamar:</p>
+                        <input id="input-new-job" class="w-full p-4 bg-slate-50 border rounded-xl outline-none text-sm mb-3" placeholder="Contoh: Staff Gudang">
+                        <button onclick="addVacancy()" class="w-full py-3 bg-slate-800 text-white rounded-xl font-bold text-xs uppercase shadow-lg">Aktifkan Pilihan</button>
                     </div>
                     <div id="vacancy-list-admin" class="space-y-2"></div>
                 </div>
             </div>
-            <button onclick="handleExit()" class="mx-8 p-4 bg-slate-200 rounded-2xl text-[9px] font-black uppercase mb-10">Keluar Panel Admin</button>
+            <button onclick="handleExit()" class="mx-8 p-4 bg-slate-200 rounded-2xl text-[9px] font-black uppercase mb-10">Logout Panel Admin</button>
         </div>
 
-        <!-- Modul Lowongan & Psikotes -->
+        <!-- Lowongan & Psikotes Views -->
         <div id="view-jobs" class="hidden bg-slate-50 min-h-screen fade-in pb-20">
-            <div class="bg-orange-500 text-white p-6 flex items-center gap-4"><button onclick="showPage('user')" class="text-xl font-bold">←</button><h1 class="font-black uppercase text-sm tracking-widest">Lowongan Aktif</h1></div>
+            <div class="bg-orange-500 text-white p-6 flex items-center gap-4 sticky top-0 z-50 shadow-md">
+                <button onclick="showPage('user')" class="text-xl font-bold">←</button>
+                <h1 class="font-black uppercase text-sm tracking-widest italic">Loker Tersedia</h1>
+            </div>
             <div class="p-6" id="job-info-list"></div>
         </div>
 
         <div id="view-psikotes" class="hidden bg-white min-h-screen fade-in flex-col">
-            <div class="bg-orange-500 text-white p-6 flex items-center gap-4"><button onclick="showPage('user')" class="text-xl font-bold">←</button><h1 class="font-black uppercase text-sm tracking-widest">Psikotes Online</h1></div>
+            <div class="bg-orange-500 text-white p-6 flex items-center gap-4 sticky top-0 z-50 shadow-md">
+                <button onclick="showPage('user')" class="text-xl font-bold">←</button>
+                <h1 class="font-black uppercase text-sm tracking-widest italic">Ujian Online</h1>
+            </div>
             <div class="p-10 flex flex-col items-center justify-center flex-1 text-center">
                 <div class="text-7xl mb-6">🧠</div>
-                <h2 class="text-xl font-black text-slate-800 uppercase italic">Ujian Tahap 1</h2>
-                <p class="text-xs text-slate-400 mt-4 leading-relaxed italic">Segera hubungi HRD untuk mendapatkan token akses ujian Anda.</p>
-                <button class="btn-orange mt-10" onclick="showToast('Sistem Menunggu Konfirmasi Admin')">Mulai Ujian</button>
+                <h2 class="text-xl font-black text-slate-800 uppercase italic">Tes Logika Dasar</h2>
+                <p class="text-xs text-slate-400 mt-4 leading-relaxed italic">Ujian akan aktif setelah diverifikasi Admin.</p>
+                <button class="btn-orange mt-10" onclick="showToast('Sistem Sedang Menunggu Verifikasi')">Mulai Sekarang</button>
             </div>
         </div>
 
     </div>
 
-    <!-- ::MODUL 8 - LOGIKA ENGINE (PWA + FIREBASE) :: -->
+    <!-- ::MODUL 8 - LOGIKA ENGINE :: -->
     <script>
-        // 8.1 Registrasi Service Worker (Blob untuk Single File)
+        // 8.1 PWA Registration
+        let deferredPrompt;
         if ('serviceWorker' in navigator) {
-            const swCode = "self.addEventListener('fetch', function(e) {});";
-            const blob = new Blob([swCode], {type: 'text/javascript'});
-            const url = URL.createObjectURL(blob);
-            navigator.serviceWorker.register(url).then(() => console.log("PWA Active"));
+            const swBlob = new Blob(["self.addEventListener('fetch', function(e) {});"], {type: 'text/javascript'});
+            navigator.serviceWorker.register(URL.createObjectURL(swBlob));
         }
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault(); deferredPrompt = e;
+            document.getElementById('btn-install').classList.remove('hidden');
+        });
+
+        document.getElementById('btn-install')?.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') document.getElementById('btn-install').classList.add('hidden');
+                deferredPrompt = null;
+            }
+        });
 
         // 8.2 Database Config (Automated)
         const firebaseConfig = {
@@ -256,27 +270,23 @@
             const app = firebase.initializeApp(firebaseConfig);
             db = firebase.firestore(app);
             auth = firebase.auth(app);
-        } catch (e) { console.warn("Database Offline"); }
+        } catch (e) { console.warn("Modul Offline Aktif"); }
 
-        // Global States
+        // Local Data Management
         let isSignupMode = false;
         let base64Photo = "";
-        let globalVacancies = ['Operator Sewing', 'Operator Cutting', 'Quality Control', 'Staff Gudang'];
+        let globalVacancies = ['Operator Sewing', 'Operator Cutting', 'Staff Gudang', 'Security'];
         let applicantsData = [
-            { id: '1', name: 'User Demo 1', pos: 'Operator Sewing', status: 'PROSES' },
-            { id: '2', name: 'User Demo 2', pos: 'Quality Control', status: 'LOLOS' }
+            { id: '1', name: 'Kang Dede', pos: 'Operator Sewing', status: 'PROSES' },
+            { id: '2', name: 'Mbak Rohmah', pos: 'Quality Control', status: 'LOLOS' }
         ];
-        const APP_ID = "v64_pwa_industrial";
+        const APP_ID = "v66_pwa_industrial_final";
 
-        // 8.3 ::MODUL NAVIGASI ::
+        // 8.3 Navigasi ::modul menu ::
         function showPage(id) {
             const views = ['splash', 'auth', 'user', 'form', 'admin', 'jobs', 'psikotes'];
-            views.forEach(v => {
-                const el = document.getElementById('view-' + v);
-                if(el) el.classList.add('hidden');
-            });
-            const target = document.getElementById('view-' + id);
-            if(target) target.classList.remove('hidden');
+            views.forEach(v => document.getElementById('view-' + v).classList.add('hidden'));
+            document.getElementById('view-' + id).classList.remove('hidden');
             window.scrollTo(0,0);
         }
 
@@ -293,7 +303,7 @@
             document.getElementById('btn-switch').innerText = isSignupMode ? 'Sudah punya akun? Login' : 'Belum punya akun? Daftar';
         }
 
-        // 8.4 ::MODUL AUTH LOGIC ::
+        // 8.4 Submit Auth
         async function handleAuthSubmit() {
             const email = document.getElementById('auth-email').value;
             const pass = document.getElementById('auth-pass').value;
@@ -308,23 +318,23 @@
                     const res = await auth.createUserWithEmailAndPassword(email.trim(), pass);
                     const role = email.includes('admin') ? 'admin' : 'user';
                     await db.collection('artifacts').doc(APP_ID).collection('users').doc(res.user.uid).set({
-                        name: name || 'User', email, role, at: new Date().toISOString()
+                        name: name || 'Pelamar', email, role, at: new Date().toISOString()
                     });
                 } else {
                     await auth.signInWithEmailAndPassword(email.trim(), pass);
                 }
                 location.reload();
             } catch (err) {
-                showToast("Sistem: " + err.message);
-                btn.innerText = "MASUK SEKARANG";
                 if(err.code.includes('api-key-not-valid')) {
-                   showToast("API Dibatasi - Menggunakan Mode Demo");
-                   setTimeout(() => bypassTo('user'), 2000);
+                   showToast("Error API: Silakan gunakan 'Mode Bypass' untuk Presentasi.");
+                } else {
+                   showToast("Error: " + err.message);
                 }
+                btn.innerText = "MASUK SEKARANG";
             }
         }
 
-        // 8.5 ::MODUL ADMIN (KONTROL ISIAN) ::
+        // 8.5 Admin Features (Mengatur Isian Pelamar)
         function refreshVacancies() {
             const select = document.getElementById('f-pos');
             if(select) select.innerHTML = globalVacancies.map(v => `<option value="${v}">${v}</option>`).join('');
@@ -332,8 +342,8 @@
             const infoList = document.getElementById('job-info-list');
             if(infoList) infoList.innerHTML = globalVacancies.map(v => `
                 <div class="card fade-in">
-                    <h3 class="font-black text-orange-500 uppercase">${v}</h3>
-                    <p class="text-[10px] text-slate-400 mt-1 italic">Kualifikasi: Pendidikan Min. SMA/K, Sehat Jasmani, Usia Maksimal 30 Tahun.</p>
+                    <h3 class="font-black text-orange-500 uppercase italic">${v}</h3>
+                    <p class="text-[10px] text-slate-400 mt-1 italic leading-none">Syarat: SMA/K, Min. 18 thn, Sehat Jasmani.</p>
                     <button class="mt-4 text-[10px] font-black text-orange-500 underline uppercase" onclick="showPage('form')"> Lamar Sekarang</button>
                 </div>
             `).join('');
@@ -349,11 +359,11 @@
 
         function addVacancy() {
             const input = document.getElementById('input-new-job');
-            if(!input.value) return showToast("Ketik nama posisi!");
+            if(!input.value) return showToast("Tulis nama lowongan!");
             globalVacancies.push(input.value);
             input.value = "";
             refreshVacancies();
-            showToast("Opsi Diperbarui!");
+            showToast("Opsi Lowongan Baru Diaktifkan!");
         }
 
         function removeVacancy(index) {
@@ -366,15 +376,14 @@
             document.getElementById('admin-sec-vacancies').classList.toggle('hidden', tab !== 'vacancies');
         }
 
-        // 8.6 ::MODUL FORM SUBMIT ::
+        // 8.6 Apply Logic
         function handlePhoto(input) {
             const reader = new FileReader();
             reader.readAsDataURL(input.files[0]);
             reader.onload = () => {
                 base64Photo = reader.result;
                 document.getElementById('photo-icon').innerText = "✅";
-                document.getElementById('photo-text').innerText = "UNGGAH BERHASIL";
-                document.getElementById('photo-box').style.borderColor = "#f97316";
+                document.getElementById('photo-text').innerText = "FOTO SIAP";
             };
         }
 
@@ -382,38 +391,38 @@
             const nik = document.getElementById('f-nik').value;
             const wa = document.getElementById('f-wa').value;
             const pos = document.getElementById('f-pos').value;
-            if(!nik || !wa || !base64Photo) return showToast("Data & Foto Wajib Ada!");
+            if(!nik || !wa || !base64Photo) return showToast("Data & Foto Belum Lengkap!");
 
             try {
                 await db.collection('artifacts').doc(APP_ID).collection('applicants').add({
                     name: document.getElementById('user-display-name').innerText,
                     nik, wa, pos, photo: base64Photo, at: new Date().toISOString(), status: 'PROSES'
                 });
-                showToast("Lamaran Berhasil Dikirim!");
+                showToast("Lamaran Terkirim!");
                 document.getElementById('current-status').innerText = "DALAM PROSES";
                 showPage('user');
             } catch (e) { 
-                showToast("Database Offline - Berhasil (Mode Demo)");
-                applicantsData.push({id: Date.now(), name: "User Demo", pos, status: 'PROSES'});
+                showToast("Berhasil (Simulasi UAT)");
+                applicantsData.unshift({id: Date.now(), name: "Dede (Simulasi)", pos, status: 'PROSES'});
                 renderApplicants();
                 showPage('user');
             }
         }
 
-        // 8.7 RENDERING & UTILS
+        // 8.7 Rendering & Utils
         function renderApplicants() {
             const container = document.getElementById('admin-list-container');
             if(!container) return;
             container.innerHTML = applicantsData.map(ap => `
                 <div class="bg-white p-5 rounded-2xl border shadow-sm flex items-center justify-between fade-in">
                     <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center text-xl">👤</div>
-                        <div class="text-left">
-                            <h4 class="font-black text-sm text-slate-800 leading-none">${ap.name}</h4>
+                        <div class="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center text-xl italic font-black">👤</div>
+                        <div class="text-left leading-none">
+                            <h4 class="font-black text-sm text-slate-800 leading-none tracking-tighter">${ap.name}</h4>
                             <p class="text-[9px] font-bold text-blue-600 uppercase mt-1 italic">${ap.pos}</p>
                         </div>
                     </div>
-                    <span class="text-[8px] font-black bg-orange-100 text-orange-600 px-3 py-1 rounded-full">${ap.status}</span>
+                    <span class="text-[8px] font-black bg-orange-100 text-orange-600 px-3 py-1 rounded-full uppercase italic">${ap.status}</span>
                 </div>
             `).join('');
         }
@@ -425,7 +434,7 @@
         }
 
         function bypassTo(role) {
-            if(role === 'user') document.getElementById('user-display-name').innerText = "DEDE HARDIYANTO (UAT)";
+            document.getElementById('user-display-name').innerText = "DEDE HARDIYANTO (UAT)";
             showPage(role);
         }
 
@@ -459,10 +468,8 @@
                         showPage('auth');
                     }
                 });
-            }, 1500);
+            }, 2000);
         };
     </script>
 </body>
 </html>
-
-```
