@@ -6,9 +6,9 @@
     <meta name="theme-color" content="#f97316">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>HIREPRO - Enterprise Recruitment System</title>
+    <title>HIREPRO - Enterprise System</title>
     
-    <!-- :: PWA CONFIG :: -->
+    <!-- :: PWA MANIFEST :: -->
     <script>
         const pwaManifest = {
             "name": "HIREPRO Recruitment",
@@ -45,15 +45,15 @@
         * { font-family: 'Plus Jakarta Sans', sans-serif; box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-style: normal !important; }
         body { background-color: var(--accent); margin: 0; padding: 0; color: var(--dark); overflow-x: hidden; }
         
-        .app-shell { max-width: 480px; margin: 0 auto; min-height: 100vh; background: white; position: relative; display: flex; flex-direction: column; box-shadow: 0 0 60px rgba(0,0,0,0.1); }
+        .app-shell { max-width: 480px; margin: 0 auto; min-height: 100vh; background: white; position: relative; display: flex; flex-direction: column; box-shadow: 0 0 50px rgba(0,0,0,0.1); }
         
-        /* Header Profile (Ref Gambar 34254) */
+        /* Header Profile */
         .header-profile { 
             background: linear-gradient(135deg, var(--primary) 0%, #ea580c 100%); 
             border-radius: 0 0 45px 45px; padding: 60px 20px 45px; color: white; text-align: center; 
             box-shadow: 0 15px 35px rgba(249, 115, 22, 0.2); transition: 0.5s;
         }
-        .avatar-box { width: 90px; height: 90px; border: 4px solid white; border-radius: 50%; margin: 0 auto 15px; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; overflow: hidden; font-size: 40px; }
+        .avatar-box { width: 90px; height: 90px; border: 3px solid white; border-radius: 50%; margin: 0 auto 15px; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; overflow: hidden; font-size: 40px; }
         .avatar-box img { width: 100%; height: 100%; object-fit: cover; }
 
         /* Navigation */
@@ -61,12 +61,12 @@
         .nav-item { display: flex; flex-direction: column; align-items: center; font-size: 10px; font-weight: 800; color: #94a3b8; cursor: pointer; }
         .nav-item.active { color: var(--primary); }
 
-        /* Form Inputs */
+        /* Form Controls */
         .input-pro { width: 100%; padding: 16px; background: #f1f5f9; border: 2px solid transparent; border-radius: 16px; font-size: 14px; outline: none; transition: 0.3s; margin-bottom: 15px; }
-        .input-pro:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.1); }
+        .input-pro:focus { border-color: var(--primary); background: white; }
         .form-label { font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 6px; display: block; margin-left: 4px; }
         
-        .btn-orange { background: var(--primary); color: white; padding: 18px; border-radius: 20px; font-weight: 900; width: 100%; text-transform: uppercase; border: none; box-shadow: 0 12px 24px rgba(249, 115, 22, 0.25); cursor: pointer; }
+        .btn-orange { background: var(--primary); color: white; padding: 18px; border-radius: 18px; font-weight: 900; width: 100%; text-transform: uppercase; border: none; box-shadow: 0 12px 24px rgba(249, 115, 22, 0.2); cursor: pointer; }
         .btn-outline { width: 100%; border: 2.5px solid var(--success); color: var(--success); background: white; padding: 16px; border-radius: 18px; font-weight: 900; font-size: 14px; margin-bottom: 12px; display: block; text-align: center; }
 
         .upload-card { border: 2px dashed #cbd5e1; border-radius: 20px; padding: 25px; text-align: center; background: #f8fafc; cursor: pointer; margin-bottom: 18px; transition: 0.2s; }
@@ -78,27 +78,37 @@
         #view-splash { position: fixed; inset: 0; z-index: 99999; background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; }
         #toast { position: fixed; top: 25px; left: 50%; transform: translateX(-50%); background: var(--dark); color: white; padding: 16px 28px; border-radius: 18px; font-size: 12px; font-weight: 800; z-index: 100001; display: none; text-align: center; width: 85%; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
         
-        /* Modal Engine */
+        /* Modal Backdrop */
         .modal-backdrop { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.9); z-index: 100005; display: none; align-items: center; justify-content: center; padding: 20px; }
-        .modal-box { background: white; border-radius: 35px; padding: 30px; text-align: left; width: 100%; max-width: 450px; animation: popUp 0.3s ease-out; position: relative; max-height: 90vh; overflow-y: auto; }
+        .modal-box { background: white; border-radius: 35px; padding: 35px; text-align: left; width: 100%; max-width: 440px; animation: popUp 0.3s ease-out; max-height: 90vh; overflow-y: auto; }
         @keyframes popUp { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         
-        /* Theme Presets Admin */
+        /* Theme Pills */
         .theme-pill { padding: 12px; border-radius: 15px; cursor: pointer; font-weight: 900; font-size: 10px; text-transform: uppercase; border: 2px solid #f1f5f9; text-align: center; }
-        .theme-pill.active { border-color: var(--primary); background: #fff7ed; color: var(--primary); }
+        .preview-img-box { width: 100%; height: 200px; object-fit: contain; background: #f1f5f9; border-radius: 18px; margin-bottom: 12px; border: 1px solid #e2e8f0; }
     </style>
 </head>
 <body>
 
     <div id="toast">Notifikasi</div>
 
-    <!-- :: MODAL NOTIFIKASI :: -->
+    <!-- :: MODAL REGISTRASI BERHASIL :: -->
+    <div id="modal-reg-success" class="modal-backdrop">
+        <div class="modal-box text-center">
+            <div class="text-6xl mb-6">🎉</div>
+            <h3 class="text-xl font-black text-slate-800 uppercase mb-4 leading-tight">Registrasi Berhasil!</h3>
+            <p class="text-xs text-slate-400 font-bold mb-8 uppercase leading-relaxed">Terima kasih sudah bergabung. Akun Anda telah aktif, silakan lengkapi formulir lamaran di dashboard.</p>
+            <button onclick="closeModal('modal-reg-success'); location.reload();" class="btn-orange">Masuk Dashboard</button>
+        </div>
+    </div>
+
+    <!-- :: MODAL NOTIFIKASI UMUM :: -->
     <div id="modal-notif" class="modal-backdrop">
         <div class="modal-box text-center">
             <div class="text-6xl mb-6">✅</div>
-            <h3 class="text-xl font-black text-slate-800 uppercase mb-4 leading-tight">Data Diterima!</h3>
-            <p class="text-xs text-slate-400 font-bold mb-8 uppercase leading-relaxed">Pendaftaran Anda sedang dalam proses peninjauan administrasi. Mohon tunggu informasi selanjutnya.</p>
-            <button onclick="closeModal('modal-notif'); showPage('user');" class="btn-orange">Pantau Dashboard</button>
+            <h3 class="text-xl font-black text-slate-800 uppercase mb-4">Data Terkirim</h3>
+            <p class="text-xs text-slate-400 font-bold mb-8 uppercase">Berkas Anda telah diterima. Mohon pantau hasil seleksi secara berkala.</p>
+            <button onclick="closeModal('modal-notif'); showPage('user');" class="btn-orange">Lanjutkan</button>
         </div>
     </div>
 
@@ -110,7 +120,7 @@
                 <button onclick="closeModal('modal-detail')" class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center font-bold">✕</button>
             </div>
             <div id="detail-content" class="space-y-4 text-sm font-bold">
-                <!-- Diisi JS -->
+                <!-- Diisi oleh JS -->
             </div>
         </div>
     </div>
@@ -121,10 +131,10 @@
         <div id="view-splash" class="text-white text-center">
             <img id="splash-logo-img" src="https://cdn-icons-png.flaticon.com/512/2964/2964563.png" class="w-28 h-28 rounded-3xl bg-white p-4 mb-6 animate-bounce shadow-2xl">
             <h1 id="splash-app-name" class="text-4xl font-black tracking-tighter uppercase leading-none">HIREPRO</h1>
-            <p class="text-[10px] font-bold tracking-[0.4em] opacity-40 uppercase mt-4">Enterprise Production v99</p>
+            <p class="text-[10px] font-bold tracking-[0.4em] opacity-40 uppercase mt-4">Enterprise Edition v100</p>
         </div>
 
-        <!-- :: 1. AUTH (LOGIN/REGISTER) :: -->
+        <!-- :: 1. AUTH :: -->
         <div id="view-auth" class="hidden flex flex-col justify-center p-10 min-h-screen bg-white text-left">
             <div class="text-center mb-10">
                 <img id="auth-logo-img" src="https://cdn-icons-png.flaticon.com/512/2964/2964563.png" class="w-20 h-20 mx-auto mb-4 rounded-2xl shadow-lg border p-2 bg-white">
@@ -144,11 +154,11 @@
                 <button onclick="handleAuthSubmit()" id="btn-auth-main" class="btn-orange">Masuk Sekarang</button>
             </div>
 
-            <button onclick="showToast('Klik menu browser > Tambahkan ke Layar Utama')" class="w-full py-4 mt-8 bg-slate-900 text-white rounded-3xl font-black text-[11px] uppercase tracking-widest border-4 border-orange-500/20 animate-pulse">PASANG APLIKASI HIREPRO</button>
+            <button onclick="showToast('Buka menu browser > Tambahkan ke Layar Utama')" class="w-full py-4 mt-8 bg-slate-900 text-white rounded-3xl font-black text-[11px] uppercase tracking-widest border-4 border-orange-500/20 animate-pulse">PASANG APLIKASI HIREPRO</button>
             
-            <div class="flex flex-col gap-4 mt-8">
-                <button onclick="contactHR()" class="text-[9px] font-black text-slate-400 uppercase text-center underline">Bantuan / Lupa Password</button>
-                <button onclick="toggleAuthMode()" id="btn-switch" class="text-[10px] font-black text-slate-800 uppercase block text-center bg-slate-50 py-3 rounded-xl border border-dashed">Belum punya akun? Daftar Baru</button>
+            <div class="flex flex-col gap-4 mt-8 text-center">
+                <button onclick="contactHR()" class="text-[9px] font-black text-slate-400 uppercase underline">Bantuan / Lupa Password</button>
+                <button onclick="toggleAuthMode()" id="btn-switch" class="text-[10px] font-black text-slate-800 uppercase block bg-slate-50 py-3 rounded-xl border border-dashed">Belum punya akun? Daftar Baru</button>
             </div>
         </div>
 
@@ -164,7 +174,6 @@
                     <h2 class="text-xl font-black text-slate-800 tracking-tight">Dashboard</h2>
                     <p id="date-now" class="text-[10px] font-bold text-slate-400 uppercase"></p>
                 </div>
-                <!-- Status Card -->
                 <div class="card bg-orange-50 border-orange-100 flex items-center justify-between mb-8 shadow-lg shadow-orange-100/50">
                     <div>
                         <p class="text-[9px] font-black text-orange-400 uppercase tracking-widest mb-1 leading-none">Status Pendaftaran</p>
@@ -174,19 +183,19 @@
                 </div>
                 <div class="space-y-4">
                     <button id="btn-isi-form" class="btn-outline hidden" onclick="showPage('form')">Isi Formulir Lamaran</button>
-                    <button id="btn-psikotes" class="btn-outline hidden !border-orange-500 !text-orange-500 animate-bounce" onclick="showToast('Modul Psikotes Segera Dimulai...')">Mulai Ujian Psikotes</button>
+                    <button id="btn-psikotes" class="btn-outline hidden !border-orange-500 !text-orange-500 animate-bounce" onclick="showToast('Ujian Psikotes Segera Aktif!')">Mulai Ujian Psikotes</button>
                     <button class="btn-outline bg-red-50 !text-red-500 !border-red-100" onclick="handleExit()">Keluar / Logout</button>
                 </div>
             </div>
             <div class="bottom-nav">
                 <div class="nav-item active"><span class="text-2xl">🏠</span><span>Dashboard</span></div>
-                <div class="nav-item" onclick="showToast('Selesaikan Tahap 1 Dahulu')"><span class="text-2xl">📋</span><span>Ujian</span></div>
+                <div class="nav-item" onclick="showToast('Selesaikan Tahap 1')"><span class="text-2xl">📋</span><span>Ujian</span></div>
                 <div class="nav-item" onclick="showToast('Pesan Kosong')"><span class="text-2xl">💬</span><span>Pesan</span></div>
                 <div class="nav-item" onclick="showToast('Hasil Belum Ada')"><span class="text-2xl">📊</span><span>Hasil</span></div>
             </div>
         </div>
 
-        <!-- :: 3. FORM REKRUTMEN (REF GAMBAR 34258) :: -->
+        <!-- :: 3. FORM REKRUTMEN :: -->
         <div id="view-form" class="hidden flex-col min-h-screen bg-white pb-20 fade-in text-left">
             <div class="bg-orange-500 text-white p-6 flex items-center gap-4 sticky top-0 z-50 shadow-md header-dynamic">
                 <button onclick="showPage('user')" class="text-xl font-bold">←</button>
@@ -215,7 +224,7 @@
                 <label class="form-label">Posisi Yang Dilamar <span>*</span></label>
                 <select id="f-pos" class="input-pro"></select>
 
-                <!-- SECTION UNGGAH BERKAS -->
+                <!-- SECTION UNGGAH BERKAS (REF GAMBAR 34258) -->
                 <div class="pt-8 border-t mt-8 space-y-4">
                     <label class="form-label">Unggah Pas Foto 3x4</label>
                     <div class="upload-card" onclick="triggerUp('up-foto')" id="box-up-foto"><input type="file" id="up-foto" class="hidden" accept="image/*" onchange="handleFile(this, 'up-foto')"><div class="text-3xl">📷</div><p id="txt-up-foto" class="text-[9px] font-black uppercase mt-1">Pilih File Foto</p></div>
@@ -227,7 +236,7 @@
                     <div class="upload-card" onclick="triggerUp('up-cv')" id="box-up-cv"><input type="file" id="up-cv" class="hidden" accept="image/*,.pdf" onchange="handleFile(this, 'up-cv')"><div class="text-3xl">📂</div><p id="txt-up-cv" class="text-[9px] font-black uppercase mt-1">Pilih File CV</p></div>
                 </div>
 
-                <button onclick="submitApplication()" id="btn-submit" class="btn-orange mt-12 mb-10">Kirim Lamaran Sekarang</button>
+                <button onclick="submitApplication()" id="btn-submit" class="btn-orange mt-10 mb-12">Kirim Lamaran Sekarang</button>
             </div>
         </div>
 
@@ -247,21 +256,21 @@
                 <div id="sec-applicants" class="hidden space-y-3"><div id="list-applicants-admin"></div></div>
 
                 <div id="sec-master" class="hidden space-y-4">
-                    <div class="card border-2 border-orange-200 text-left">
+                    <div class="card border-2 border-orange-200">
                         <h3 class="font-black text-sm uppercase mb-4 leading-none">:: Kelola Lowongan</h3>
                         <div class="flex gap-2">
                             <input id="new-vacancy" class="flex-1 p-3 bg-slate-100 rounded-xl text-xs outline-none" placeholder="Loker Baru...">
                             <button onclick="addVacancy()" class="px-4 bg-slate-800 text-white rounded-xl font-bold text-[9px]">TAMBAH</button>
                         </div>
-                        <div id="list-vacancies-admin" class="mt-6 space-y-2"></div>
+                        <div id="list-vacancies-admin" class="mt-4 space-y-2"></div>
                     </div>
                 </div>
 
                 <div id="sec-settings" class="space-y-4">
                     <div class="card border-2 border-orange-200">
-                        <label class="form-label text-left">Identitas Sistem</label>
+                        <label class="form-label text-left">Identitas Perusahaan</label>
                         <input id="set-name" class="input-pro" placeholder="Nama Perusahaan">
-                        <input id="set-wa" class="input-pro" placeholder="Nomor WA HR (62...)">
+                        <input id="set-wa" class="input-pro" placeholder="WhatsApp HR (+62...)">
                         
                         <label class="form-label text-left mt-4">Preset Tema Warna</label>
                         <div class="grid grid-cols-3 gap-2 mb-6">
@@ -270,7 +279,7 @@
                             <div class="theme-pill" onclick="applyPreset('#10b981')" style="background: #10b981; color: white;">Green</div>
                         </div>
 
-                        <label class="form-label text-left">Logo Baru (Unggah HP)</label>
+                        <label class="form-label text-left">Ganti Logo (Galeri HP)</label>
                         <div class="flex items-center gap-4 mb-4">
                             <img id="set-logo-preview" src="" class="w-16 h-16 rounded-xl border bg-white object-contain">
                             <label class="flex-1 py-3 bg-slate-100 border text-slate-500 rounded-xl text-center text-[10px] font-black uppercase cursor-pointer">Pilih File<input type="file" class="hidden" onchange="handleLogoUpload(this)"></label>
@@ -280,15 +289,15 @@
                     </div>
                 </div>
             </div>
-            <button onclick="handleExit()" class="mx-12 p-4 bg-slate-200 rounded-2xl text-[9px] font-black uppercase mb-10 shadow-sm">Keluar Panel Admin</button>
+            <button onclick="handleExit()" class="mx-12 p-4 bg-slate-200 rounded-2xl text-[9px] font-black uppercase mb-10 shadow-sm">Logout Panel Admin</button>
         </div>
 
     </div>
 
     <!-- :: SCRIPT ENGINE :: -->
     <script>
-        let MASTER = { companyName: "PT SEPATU INDONESIA", logoUrl: "https://cdn-icons-png.flaticon.com/512/2964/2964563.png", adminWA: "6288902312290", themeColor: "#f97316", vacancies: ["Operator Sewing", "QC Inspector", "Leader Line", "Warehouse", "HR Admin"] };
-        const DB_ID = "v99_industrial_final_stage1"; 
+        let MASTER = { companyName: "PT SEPATU INDONESIA", logoUrl: "https://cdn-icons-png.flaticon.com/512/2964/2964563.png", adminWA: "6288902312290", themeColor: "#f97316", vacancies: ["Operator Sewing", "QC Inspector", "Leader Line", "Logistik"] };
+        const DB_ID = "v100_enterprise_final_master"; 
         const firebaseConfig = { apiKey: "AIzaSyAg2NSb0rqD6BNtu96_7VJezhGiUlYyIZM", authDomain: "hire-1a51d.firebaseapp.com", projectId: "hire-1a51d", storageBucket: "hire-1a51d.firebasestorage.app", messagingSenderId: "370568295", appId: "1:370568295:web:a0d38b16b3bde89cbbf8c2" };
         const app = firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore(app);
@@ -352,15 +361,12 @@
                 if(isReg) {
                     const res = await auth.createUserWithEmailAndPassword(email, pass);
                     await db.collection('artifacts').doc(DB_ID).collection('users').doc(res.user.uid).set({ name, email, pass, role: email.includes('admin')?'admin':'user' });
-                } else { await auth.signInWithEmailAndPassword(email, pass); }
-                location.reload();
-            } catch (e) {
-                if(e.code.includes('api-key-not-valid')) { 
-                    const f = { name: name || "JAJA SUNARJA", email, role: email.includes('admin')?'admin':'user', uid: 'UAT_'+Date.now() };
-                    localStorage.setItem('uat_session', JSON.stringify(f));
+                    document.getElementById('modal-reg-success').style.display = 'flex';
+                } else { 
+                    await auth.signInWithEmailAndPassword(email, pass); 
                     location.reload();
-                } else showToast(e.message);
-            }
+                }
+            } catch (e) { showToast(e.message); }
         }
 
         let currentFiles = {};
@@ -377,7 +383,7 @@
         async function submitApplication() {
             const nik = document.getElementById('f-nik').value;
             if(!nik || nik.length < 16) return showToast("NIK Harus 16 Digit!");
-            const u = auth.currentUser || JSON.parse(localStorage.getItem('uat_session'));
+            const u = auth.currentUser;
             
             document.getElementById('btn-submit').innerText = "MENGIRIM...";
             document.getElementById('btn-submit').disabled = true;
@@ -391,12 +397,10 @@
                     kota: document.getElementById('f-kab').options[document.getElementById('f-kab').selectedIndex]?.text || "",
                     kec: document.getElementById('f-kec').options[document.getElementById('f-kec').selectedIndex]?.text || "",
                     alamat: document.getElementById('f-alamat').value,
-                    files: currentFiles,
-                    status: 'MENUNGGU_ADM', 
-                    at: new Date().toISOString()
+                    files: currentFiles, status: 'MENUNGGU_ADM', at: new Date().toISOString()
                 });
                 document.getElementById('modal-notif').style.display = 'flex';
-            } catch(e) { showToast("Error Database."); document.getElementById('btn-submit').innerText = "Kirim Lagi"; document.getElementById('btn-submit').disabled = false; }
+            } catch(e) { showToast("Error Database."); }
         }
 
         function startLiveSync(uid) {
@@ -425,8 +429,8 @@
                     const d = doc.data();
                     const isLolos = d.status === 'LOLOS_ADMINISTRASI';
                     return `<div class="card border-2 border-slate-50">
-                        <div class="flex justify-between items-center mb-4">
-                            <div class="text-left"><h4 class="font-black text-sm uppercase leading-none">${d.name}</h4><p class="text-[9px] font-bold text-orange-500 mt-1 uppercase">${d.pos}</p></div>
+                        <div class="flex justify-between items-center mb-4 text-left">
+                            <div><h4 class="font-black text-sm uppercase leading-none">${d.name}</h4><p class="text-[9px] font-bold text-orange-500 mt-1 uppercase">${d.pos}</p></div>
                             <button onclick="updateStat('${doc.id}', 'LOLOS_ADMINISTRASI')" class="${isLolos?'bg-emerald-100 text-emerald-600':'bg-emerald-600 text-white'} px-4 py-2 rounded-xl text-[8px] font-black uppercase">${isLolos?'LOLOS ADM':'LOLOSKAN'}</button>
                         </div>
                         <div class="grid grid-cols-2 gap-2">
@@ -449,12 +453,12 @@
                     <p class="text-[9px] text-slate-400 uppercase mt-2">Alamat Lengkap</p>
                     <p>${d.kec}, ${d.kota}, ${d.prov}<br>${d.alamat}</p>
                 </div>
-                <div class="space-y-4 pt-4">
+                <div class="space-y-4 pt-4 text-left">
                     <p class="text-slate-800 uppercase tracking-widest text-[10px]">Arsip Berkas:</p>
-                    ${d.files?.['up-foto'] ? `<div><p class="text-[9px] mb-2 uppercase">Pas Foto:</p><img src="${d.files['up-foto']}" class="w-full h-40 object-contain bg-slate-100 rounded-2xl border"></div>` : ''}
-                    ${d.files?.['up-ktp'] ? `<button onclick="openFile('${d.files['up-ktp']}')" class="w-full p-4 bg-slate-100 rounded-2xl text-[9px] uppercase border">Buka Foto KTP</button>` : ''}
-                    ${d.files?.['up-lamaran'] ? `<button onclick="openFile('${d.files['up-lamaran']}')" class="w-full p-4 bg-slate-100 rounded-2xl text-[9px] uppercase border">Buka Surat Lamaran</button>` : ''}
-                    ${d.files?.['up-cv'] ? `<button onclick="openFile('${d.files['up-cv']}')" class="w-full p-4 bg-slate-100 rounded-2xl text-[9px] uppercase border">Buka File CV</button>` : ''}
+                    ${d.files?.['up-foto'] ? `<div><p class="text-[9px] mb-2 uppercase">Pas Foto:</p><img src="${d.files['up-foto']}" class="preview-img-box"></div>` : ''}
+                    ${d.files?.['up-ktp'] ? `<button onclick="openFile('${d.files['up-ktp']}')" class="w-full p-4 bg-slate-100 rounded-2xl text-[10px] uppercase border">Buka Foto KTP</button>` : ''}
+                    ${d.files?.['up-lamaran'] ? `<button onclick="openFile('${d.files['up-lamaran']}')" class="w-full p-4 bg-slate-100 rounded-2xl text-[10px] uppercase border">Buka Surat Lamaran</button>` : ''}
+                    ${d.files?.['up-cv'] ? `<button onclick="openFile('${d.files['up-cv']}')" class="w-full p-4 bg-slate-100 rounded-2xl text-[10px] uppercase border">Buka File CV</button>` : ''}
                 </div>
             `;
             document.getElementById('detail-content').innerHTML = content;
@@ -463,45 +467,38 @@
 
         function openFile(data) { const w = window.open(); w.document.write(`<img src="${data}" style="max-width:100%">`); }
         async function checkPass(uid) { const s = await db.collection('artifacts').doc(DB_ID).collection('users').doc(uid).get(); if(s.exists) showToast("Password: " + s.data().pass); }
-        async function updateStat(id, stat) { await db.collection('artifacts').doc(DB_ID).collection('applicants').doc(id).update({ status: stat }); showToast("Pelamar Diloloskan!"); }
+        async function updateStat(id, stat) { await db.collection('artifacts').doc(DB_ID).collection('applicants').doc(id).update({ status: stat }); showToast("Status Diperbarui!"); }
 
         window.onload = () => {
             setTimeout(() => { if(document.getElementById('view-splash').style.display !== 'none') showPage('auth'); }, 2500);
-            const saved = localStorage.getItem('uat_99_m');
+            const saved = localStorage.getItem('uat_100_m');
             if(saved) { MASTER = JSON.parse(saved); applyIdent(MASTER); refreshMasterUI(); }
             db.collection('artifacts').doc(DB_ID).collection('public').doc('master').onSnapshot(s => { if(s.exists) { MASTER = s.data(); applyIdent(MASTER); refreshMasterUI(); } });
             loadProv(); refreshMasterUI();
             const now = new Date(); document.getElementById('date-now').innerText = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
             
-            const uatS = localStorage.getItem('uat_session');
-            if(uatS) {
-                const u = JSON.parse(uatS);
-                document.getElementById('user-display-name').innerText = u.name.toUpperCase();
-                if(u.role === 'admin') { showPage('admin'); listenAdmin(); } else { showPage('user'); startLiveSync(u.uid); }
-            } else {
-                auth.onAuthStateChanged(u => {
-                    if(u) {
-                        db.collection('artifacts').doc(DB_ID).collection('users').doc(u.uid).get().then(snap => {
-                            const d = snap.exists ? snap.data() : { name: "USER", role: "user" };
-                            document.getElementById('user-display-name').innerText = d.name.toUpperCase();
-                            if(d.role === 'admin') { showPage('admin'); listenAdmin(); } else { showPage('user'); startLiveSync(u.uid); }
-                        });
-                    } else showPage('auth');
-                });
-            }
+            auth.onAuthStateChanged(u => {
+                if(u) {
+                    db.collection('artifacts').doc(DB_ID).collection('users').doc(u.uid).get().then(snap => {
+                        const d = snap.exists ? snap.data() : { name: "USER", role: "user" };
+                        document.getElementById('user-display-name').innerText = d.name.toUpperCase();
+                        if(d.role === 'admin') { showPage('admin'); listenAdmin(); } else { showPage('user'); startLiveSync(u.uid); }
+                    });
+                } else showPage('auth');
+            });
         };
 
         let isReg = false;
         function toggleAuthMode() { isReg = !isReg; document.getElementById('auth-title').innerText = isReg ? "DAFTAR AKUN" : "MASUK SISTEM"; document.getElementById('reg-container').classList.toggle('hidden'); document.getElementById('btn-auth-main').innerText = isReg ? "DAFTAR AKUN" : "MASUK SEKARANG"; }
-        function handleExit() { auth.signOut(); localStorage.removeItem('uat_session'); location.reload(); }
+        function handleExit() { auth.signOut(); location.reload(); }
         function showToast(m) { const t = document.getElementById('toast'); t.innerText = m; t.style.display = 'block'; setTimeout(() => t.style.display='none', 4000); }
         function contactHR() { window.open(`https://wa.me/${MASTER.adminWA}?text=Halo%20Admin%20HR%20HIREPRO%2C%20saya%20lupa%20password%20akun%20saya.`); }
         function switchTab(t) { ['applicants', 'master', 'settings'].forEach(s => { document.getElementById('sec-' + s).classList.add('hidden'); document.getElementById('tab-' + s.substring(0,3)).classList.remove('bg-orange-500', 'text-white'); }); document.getElementById('sec-' + t).classList.remove('hidden'); document.getElementById('tab-' + t.substring(0,3)).classList.add('bg-orange-500', 'text-white'); if(t==='applicants') listenAdmin(); }
         function triggerUp(id) { document.getElementById(id).click(); }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-        function applyPreset(c) { MASTER.themeColor = c; applyIdent(MASTER); showToast("Preset Tema Terpilih!"); }
+        function applyPreset(c) { MASTER.themeColor = c; applyIdent(MASTER); showToast("Preset Tema Diaktifkan!"); }
         function handleLogoUpload(i) { const r = new FileReader(); r.readAsDataURL(i.files[0]); r.onload = () => { MASTER.logoUrl = r.result; document.getElementById('set-logo-preview').src = r.result; showToast("Logo Terpilih!"); }; }
-        async function saveGlobalSet() { MASTER.companyName = document.getElementById('set-name').value; MASTER.adminWA = document.getElementById('set-wa').value; await syncDB(); applyIdent(MASTER); showToast("Setelan Disimpan!"); }
+        async function saveGlobalSet() { MASTER.companyName = document.getElementById('set-name').value; MASTER.adminWA = document.getElementById('set-wa').value; await syncDB(); applyIdent(MASTER); showToast("Setelan Berhasil Disimpan!"); }
     </script>
 </body>
 </html>
