@@ -6,23 +6,32 @@
     <meta name="theme-color" content="#f97316">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>HIREPRO - Enterprise Recruitment System</title>
+    <title>HIREPRO - Enterprise System</title>
     
-    <!-- :: PWA MANIFEST :: -->
-    <script>
-        const pwaManifest = {
-            "name": "HIREPRO Recruitment",
-            "short_name": "HIREPRO",
-            "start_url": ".",
-            "display": "standalone",
-            "background_color": "#ffffff",
-            "theme_color": "#f97316",
-            "icons": [{ "src": "https://cdn-icons-png.flaticon.com/512/2964/2964563.png", "sizes": "512x512", "type": "image/png" }]
-        };
-        const blob = new Blob([JSON.stringify(pwaManifest)], {type: 'application/json'});
-        const link = document.createElement('link');
-        link.rel = 'manifest'; link.href = URL.createObjectURL(blob);
-        document.head.appendChild(link);
+    <!-- :: PWA MANIFEST ENGINE :: -->
+    <script id="pwa-manifest-script">
+        function updateManifest(logoUrl) {
+            const manifest = {
+                "name": "HIREPRO Recruitment",
+                "short_name": "HIREPRO",
+                "start_url": ".",
+                "display": "standalone",
+                "background_color": "#ffffff",
+                "theme_color": "#f97316",
+                "icons": [{ "src": logoUrl || "https://cdn-icons-png.flaticon.com/512/2964/2964563.png", "sizes": "512x512", "type": "image/png" }]
+            };
+            const stringManifest = JSON.stringify(manifest);
+            const blob = new Blob([stringManifest], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            let link = document.querySelector('link[rel="manifest"]');
+            if (!link) {
+                link = document.createElement('link');
+                link.rel = 'manifest';
+                document.head.appendChild(link);
+            }
+            link.href = url;
+        }
+        updateManifest();
     </script>
 
     <!-- :: LIBRARIES :: -->
@@ -34,102 +43,98 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
         
-        :root { 
-            --primary: #f97316; 
-            --dark: #1e293b;    
-            --success: #10b981; 
-            --accent: #f8fafc;  
-        }
+        :root { --primary: #f97316; --dark: #1e293b; --success: #10b981; --accent: #f8fafc; }
 
-        /* FILOSOFI TEGAK */
+        /* FILOSOFI TEGAK: NO ITALIC */
         * { font-family: 'Plus Jakarta Sans', sans-serif; box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-style: normal !important; }
         body { background-color: var(--accent); margin: 0; padding: 0; color: var(--dark); overflow-x: hidden; }
         
-        .app-shell { max-width: 480px; margin: 0 auto; min-height: 100vh; background: white; position: relative; display: flex; flex-direction: column; box-shadow: 0 0 60px rgba(0,0,0,0.05); }
+        .app-shell { max-width: 480px; margin: 0 auto; min-height: 100vh; background: white; position: relative; display: flex; flex-direction: column; box-shadow: 0 0 60px rgba(0,0,0,0.1); }
         
-        /* Layout Mobile Dashboard (Ref Gambar 34254) */
+        /* Layout Profile (Ref Gambar 34254) */
         .header-profile { 
             background: linear-gradient(135deg, var(--primary) 0%, #ea580c 100%); 
             border-radius: 0 0 45px 45px; padding: 60px 20px 45px; color: white; text-align: center; 
-            box-shadow: 0 15px 30px rgba(249, 115, 22, 0.2); transition: 0.5s;
+            box-shadow: 0 15px 35px rgba(249, 115, 22, 0.2); transition: 0.5s;
         }
-        .avatar-box { width: 85px; height: 85px; border: 3px solid white; border-radius: 50%; margin: 0 auto 15px; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; overflow: hidden; font-size: 35px; }
+        .avatar-box { width: 90px; height: 90px; border: 3px solid white; border-radius: 50%; margin: 0 auto 15px; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; overflow: hidden; }
         .avatar-box img { width: 100%; height: 100%; object-fit: cover; }
 
         .bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 480px; background: white; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #f1f5f9; z-index: 100; padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
         .nav-item { display: flex; flex-direction: column; align-items: center; font-size: 10px; font-weight: 800; color: #94a3b8; cursor: pointer; }
         .nav-item.active { color: var(--primary); }
 
-        /* Form Styling */
+        /* Form Inputs (Ref Gambar 34258) */
         .input-pro { width: 100%; padding: 16px; background: #f1f5f9; border: 2px solid transparent; border-radius: 16px; font-size: 14px; outline: none; transition: 0.3s; margin-bottom: 15px; }
         .input-pro:focus { border-color: var(--primary); background: white; }
         .form-label { font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 6px; display: block; margin-left: 4px; }
         
-        .btn-primary { background: var(--primary); color: white; padding: 18px; border-radius: 18px; font-weight: 900; width: 100%; text-transform: uppercase; border: none; box-shadow: 0 10px 20px rgba(249, 115, 22, 0.2); cursor: pointer; }
+        .btn-primary { background: var(--primary); color: white; padding: 18px; border-radius: 20px; font-weight: 900; width: 100%; text-transform: uppercase; border: none; box-shadow: 0 12px 24px rgba(249, 115, 22, 0.2); cursor: pointer; transition: 0.2s; }
+        .btn-primary:active { transform: scale(0.98); }
         .btn-outline { width: 100%; border: 2.5px solid var(--success); color: var(--success); background: white; padding: 16px; border-radius: 18px; font-weight: 900; font-size: 14px; margin-bottom: 12px; display: block; text-align: center; }
 
-        .upload-box { border: 2px dashed #cbd5e1; border-radius: 20px; padding: 25px; text-align: center; background: #f8fafc; cursor: pointer; margin-bottom: 18px; transition: 0.2s; }
-        .upload-box.done { border-color: var(--success); background: #ecfdf5; color: var(--success); }
+        .upload-card { border: 2px dashed #cbd5e1; border-radius: 20px; padding: 25px; text-align: center; background: #f8fafc; cursor: pointer; margin-bottom: 18px; transition: 0.2s; }
+        .upload-card.done { border-color: var(--success); background: #ecfdf5; color: var(--success); }
 
         .hidden { display: none !important; }
-        .card { background: white; border-radius: 30px; padding: 20px; border: 1px solid #f1f5f9; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
+        .card { background: white; border-radius: 30px; padding: 20px; border: 1px solid #f1f5f9; margin-bottom: 15px; }
         
         #view-splash { position: fixed; inset: 0; z-index: 99999; background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        #toast { position: fixed; top: 25px; left: 50%; transform: translateX(-50%); background: var(--dark); color: white; padding: 16px 28px; border-radius: 18px; font-size: 11px; font-weight: 800; z-index: 100001; display: none; text-align: center; width: 85%; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
+        #toast { position: fixed; top: 30px; left: 50%; transform: translateX(-50%); background: var(--dark); color: white; padding: 16px 28px; border-radius: 18px; font-size: 12px; font-weight: 800; z-index: 100001; display: none; text-align: center; width: 85%; }
         
         /* Modal Backdrop */
-        .modal-backdrop { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.94); z-index: 100005; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .modal-backdrop { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.95); z-index: 100005; display: none; align-items: center; justify-content: center; padding: 20px; }
         .modal-box { background: white; border-radius: 35px; padding: 35px; text-align: left; width: 100%; max-width: 440px; animation: popUp 0.3s ease-out; max-height: 85vh; overflow-y: auto; }
-        @keyframes popUp { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes popUp { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         
-        .theme-item { padding: 12px; border-radius: 14px; cursor: pointer; font-weight: 900; font-size: 10px; text-transform: uppercase; border: 2px solid #f1f5f9; text-align: center; }
+        .theme-pill { padding: 12px; border-radius: 16px; cursor: pointer; font-weight: 900; font-size: 10px; text-transform: uppercase; border: 2px solid #f1f5f9; text-align: center; }
         
-        /* Gambar utuh di Admin (FIXED) */
-        .admin-img-preview { width: 100%; max-height: 250px; object-fit: contain; background: #f1f5f9; border-radius: 16px; margin-bottom: 12px; border: 1px solid #e2e8f0; }
+        /* Preview Document Tanpa Terpotong (Ref Gambar 38002-38004) */
+        .doc-preview-full { width: 100%; max-height: 350px; object-fit: contain; background: #f1f5f9; border-radius: 18px; margin-bottom: 15px; border: 1px solid #e2e8f0; }
     </style>
 </head>
 <body>
 
     <div id="toast">Notifikasi</div>
 
-    <!-- :: MODAL REGISTRASI BERHASIL :: -->
-    <div id="modal-reg-ok" class="modal-backdrop">
+    <!-- :: MODAL REGISTRASI :: -->
+    <div id="modal-reg-success" class="modal-backdrop">
         <div class="modal-box text-center">
             <div class="text-6xl mb-6">🎉</div>
-            <h3 class="text-xl font-black text-slate-800 uppercase mb-4 leading-tight">Terima Kasih!</h3>
-            <p class="text-xs text-slate-400 font-bold mb-8 uppercase leading-relaxed">Akun Anda telah aktif di sistem HIREPRO. Silakan lengkapi formulir lamaran di Dashboard.</p>
-            <button onclick="location.reload();" class="btn-primary">Masuk Sekarang</button>
+            <h3 class="text-xl font-black text-slate-800 uppercase mb-4 leading-tight">Registrasi Berhasil!</h3>
+            <p class="text-xs text-slate-400 font-bold mb-8 uppercase leading-relaxed">Selamat bergabung di HIREPRO. Akun Anda telah siap, silakan lengkapi berkas untuk melamar.</p>
+            <button onclick="location.reload();" class="btn-primary">Lanjutkan Sekarang</button>
         </div>
     </div>
 
-    <!-- :: MODAL KIRIM BERHASIL :: -->
-    <div id="modal-info" class="modal-backdrop">
+    <!-- :: MODAL DATA TERKIRIM :: -->
+    <div id="modal-submit-ok" class="modal-backdrop">
         <div class="modal-box text-center">
             <div class="text-6xl mb-6">✅</div>
-            <h3 class="text-xl font-black text-slate-800 uppercase mb-4">Berkas Terkirim</h3>
-            <p class="text-xs text-slate-400 font-bold mb-8 uppercase">Data lamaran Anda sudah masuk ke database. Tim HRD akan segera meninjau berkas administrasi Anda.</p>
-            <button onclick="closeModal('modal-info'); showPage('user');" class="btn-primary">Lihat Dashboard</button>
+            <h3 class="text-xl font-black text-slate-800 uppercase mb-4 leading-tight">Berkas Dikirim</h3>
+            <p class="text-xs text-slate-400 font-bold mb-8 uppercase">Lamaran Anda sedang kami proses secara administratif. Cek dashboard secara berkala.</p>
+            <button onclick="closeModal('modal-submit-ok'); showPage('user');" class="btn-primary">Selesai</button>
         </div>
     </div>
 
-    <!-- :: MODAL DETAIL (ADMIN) :: -->
-    <div id="modal-detail" class="modal-backdrop" onclick="if(event.target==this) closeModal('modal-detail')">
+    <!-- :: MODAL DETAIL ADMIN :: -->
+    <div id="modal-detail" class="modal-backdrop">
         <div class="modal-box">
             <div class="flex justify-between items-center mb-6">
-                <h3 class="text-lg font-black text-slate-800 uppercase">Berkas Pelamar</h3>
+                <h3 class="text-lg font-black text-slate-800 uppercase">Detail Pelamar</h3>
                 <button onclick="closeModal('modal-detail')" class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center font-bold">✕</button>
             </div>
-            <div id="detail-content" class="space-y-4 text-sm font-bold"></div>
+            <div id="detail-content" class="space-y-4 text-sm font-bold text-slate-700"></div>
         </div>
     </div>
 
     <div class="app-shell">
         
-        <!-- :: 0. SPLASH SCREEN :: -->
-        <div id="view-splash" class="text-white text-center">
+        <!-- :: 0. SPLASH :: -->
+        <div id="view-splash">
             <img id="splash-logo-img" src="https://cdn-icons-png.flaticon.com/512/2964/2964563.png" class="w-28 h-28 rounded-3xl bg-white p-4 mb-6 animate-bounce shadow-2xl">
-            <h1 id="splash-app-name" class="text-4xl font-black tracking-tighter uppercase leading-none">HIREPRO</h1>
-            <p class="text-[10px] font-bold tracking-[0.4em] opacity-40 uppercase mt-4">Enterprise Edition v103</p>
+            <h1 id="splash-app-name" class="text-4xl font-black text-white tracking-tighter uppercase leading-none">HIREPRO</h1>
+            <p class="text-[10px] text-white font-bold tracking-[0.4em] opacity-40 uppercase mt-4">Enterprise v104 Final</p>
         </div>
 
         <!-- :: 1. AUTH :: -->
@@ -143,20 +148,20 @@
             <div class="space-y-4">
                 <div id="reg-container" class="hidden">
                     <label class="form-label">Nama Lengkap Sesuai KTP</label>
-                    <input id="auth-name" class="input-pro" placeholder="Masukkan Nama Lengkap">
+                    <input id="auth-name" class="input-pro" placeholder="Contoh: Dede Hardiyanto">
                 </div>
                 <label class="form-label">Email Terdaftar</label>
-                <input id="auth-email" class="input-pro" placeholder="email@perusahaan.com">
+                <input id="auth-email" class="input-pro" placeholder="nama@email.com">
                 <label class="form-label">Kata Sandi</label>
                 <input id="auth-pass" class="input-pro" type="password" placeholder="••••••••">
                 <button onclick="handleAuthSubmit()" id="btn-auth-main" class="btn-primary">Masuk Sekarang</button>
             </div>
 
-            <button onclick="showToast('Buka menu browser Anda > Pilih Tambahkan ke Layar Utama')" class="w-full py-4 mt-8 bg-slate-900 text-white rounded-3xl font-black text-[11px] uppercase tracking-widest border-4 border-orange-500/20 animate-pulse">PASANG APLIKASI HIREPRO</button>
+            <button onclick="showToast('Buka menu browser > Tambahkan ke Layar Utama')" class="w-full py-4 mt-8 bg-slate-900 text-white rounded-3xl font-black text-[11px] uppercase tracking-widest border-4 border-orange-500/20 animate-pulse">PASANG APLIKASI HIREPRO</button>
             
             <div class="flex flex-col gap-4 mt-8 text-center">
                 <button onclick="contactHR()" class="text-[9px] font-black text-slate-400 uppercase underline">Lupa Password? Hubungi HR</button>
-                <button onclick="toggleAuthMode()" id="btn-switch" class="text-[10px] font-black text-slate-800 uppercase block bg-slate-50 py-4 rounded-xl border border-dashed">Belum punya akun? Daftar Baru</button>
+                <button onclick="toggleAuthMode()" id="btn-switch" class="text-[11px] font-bold text-slate-800 uppercase block py-4 bg-slate-50 rounded-2xl border border-dashed">Belum punya akun? Daftar Baru</button>
             </div>
         </div>
 
@@ -174,22 +179,22 @@
                 </div>
                 <div class="card bg-orange-50 border-orange-100 flex items-center justify-between mb-8 shadow-lg shadow-orange-100/50">
                     <div>
-                        <p class="text-[9px] font-black text-orange-400 uppercase tracking-widest mb-1 leading-none">Status Tahap 1</p>
-                        <h4 id="current-status" class="font-black text-slate-800 uppercase leading-tight">Mengecek...</h4>
+                        <p class="text-[9px] font-black text-orange-400 uppercase tracking-widest mb-1 leading-none">Status</p>
+                        <h4 id="current-status" class="font-black text-slate-800 uppercase leading-tight">Mengecek Data...</h4>
                     </div>
                     <div id="status-icon" class="text-3xl">📋</div>
                 </div>
                 <div class="space-y-4">
                     <button id="btn-isi-form" class="btn-outline hidden" onclick="showPage('form')">Isi Formulir Lamaran</button>
-                    <button id="btn-psikotes" class="btn-outline hidden !border-orange-500 !text-orange-500 animate-bounce" onclick="showToast('Peringatan: Modul Psikotes Segera Dibuka')">Akses Psikotes (Terbuka)</button>
-                    <button class="btn-outline bg-red-50 !text-red-500 !border-red-100" onclick="handleExit()">Keluar / Logout</button>
+                    <button id="btn-psikotes" class="btn-outline hidden !border-orange-500 !text-orange-500 animate-bounce" onclick="showToast('Ujian Tahap Psikotes Dibuka!')">Mulai Ujian Psikotes</button>
+                    <button class="btn-outline bg-red-50 !text-red-500 !border-red-100" onclick="handleExit()">Logout / Keluar</button>
                 </div>
             </div>
             <div class="bottom-nav">
                 <div class="nav-item active"><span class="text-2xl">🏠</span><span>Dashboard</span></div>
-                <div class="nav-item" onclick="showToast('Selesaikan Tahap 1')"><span class="text-2xl">📋</span><span>Ujian</span></div>
+                <div class="nav-item" onclick="showToast('Selesaikan Administrasi')"><span class="text-2xl">📋</span><span>Ujian</span></div>
                 <div class="nav-item" onclick="showToast('Pesan Kosong')"><span class="text-2xl">💬</span><span>Pesan</span></div>
-                <div class="nav-item" onclick="showToast('Hasil Belum Ada')"><span class="text-2xl">📊</span><span>Hasil</span></div>
+                <div class="nav-item" onclick="showToast('Belum Ada Hasil')"><span class="text-2xl">📊</span><span>Hasil</span></div>
             </div>
         </div>
 
@@ -200,42 +205,46 @@
                 <h1 class="font-black uppercase text-sm tracking-widest leading-none">Biodata Rekrutmen</h1>
             </div>
             <div class="p-8 space-y-2">
+                <h2 class="font-black text-lg text-slate-800 uppercase leading-tight mb-6">Form Lamaran Kerja</h2>
+                
                 <label class="form-label">No KTP (NIK) <span>*</span></label>
                 <input id="f-nik" class="input-pro" placeholder="16 Digit NIK">
                 <label class="form-label">Nama Lengkap <span>*</span></label>
                 <input id="f-name" class="input-pro" placeholder="Sesuai KTP">
-                <label class="form-label">Nomor WhatsApp <span>*</span></label>
+                <label class="form-label">Nomor HP/WA <span>*</span></label>
                 <input id="f-wa" class="input-pro" placeholder="08xxxxxxxx">
 
-                <label class="form-label">Provinsi Domisili</label>
-                <select id="f-prov" class="input-pro" onchange="loadCities(this.value)"><option value="">Pilih Provinsi...</option></select>
-                <label class="form-label">Kabupaten / Kota</label>
-                <select id="f-kab" class="input-pro" onchange="loadDistricts(this.value)"><option value="">Pilih Provinsi Dahulu</option></select>
-                <label class="form-label">Kecamatan</label>
-                <select id="f-kec" class="input-pro"><option value="">Pilih Kabupaten Dahulu</option></select>
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="form-label">Provinsi</label><select id="f-prov" class="input-pro" onchange="loadCities(this.value)"><option value="">Pilih...</option></select></div>
+                    <div><label class="form-label">Kabupaten</label><select id="f-kab" class="input-pro" onchange="loadDistricts(this.value)"><option value="">Pilih...</option></select></div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="form-label">Kecamatan</label><select id="f-kec" class="input-pro"><option value="">Pilih...</option></select></div>
+                    <div><label class="form-label">Kode Pos</label><input id="f-kodepos" class="input-pro" placeholder="5 Digit"></div>
+                </div>
 
                 <label class="form-label">Alamat Lengkap</label>
-                <textarea id="f-alamat" class="input-pro h-24 p-4" placeholder="Nama Jalan, Blok, No Rumah..."></textarea>
+                <textarea id="f-alamat" class="input-pro h-24 p-4" placeholder="Jl. Raya No..."></textarea>
 
-                <label class="form-label">Posisi Dilamar <span>*</span></label>
+                <label class="form-label">Posisi Yang Dilamar <span>*</span></label>
                 <select id="f-pos" class="input-pro"></select>
 
                 <!-- SECTION UNGGAH BERKAS (REF GAMBAR 34258) -->
                 <div class="pt-8 border-t mt-8 space-y-4">
                     <label class="form-label">Pas Foto 3x4 <span>*</span></label>
-                    <div class="upload-box" onclick="triggerUp('up-foto')" id="box-up-foto"><input type="file" id="up-foto" class="hidden" accept="image/*" onchange="handleFile(this, 'up-foto')"><div class="text-3xl">📷</div><p id="txt-up-foto" class="text-[9px] font-black uppercase mt-1">Upload Foto</p></div>
+                    <div class="upload-box" onclick="triggerUp('up-foto')" id="box-up-foto"><input type="file" id="up-foto" class="hidden" accept="image/*" onchange="handleFile(this, 'up-foto')"><div class="text-3xl">📷</div><p id="txt-up-foto" class="text-[9px] font-black uppercase mt-1">Upload Pas Foto</p></div>
                     
                     <label class="form-label">Foto KTP <span>*</span></label>
-                    <div class="upload-box" onclick="triggerUp('up-ktp')" id="box-up-ktp"><input type="file" id="up-ktp" class="hidden" accept="image/*" onchange="handleFile(this, 'up-ktp')"><div class="text-3xl">💳</div><p id="txt-up-ktp" class="text-[9px] font-black uppercase mt-1">Upload KTP</p></div>
+                    <div class="upload-box" onclick="triggerUp('up-ktp')" id="box-up-ktp"><input type="file" id="up-ktp" class="hidden" accept="image/*" onchange="handleFile(this, 'up-ktp')"><div class="text-3xl">💳</div><p id="txt-up-ktp" class="text-[9px] font-black uppercase mt-1">Upload Foto KTP</p></div>
                     
                     <label class="form-label">Surat Lamaran Kerja <span>*</span></label>
-                    <div class="upload-box" onclick="triggerUp('up-lamaran')" id="box-up-lamaran"><input type="file" id="up-lamaran" class="hidden" accept="image/*,.pdf" onchange="handleFile(this, 'up-lamaran')"><div class="text-3xl">📄</div><p id="txt-up-lamaran" class="text-[9px] font-black uppercase mt-1">Upload Lamaran</p></div>
+                    <div class="upload-box" onclick="triggerUp('up-lamaran')" id="box-up-lamaran"><input type="file" id="up-lamaran" class="hidden" accept="image/*,.pdf" onchange="handleFile(this, 'up-lamaran')"><div class="text-3xl">📄</div><p id="txt-up-lamaran" class="text-[9px] font-black uppercase mt-1">Upload Surat Lamaran</p></div>
                     
                     <label class="form-label">CV / Riwayat Hidup <span>*</span></label>
-                    <div class="upload-box" onclick="triggerUp('up-cv')" id="box-up-cv"><input type="file" id="up-cv" class="hidden" accept="image/*,.pdf" onchange="handleFile(this, 'up-cv')"><div class="text-3xl">📂</div><p id="txt-up-cv" class="text-[9px] font-black uppercase mt-1">Upload CV</p></div>
+                    <div class="upload-box" onclick="triggerUp('up-cv')" id="box-up-cv"><input type="file" id="up-cv" class="hidden" accept="image/*,.pdf" onchange="handleFile(this, 'up-cv')"><div class="text-3xl">📂</div><p id="txt-up-cv" class="text-[9px] font-black uppercase mt-1">Upload Berkas CV</p></div>
                 </div>
 
-                <button onclick="submitApplication()" id="btn-submit" class="btn-primary mt-12 mb-10">Kirim Lamaran Sekarang</button>
+                <button onclick="submitApplication()" id="btn-submit" class="btn-primary mt-12 mb-12">Kirim Lamaran Sekarang</button>
             </div>
         </div>
 
@@ -247,8 +256,8 @@
             </div>
             <div class="p-6">
                 <div class="grid grid-cols-3 gap-1 mb-6">
-                    <button onclick="switchTab('applicants')" id="tab-app" class="p-3 bg-white border border-orange-500 text-orange-500 rounded-xl font-black text-[9px] uppercase shadow-sm">Pelamar</button>
-                    <button onclick="switchTab('master')" id="tab-mas" class="p-3 bg-white border border-orange-500 text-orange-500 rounded-xl font-black text-[9px] uppercase shadow-sm">Isian Data</button>
+                    <button onclick="switchTab('applicants')" id="tab-app" class="p-3 bg-white border border-orange-500 text-orange-500 rounded-xl font-black text-[9px] uppercase">Pelamar</button>
+                    <button onclick="switchTab('master')" id="tab-mas" class="p-3 bg-white border border-orange-500 text-orange-500 rounded-xl font-black text-[9px] uppercase">Isian Data</button>
                     <button onclick="switchTab('settings')" id="tab-set" class="p-3 bg-orange-500 text-white rounded-xl font-black text-[9px] uppercase shadow-md">Setelan</button>
                 </div>
 
@@ -256,46 +265,46 @@
 
                 <div id="sec-master" class="hidden space-y-4">
                     <div class="card border-2 border-orange-200">
-                        <h3 class="font-black text-sm uppercase mb-4 leading-none">:: Tambah Lowongan</h3>
-                        <div class="flex gap-2">
-                            <input id="new-vacancy" class="flex-1 p-3 bg-slate-100 rounded-xl text-xs outline-none" placeholder="Loker Baru...">
+                        <div class="flex gap-2 mb-4">
+                            <input id="new-vacancy" class="flex-1 p-3 bg-slate-100 rounded-xl text-xs outline-none" placeholder="Posisi Baru...">
                             <button onclick="addVacancy()" class="px-4 bg-slate-800 text-white rounded-xl font-bold text-[9px]">TAMBAH</button>
                         </div>
                         <div id="list-vacancies-admin" class="mt-4 space-y-2"></div>
                     </div>
                 </div>
 
-                <div id="sec-settings" class="space-y-4 text-center">
-                    <div class="card border-2 border-orange-200">
-                        <label class="form-label text-left">Identitas Perusahaan</label>
+                <div id="sec-settings" class="space-y-4">
+                    <div class="card border-2 border-orange-200 text-center">
+                        <label class="form-label text-left">Nama Perusahaan</label>
                         <input id="set-name" class="input-pro">
-                        <input id="set-wa" class="input-pro" placeholder="WhatsApp HR (+62...)">
+                        <label class="form-label text-left">WhatsApp Admin</label>
+                        <input id="set-wa" class="input-pro" placeholder="628xxxx">
                         
-                        <label class="form-label text-left mt-2">Pilih Komposisi Warna</label>
+                        <label class="form-label text-left mt-2">Preset Tema Warna</label>
                         <div class="grid grid-cols-3 gap-2 mb-6">
-                            <div class="theme-item" onclick="applyTheme('#f97316')" style="background:#f97316;color:white">ORANGE</div>
-                            <div class="theme-item" onclick="applyTheme('#2563eb')" style="background:#2563eb;color:white">BLUE</div>
-                            <div class="theme-item" onclick="applyTheme('#10b981')" style="background:#10b981;color:white">GREEN</div>
+                            <div class="theme-pill" onclick="applyTheme('#f97316')" style="background:#f97316;color:white">ORANGE</div>
+                            <div class="theme-pill" onclick="applyTheme('#2563eb')" style="background:#2563eb;color:white">BLUE</div>
+                            <div class="theme-pill" onclick="applyTheme('#10b981')" style="background:#10b981;color:white">GREEN</div>
                         </div>
 
-                        <label class="form-label text-left">Ganti Logo Perusahaan</label>
+                        <label class="form-label text-left">Logo Perusahaan</label>
                         <div class="flex items-center gap-4 mb-4">
-                            <img id="set-logo-preview" src="" class="admin-img-preview w-16 h-16 !mb-0">
+                            <img id="set-logo-preview" src="" class="w-16 h-16 rounded-xl border bg-white object-contain">
                             <label class="flex-1 py-4 bg-slate-100 border text-slate-500 rounded-xl text-center text-[10px] font-black uppercase cursor-pointer">Pilih File<input type="file" class="hidden" onchange="handleLogoUpload(this)"></label>
                         </div>
                         <button onclick="saveGlobalSet()" class="btn-primary">Simpan Perubahan</button>
                     </div>
                 </div>
             </div>
-            <button onclick="handleExit()" class="mx-12 p-4 bg-slate-200 rounded-2xl text-[9px] font-black uppercase mb-10 shadow-sm">Keluar Admin</button>
+            <button onclick="handleExit()" class="mx-12 p-4 bg-slate-200 rounded-2xl text-[9px] font-black uppercase mb-10 shadow-sm">Logout Panel Admin</button>
         </div>
 
     </div>
 
     <!-- :: SCRIPT ENGINE :: -->
     <script>
-        let MASTER = { companyName: "PT SEPATU INDONESIA", logoUrl: "https://cdn-icons-png.flaticon.com/512/2964/2964563.png", adminWA: "6288902312290", themeColor: "#f97316", vacancies: ["Operator Sewing", "QC Inspector", "Leader Line"] };
-        const DB_ID = "v103_final_certified_sync"; 
+        let MASTER = { companyName: "PT SEPATU INDONESIA", logoUrl: "https://cdn-icons-png.flaticon.com/512/2964/2964563.png", adminWA: "6288902312290", themeColor: "#f97316", vacancies: ["Operator Sewing", "QC Inspector", "Supervisor Produksi"] };
+        const DB_ID = "v104_industrial_final_sync"; 
         const firebaseConfig = { apiKey: "AIzaSyAg2NSb0rqD6BNtu96_7VJezhGiUlYyIZM", authDomain: "hire-1a51d.firebaseapp.com", projectId: "hire-1a51d", storageBucket: "hire-1a51d.firebasestorage.app", messagingSenderId: "370568295", appId: "1:370568295:web:a0d38b16b3bde89cbbf8c2" };
         const app = firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore(app);
@@ -310,8 +319,8 @@
             window.scrollTo(0,0);
         }
 
-        async function loadProv() { const res = await fetch('https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json'); const data = await res.json(); document.getElementById('f-prov').innerHTML = '<option value="">Pilih Provinsi...</option>' + data.map(p => `<option value="${p.id}">${p.name}</option>`).join(''); }
-        async function loadCities(pid) { if(!pid) return; const res = await fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/regencies/${pid}.json`); const data = await res.json(); document.getElementById('f-kab').innerHTML = '<option value="">Pilih Kota...</option>' + data.map(c => `<option value="${c.id}">${c.name}</option>`).join(''); }
+        async function loadProv() { const res = await fetch('https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json'); const data = await res.json(); document.getElementById('f-prov').innerHTML = '<option value="">Pilih...</option>' + data.map(p => `<option value="${p.id}">${p.name}</option>`).join(''); }
+        async function loadCities(pid) { if(!pid) return; const res = await fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/regencies/${pid}.json`); const data = await res.json(); document.getElementById('f-kab').innerHTML = '<option value="">Pilih...</option>' + data.map(c => `<option value="${c.id}">${c.name}</option>`).join(''); }
         async function loadDistricts(kid) { if(!kid) return; const res = await fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/districts/${kid}.json`); const data = await res.json(); document.getElementById('f-kec').innerHTML = data.map(k => `<option value="${k.name}">${k.name}</option>`).join(''); }
 
         function applyIdent(data) {
@@ -326,11 +335,12 @@
             document.getElementById('set-wa').value = MASTER.adminWA;
             document.documentElement.style.setProperty('--primary', MASTER.themeColor);
             document.querySelectorAll('.header-profile, .header-dynamic').forEach(e => e.style.background = `linear-gradient(135deg, ${MASTER.themeColor} 0%, #ea580c 100%)`);
+            updateManifest(MASTER.logoUrl);
         }
 
         function refreshMasterUI() {
             document.getElementById('f-pos').innerHTML = MASTER.vacancies.map(v => `<option value="${v}">${v}</option>`).join('');
-            document.getElementById('list-vacancies-admin').innerHTML = MASTER.vacancies.map((v, i) => `<div class="flex justify-between items-center p-3 bg-white border rounded-xl shadow-sm mb-2"><span class="text-xs font-bold uppercase">${v}</span><button onclick="delVacancy(${i})" class="text-[8px] font-black text-red-500">HAPUS</button></div>`).join('');
+            document.getElementById('list-vacancies-admin').innerHTML = MASTER.vacancies.map((v, i) => `<div class="flex justify-between items-center p-3 bg-white border rounded-xl shadow-sm mb-2"><span class="text-xs font-bold uppercase">${v}</span><button onclick="delVacancy(${i})" class="text-[8px] font-black text-red-500 px-2 py-1">HAPUS</button></div>`).join('');
         }
 
         async function addVacancy() { const v = document.getElementById('new-vacancy').value; if(v) { MASTER.vacancies.push(v); await syncDB(); refreshMasterUI(); } }
@@ -345,13 +355,13 @@
                 if(isReg) {
                     const res = await auth.createUserWithEmailAndPassword(email, pass);
                     await db.collection('artifacts').doc(DB_ID).collection('users').doc(res.user.uid).set({ name, email, pass, role: email.includes('admin')?'admin':'user' });
-                    document.getElementById('modal-reg-ok').style.display = 'flex';
+                    document.getElementById('modal-reg-success').style.display = 'flex';
                 } else { await auth.signInWithEmailAndPassword(email, pass); location.reload(); }
             } catch (e) {
                 if(e.code.includes('api-key-not-valid')) { 
-                    const f = { name: name || "JAJA SUNARJA", email, role: email.includes('admin')?'admin':'user', uid: 'UAT_'+Date.now() };
-                    localStorage.setItem('uat_session', JSON.stringify(f));
-                    if(isReg) document.getElementById('modal-reg-ok').style.display = 'flex'; else location.reload();
+                    const fake = { name: name || "USER SIMULASI", email, role: email.includes('admin')?'admin':'user', uid: 'UAT_'+Date.now() };
+                    localStorage.setItem('uat_session', JSON.stringify(fake));
+                    if(isReg) document.getElementById('modal-reg-success').style.display = 'flex'; else location.reload();
                 } else showToast(e.message);
             }
         }
@@ -378,16 +388,17 @@
                 prov: document.getElementById('f-prov').options[document.getElementById('f-prov').selectedIndex]?.text || "",
                 kota: document.getElementById('f-kab').options[document.getElementById('f-kab').selectedIndex]?.text || "",
                 kec: document.getElementById('f-kec').options[document.getElementById('f-kec').selectedIndex]?.text || "",
+                kodepos: document.getElementById('f-kodepos').value,
                 alamat: document.getElementById('f-alamat').value, files: currentFiles, status: 'MENUNGGU_ADM', at: new Date().toISOString()
             };
 
             try {
                 await db.collection('artifacts').doc(DB_ID).collection('applicants').add(applicantData);
-                document.getElementById('modal-info').style.display = 'flex';
+                document.getElementById('modal-submit-ok').style.display = 'flex';
             } catch(e) {
                 let simDb = JSON.parse(localStorage.getItem('sim_db') || '[]');
                 simDb.push(applicantData); localStorage.setItem('sim_db', JSON.stringify(simDb));
-                document.getElementById('modal-info').style.display = 'flex';
+                document.getElementById('modal-submit-ok').style.display = 'flex';
             }
         }
 
@@ -417,57 +428,55 @@
                 dataList = [...dataList, ...simDb];
 
                 const container = document.getElementById('list-applicants-admin');
-                if(dataList.length === 0) { container.innerHTML = '<p class="text-center py-20 text-slate-300 font-bold text-[10px]">Basis data kosong</p>'; return; }
+                if(dataList.length === 0) { container.innerHTML = '<p class="text-center py-20 text-slate-300 font-bold text-[10px] uppercase">Basis data kosong</p>'; return; }
                 
                 container.innerHTML = dataList.map(d => {
                     const isLolos = d.status === 'LOLOS_ADMINISTRASI';
-                    const dbId = d.id || 'LOCAL';
+                    const dbId = d.id || 'LOCAL_'+d.uid;
                     return `<div class="card border-2 border-slate-50 text-left">
                         <div class="flex justify-between items-center mb-4">
                             <div><h4 class="font-black text-sm uppercase leading-none">${d.name}</h4><p class="text-[9px] font-bold text-orange-500 mt-1 uppercase">${d.pos}</p></div>
                             <button onclick="updateStat('${dbId}', 'LOLOS_ADMINISTRASI')" class="${isLolos?'bg-emerald-100 text-emerald-600':'bg-emerald-600 text-white'} px-4 py-2 rounded-xl text-[8px] font-black uppercase">${isLolos?'LOLOS ADM':'LOLOSKAN'}</button>
                         </div>
                         <div class="grid grid-cols-2 gap-2">
-                             <button onclick="viewApplicantDetail('${dbId}', '${d.uid}')" class="bg-slate-800 text-white py-3 rounded-xl text-[8px] font-black uppercase">Detail & Berkas</button>
-                             <button onclick="checkPass('${d.uid}')" class="bg-slate-100 text-slate-500 py-3 rounded-xl text-[8px] font-black uppercase">Lihat/Reset Pass</button>
+                             <button onclick="viewDetail('${dbId}', '${d.uid}')" class="bg-slate-800 text-white py-3 rounded-xl text-[8px] font-black uppercase">Detail & Berkas</button>
+                             <button onclick="checkPass('${d.uid}')" class="bg-slate-100 text-slate-500 py-3 rounded-xl text-[8px] font-black uppercase">Lihat Pass</button>
                         </div>
                     </div>`;
                 }).join('');
             });
         }
 
-        async function viewApplicantDetail(id, uid) {
+        async function viewDetail(id, uid) {
             let d;
-            if(id !== 'LOCAL') { const snap = await db.collection('artifacts').doc(DB_ID).collection('applicants').doc(id).get(); d = snap.data(); }
-            else { const simDb = JSON.parse(localStorage.getItem('sim_db') || '[]'); d = simDb.find(x => x.uid === uid); }
+            if(!id.startsWith('LOCAL')) { const snap = await db.collection('artifacts').doc(DB_ID).collection('applicants').doc(id).get(); d = snap.data(); }
+            else { d = JSON.parse(localStorage.getItem('sim_db')).find(x => x.uid === uid); }
             if(!d) return;
             
             let content = `
-                <div class="bg-slate-50 p-5 rounded-2xl border">
+                <div class="bg-slate-50 p-5 rounded-2xl border mb-6">
                     <p class="text-[9px] text-slate-400 uppercase font-black">NIK & WA</p>
                     <p>${d.nik} / ${d.wa}</p>
                     <p class="text-[9px] text-slate-400 uppercase font-black mt-3">Alamat Lengkap</p>
-                    <p>${d.kec}, ${d.kota}, ${d.prov}<br>${d.alamat}</p>
+                    <p>${d.kec}, ${d.kota}, ${d.prov} - ${d.kodepos}<br>${d.alamat}</p>
                 </div>
-                <div class="space-y-4 pt-4">
-                    <p class="text-slate-800 uppercase tracking-widest text-[10px] font-black">Dokumen Digital:</p>
-                    ${d.files?.['up-foto'] ? `<div><p class="text-[9px] mb-2 font-black uppercase">Pas Foto:</p><img src="${d.files['up-foto']}" class="admin-img-preview"></div>` : ''}
-                    ${d.files?.['up-ktp'] ? `<div><p class="text-[9px] mb-2 font-black uppercase">KTP:</p><img src="${d.files['up-ktp']}" class="admin-img-preview"></div>` : ''}
-                    ${d.files?.['up-lamaran'] ? `<button onclick="openF('${d.files['up-lamaran']}')" class="w-full p-4 bg-slate-100 rounded-2xl text-[9px] uppercase border font-black">Lihat Lamaran</button>` : ''}
-                    ${d.files?.['up-cv'] ? `<button onclick="openF('${d.files['up-cv']}')" class="w-full p-4 bg-slate-100 rounded-2xl text-[9px] uppercase border font-black">Lihat File CV</button>` : ''}
-                </div>
+                <p class="text-slate-800 uppercase tracking-widest text-[10px] font-black mb-4">Dokumen Digital:</p>
+                ${d.files?.['up-foto'] ? `<div><p class="text-[9px] font-black mb-2">PAS FOTO:</p><img src="${d.files['up-foto']}" class="doc-preview-full"></div>` : ''}
+                ${d.files?.['up-ktp'] ? `<div><p class="text-[9px] font-black mb-2">FOTO KTP:</p><img src="${d.files['up-ktp']}" class="doc-preview-full"></div>` : ''}
+                ${d.files?.['up-lamaran'] ? `<button onclick="openFile('${d.files['up-lamaran']}')" class="w-full p-4 bg-slate-100 rounded-2xl text-[10px] uppercase border font-black mb-2">Lihat Surat Lamaran</button>` : ''}
+                ${d.files?.['up-cv'] ? `<button onclick="openFile('${d.files['up-cv']}')" class="w-full p-4 bg-slate-100 rounded-2xl text-[10px] uppercase border font-black">Lihat Berkas CV</button>` : ''}
             `;
             document.getElementById('detail-content').innerHTML = content;
             document.getElementById('modal-detail').style.display = 'flex';
         }
 
-        function openF(data) { const w = window.open(); w.document.write(`<iframe src="${data}" style="border:0; width:100%; height:100%;"></iframe>`); }
+        function openFile(data) { const w = window.open(); w.document.write(`<iframe src="${data}" style="border:0; width:100%; height:100%;"></iframe>`); }
         async function checkPass(uid) { const s = await db.collection('artifacts').doc(DB_ID).collection('users').doc(uid).get(); if(s.exists) showToast("Password: " + s.data().pass); else showToast("Simulasi: Pass 123456"); }
-        async function updateStat(id, stat) { if(id==='LOCAL') return showToast("Data Simulasi tidak bisa diupdate online."); await db.collection('artifacts').doc(DB_ID).collection('applicants').doc(id).update({ status: stat }); showToast("Status Diperbarui!"); }
+        async function updateStat(id, stat) { if(id.startsWith('LOCAL')) return showToast("Data Simulasi tidak bisa online."); await db.collection('artifacts').doc(DB_ID).collection('applicants').doc(id).update({ status: stat }); showToast("Status Diupdate!"); }
 
         window.onload = () => {
             setTimeout(() => { if(document.getElementById('view-splash').style.display !== 'none') showPage('auth'); }, 2500);
-            const saved = localStorage.getItem('uat_103_m');
+            const saved = localStorage.getItem('uat_104_m');
             if(saved) { MASTER = JSON.parse(saved); applyIdent(MASTER); refreshMasterUI(); }
             db.collection('artifacts').doc(DB_ID).collection('public').doc('master').onSnapshot(s => { if(s.exists) { MASTER = s.data(); applyIdent(MASTER); refreshMasterUI(); } });
             loadProv(); refreshMasterUI();
@@ -491,11 +500,11 @@
         function toggleAuthMode() { isReg = !isReg; document.getElementById('auth-title').innerText = isReg ? "DAFTAR AKUN" : "MASUK SISTEM"; document.getElementById('reg-container').classList.toggle('hidden'); document.getElementById('btn-auth-main').innerText = isReg ? "DAFTAR AKUN" : "MASUK SEKARANG"; }
         function handleExit() { auth.signOut(); localStorage.removeItem('uat_session'); location.reload(); }
         function showToast(m) { const t = document.getElementById('toast'); t.innerText = m; t.style.display = 'block'; setTimeout(() => t.style.display='none', 4000); }
-        function contactHR() { window.open(`https://wa.me/${MASTER.adminWA}?text=Halo%20Admin%20HR%20HIREPRO%2C%20saya%20lupa%20password%20akun%20saya.`); }
+        function contactHR() { window.open(`https://wa.me/${MASTER.adminWA}?text=Halo%20Admin%20HR%2C%20saya%20lupa%20password%20akun%20saya.`); }
         function switchTab(t) { ['applicants', 'master', 'settings'].forEach(s => { document.getElementById('sec-' + s).classList.add('hidden'); document.getElementById('tab-' + s.substring(0,3)).classList.remove('bg-orange-500', 'text-white'); }); document.getElementById('sec-' + t).classList.remove('hidden'); document.getElementById('tab-' + t.substring(0,3)).classList.add('bg-orange-500', 'text-white'); if(t==='applicants') listenAdmin(); }
         function triggerUp(id) { document.getElementById(id).click(); }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-        function applyTheme(c) { MASTER.themeColor = c; applyIdent(MASTER); showToast("Tema Berhasil Diubah!"); }
+        function applyTheme(c) { MASTER.themeColor = c; applyIdent(MASTER); showToast("Preset Tema Diaktifkan!"); }
         function handleLogoUpload(i) { const r = new FileReader(); r.readAsDataURL(i.files[0]); r.onload = () => { MASTER.logoUrl = r.result; document.getElementById('set-logo-preview').src = r.result; showToast("Logo Terpilih!"); }; }
         async function saveGlobalSet() { MASTER.companyName = document.getElementById('set-name').value; MASTER.adminWA = document.getElementById('set-wa').value; await syncDB(); applyIdent(MASTER); showToast("Setelan Berhasil Disimpan!"); }
     </script>
