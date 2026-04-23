@@ -6,28 +6,8 @@
     <meta name="theme-color" content="#f97316">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>SIMPEL - Sistem Manajemen Pelamar</title>
+    <title>SIMPEL - Recruitment System</title>
     
-    <!-- :: PWA MANIFEST :: -->
-    <script id="pwa-config">
-        function refreshPWA(logo) {
-            const manifest = {
-                "name": "SIMPEL Recruitment",
-                "short_name": "SIMPEL",
-                "start_url": ".",
-                "display": "standalone",
-                "background_color": "#ffffff",
-                "theme_color": "#f97316",
-                "icons": [{ "src": logo || "https://cdn-icons-png.flaticon.com/512/2964/2964563.png", "sizes": "512x512", "type": "image/png" }]
-            };
-            const link = document.createElement('link');
-            link.rel = 'manifest';
-            link.href = URL.createObjectURL(new Blob([JSON.stringify(manifest)], {type: 'application/json'}));
-            document.head.appendChild(link);
-        }
-        refreshPWA();
-    </script>
-
     <!-- :: LIBRARIES :: -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -43,19 +23,20 @@
         body { background-color: var(--accent); margin: 0; padding: 0; color: var(--dark); overflow-x: hidden; }
         
         .app-shell { max-width: 480px; margin: 0 auto; min-height: 100vh; background: white; position: relative; display: flex; flex-direction: column; box-shadow: 0 0 60px rgba(0,0,0,0.05); }
-        .header-profile { background: linear-gradient(135deg, var(--primary) 0%, #ea580c 100%); border-radius: 0 0 50px 50px; padding: 70px 20px 50px; color: white; text-align: center; box-shadow: 0 15px 35px rgba(249, 115, 22, 0.2); }
-        .avatar-box { width: 85px; height: 85px; border: 3px solid white; border-radius: 50%; margin: 0 auto 15px; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .header-profile { background: linear-gradient(135deg, var(--primary) 0%, #ea580c 100%); border-radius: 0 0 50px 50px; padding: 70px 20px 50px; color: white; text-align: center; box-shadow: 0 15px 35px rgba(249, 115, 22, 0.2); transition: 0.5s; }
+        .avatar-box { width: 85px; height: 85px; border: 3px solid white; border-radius: 50%; margin: 0 auto 15px; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; overflow: hidden; font-size: 35px; }
         
         .bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 480px; background: white; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #f1f5f9; z-index: 100; padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
         .nav-item { display: flex; flex-direction: column; align-items: center; font-size: 10px; font-weight: 800; color: #94a3b8; cursor: pointer; }
         .nav-item.active { color: var(--primary); }
 
-        .btn-primary { background: var(--primary); color: white; padding: 18px; border-radius: 20px; font-weight: 900; width: 100%; text-transform: uppercase; border: none; box-shadow: 0 12px 24px rgba(249, 115, 22, 0.2); cursor: pointer; transition: 0.3s; }
-        .btn-outline { width: 100%; border: 2px solid var(--success); color: var(--success); background: white; padding: 16px; border-radius: 18px; font-weight: 900; font-size: 14px; margin-bottom: 12px; display: block; text-align: center; }
-
         .input-pro { width: 100%; padding: 16px; background: #f1f5f9; border: 2px solid transparent; border-radius: 16px; font-size: 14px; outline: none; transition: 0.3s; margin-bottom: 15px; }
         .input-pro:focus { border-color: var(--primary); background: white; }
+        .form-label { font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 6px; display: block; margin-left: 4px; }
         
+        .btn-primary { background: var(--primary); color: white; padding: 18px; border-radius: 20px; font-weight: 900; width: 100%; text-transform: uppercase; border: none; box-shadow: 0 12px 24px rgba(249, 115, 22, 0.2); cursor: pointer; }
+        .btn-outline { width: 100%; border: 2px solid var(--success); color: var(--success); background: white; padding: 16px; border-radius: 18px; font-weight: 900; font-size: 14px; margin-bottom: 12px; display: block; text-align: center; }
+
         .upload-box { border: 2px dashed #cbd5e1; border-radius: 20px; padding: 25px; text-align: center; background: #f8fafc; cursor: pointer; margin-bottom: 18px; }
         .upload-box.done { border-color: var(--success); background: #ecfdf5; color: var(--success); }
 
@@ -69,21 +50,22 @@
         .modal-box { background: white; border-radius: 35px; padding: 35px; text-align: left; width: 100%; max-width: 440px; animation: popUp 0.3s ease-out; max-height: 85vh; overflow-y: auto; }
         @keyframes popUp { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         
-        .tab-btn { flex: 1; padding: 14px 4px; font-size: 9px; font-weight: 900; text-transform: uppercase; border-radius: 14px; border: 2px solid #f1f5f9; background: white; color: #94a3b8; }
+        .tab-btn { flex: 1; padding: 14px 4px; font-size: 9px; font-weight: 900; text-transform: uppercase; border-radius: 14px; border: 2px solid #f1f5f9; background: white; color: #94a3b8; text-align: center; }
         .tab-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .doc-view-full { width: 100%; max-height: 400px; object-fit: contain; background: #f1f5f9; border-radius: 20px; border: 1px solid #e2e8f0; margin-bottom: 15px; }
     </style>
 </head>
 <body>
 
     <div id="toast">Notifikasi</div>
 
-    <!-- :: MODAL WELCOME :: -->
+    <!-- :: MODAL SUCCESS :: -->
     <div id="modal-welcome" class="modal-backdrop">
         <div class="modal-box text-center">
             <div class="text-6xl mb-6">🎉</div>
-            <h3 class="text-xl font-black text-slate-800 uppercase mb-4 leading-tight">Berhasil Terdaftar!</h3>
-            <p class="text-xs text-slate-400 font-bold mb-8 uppercase leading-relaxed text-center">Akun Anda telah aktif di SIMPEL. Silakan lengkapi formulir lamaran di dashboard Anda.</p>
-            <button onclick="location.reload();" class="btn-primary">Masuk Dashboard</button>
+            <h3 class="text-xl font-black text-slate-800 uppercase mb-4 leading-tight">Akun Berhasil Dibuat!</h3>
+            <p class="text-xs text-slate-400 font-bold mb-8 uppercase leading-relaxed text-center">Silakan masuk ke Dashboard untuk melengkapi profil lamaran kerja Anda.</p>
+            <button onclick="location.reload();" class="btn-primary">Buka Dashboard</button>
         </div>
     </div>
 
@@ -91,9 +73,9 @@
     <div id="modal-info" class="modal-backdrop">
         <div class="modal-box text-center">
             <div id="info-icon" class="text-6xl mb-6">✅</div>
-            <h3 id="info-title" class="text-xl font-black text-slate-800 uppercase mb-4">Berhasil</h3>
-            <p id="info-desc" class="text-xs text-slate-400 font-bold mb-8 uppercase"></p>
-            <button onclick="closeModal('modal-info'); showPage('user');" class="btn-primary">Lanjutkan</button>
+            <h3 id="info-title" class="text-xl font-black text-slate-800 uppercase mb-4">Data Terkirim</h3>
+            <p id="info-desc" class="text-xs text-slate-400 font-bold mb-8 uppercase text-center"></p>
+            <button onclick="closeModal('modal-info'); initUserFlow();" class="btn-primary">Lanjutkan</button>
         </div>
     </div>
 
@@ -110,7 +92,7 @@
 
     <div class="app-shell">
         
-        <!-- :: 0. SPLASH (LOGO ONLY AS REQUESTED) :: -->
+        <!-- :: 0. SPLASH (LOGO ONLY) :: -->
         <div id="view-splash">
             <img id="splash-logo-img" src="https://cdn-icons-png.flaticon.com/512/2964/2964563.png" class="w-28 h-28 rounded-3xl bg-white p-4 animate-bounce shadow-2xl">
         </div>
@@ -121,30 +103,30 @@
                 <img id="auth-logo-img" src="https://cdn-icons-png.flaticon.com/512/2964/2964563.png" class="w-20 h-20 mx-auto mb-4 rounded-2xl shadow-lg border p-2 bg-white">
                 <h2 class="text-4xl font-black text-slate-800 tracking-tighter uppercase leading-none">SIMPEL</h2>
                 <p class="text-[9px] font-extrabold text-slate-400 mt-1 uppercase tracking-tighter">Sistem Informasi Manajemen Pelamar</p>
-                <!-- LOKASI NAMA PERUSAHAAN -->
                 <p id="auth-company-name" class="text-[10px] font-black text-orange-500 mt-2 uppercase tracking-widest leading-none"></p>
             </div>
             
             <div class="space-y-4">
                 <div id="reg-container" class="hidden">
-                    <label class="form-label">Nama Lengkap Sesuai KTP</label>
-                    <input id="auth-name" class="input-pro" placeholder="Contoh: Dede Hardiyanto">
+                    <label class="form-label">Nama Lengkap</label>
+                    <input id="auth-name" class="input-pro" placeholder="Nama Sesuai KTP">
                 </div>
-                <label class="form-label">Alamat Email Terdaftar</label>
-                <input id="auth-email" class="input-pro" placeholder="nama@domain.com">
-                <label class="form-label">Kata Sandi Akun</label>
+                <label class="form-label">Alamat Email</label>
+                <input id="auth-email" class="input-pro" placeholder="email@domain.com">
+                <label class="form-label">Kata Sandi</label>
                 <input id="auth-pass" class="input-pro" type="password" placeholder="••••••••">
                 <button onclick="handleAuthSubmit()" id="btn-auth-main" class="btn-primary shadow-xl">Masuk Sistem</button>
             </div>
             
-            <div class="flex flex-col gap-4 mt-8 text-center">
-                <button onclick="contactHR()" class="text-[9px] font-black text-slate-400 uppercase underline">Bantuan / Lupa Password</button>
+            <div class="flex flex-col gap-4 mt-10 text-center">
+                <button onclick="contactHR()" class="text-[9px] font-black text-slate-400 uppercase underline">Lupa Password? Hubungi HR</button>
                 <button onclick="toggleAuthMode()" id="btn-switch" class="text-[10px] font-black text-slate-800 uppercase block py-4 bg-slate-50 rounded-2xl border border-dashed">Belum punya akun? Daftar Baru</button>
             </div>
 
+            <!-- FOOTER INFO -->
             <div class="mt-auto pt-10 text-center">
                 <button onclick="showToast('Buka menu browser > Tambahkan ke Layar Utama')" class="text-[9px] font-black text-white bg-slate-400 px-6 py-2 rounded-full uppercase mb-4 tracking-widest">Pasang Aplikasi</button>
-                <p class="text-[8px] font-bold text-slate-300 uppercase tracking-widest">Enterprise Edition v112 • Governance Ready</p>
+                <p class="text-[8px] font-bold text-slate-300 uppercase tracking-widest">v113 • Architect Corporate Edition</p>
             </div>
         </div>
 
@@ -156,9 +138,9 @@
                 <h1 class="text-2xl font-black uppercase tracking-tight leading-none" id="user-display-name">PELAMAR</h1>
             </div>
             <div class="p-6 flex-1">
-                <h2 class="text-xl font-black text-slate-800 tracking-tight mb-6 leading-none">Profil Rekrutmen</h2>
+                <h2 class="text-xl font-black text-slate-800 tracking-tight mb-6 leading-none">Status Rekrutmen</h2>
                 <div class="card bg-orange-50 border-orange-100 flex items-center justify-between mb-8 shadow-lg shadow-orange-100/50">
-                    <div><p class="text-[9px] font-black text-orange-400 uppercase tracking-widest mb-1 leading-none">Status Tahap 1</p><h4 id="current-status" class="font-black text-slate-800 uppercase leading-tight">Mengecek...</h4></div>
+                    <div><p class="text-[9px] font-black text-orange-400 uppercase tracking-widest mb-1 leading-none">Progres Tahap 1</p><h4 id="current-status" class="font-black text-slate-800 uppercase leading-tight">Mengecek Data...</h4></div>
                     <div id="status-icon" class="text-3xl">⏳</div>
                 </div>
                 <div class="space-y-4">
@@ -167,12 +149,7 @@
                     <button class="btn-outline bg-red-50 !text-red-500 !border-red-100" onclick="handleExit()">Keluar / Logout</button>
                 </div>
             </div>
-            <div class="bottom-nav">
-                <div class="nav-item active"><span class="text-2xl">🏠</span><span>Dashboard</span></div>
-                <div class="nav-item" onclick="showToast('Selesaikan Administrasi')"><span class="text-2xl">📋</span><span>Ujian</span></div>
-                <div class="nav-item" onclick="showToast('Pesan Kosong')"><span class="text-2xl">💬</span><span>Pesan</span></div>
-                <div class="nav-item" onclick="showToast('Hasil belum keluar')"><span class="text-2xl">📊</span><span>Hasil</span></div>
-            </div>
+            <div class="bottom-nav"><div class="nav-item active"><span>🏠</span><span>Beranda</span></div><div class="nav-item" onclick="showToast('Belum tersedia')"><span>📋</span><span>Ujian</span></div><div class="nav-item" onclick="showToast('Pesan Kosong')"><span>💬</span><span>Pesan</span></div><div class="nav-item" onclick="showToast('Hasil Belum Ada')"><span>📊</span><span>Hasil</span></div></div>
         </div>
 
         <!-- :: 3. FORM REKRUTMEN :: -->
@@ -185,17 +162,17 @@
                 <input id="f-nik" class="input-pro" placeholder="16 Digit NIK">
                 <input id="f-name" class="input-pro" placeholder="Nama Sesuai KTP">
                 <input id="f-wa" class="input-pro" placeholder="WhatsApp Aktif">
-                <select id="f-prov" class="input-pro" onchange="loadCities(this.value)"><option value="">Provinsi...</option></select>
-                <select id="f-kab" class="input-pro" onchange="loadDistricts(this.value)"><option value="">Kota/Kab...</option></select>
-                <select id="f-kec" class="input-pro"><option value="">Kecamatan...</option></select>
+                <select id="f-prov" class="input-pro" onchange="loadCities(this.value)"><option value="">Pilih Provinsi...</option></select>
+                <select id="f-kab" class="input-pro" onchange="loadDistricts(this.value)"><option value="">Pilih Kabupaten...</option></select>
+                <select id="f-kec" class="input-pro"><option value="">Pilih Kecamatan...</option></select>
                 <textarea id="f-alamat" class="input-pro h-24 p-4" placeholder="Alamat Lengkap..."></textarea>
-                <label class="form-label text-[10px] font-black text-slate-400 uppercase">Posisi Yang Dilamar</label>
+                <label class="form-label text-[10px] font-black text-slate-400 uppercase">Posisi Lamaran</label>
                 <select id="f-pos" class="input-pro"></select>
 
-                <div class="pt-8 border-t mt-8 space-y-4">
+                <div class="pt-8 border-t mt-8 space-y-4 text-center">
                     <div class="upload-box" onclick="triggerUp('up-foto')" id="box-up-foto"><input type="file" id="up-foto" class="hidden" accept="image/*" onchange="handleFile(this, 'up-foto')"><div class="text-3xl">📷</div><p id="txt-up-foto" class="text-[9px] font-black uppercase mt-1">Upload Pas Foto</p></div>
                     <div class="upload-box" onclick="triggerUp('up-ktp')" id="box-up-ktp"><input type="file" id="up-ktp" class="hidden" accept="image/*" onchange="handleFile(this, 'up-ktp')"><div class="text-3xl">💳</div><p id="txt-up-ktp" class="text-[9px] font-black uppercase mt-1">Upload Foto KTP</p></div>
-                    <div class="upload-box" onclick="triggerUp('up-cv')" id="box-up-cv"><input type="file" id="up-cv" class="hidden" accept="image/*,.pdf" onchange="handleFile(this, 'up-cv')"><div class="text-3xl">📂</div><p id="txt-up-cv" class="text-[9px] font-black uppercase mt-1">Upload CV & Lamaran</p></div>
+                    <div class="upload-box" onclick="triggerUp('up-cv')" id="box-up-cv"><input type="file" id="up-cv" class="hidden" accept="image/*,.pdf" onchange="handleFile(this, 'up-cv')"><div class="text-3xl">📂</div><p id="txt-up-cv" class="text-[9px] font-black uppercase mt-1">CV & Lamaran (PDF/IMG)</p></div>
                 </div>
                 <button onclick="submitApplication()" id="btn-submit" class="btn-primary mt-12 mb-12 shadow-xl">Kirim Berkas Sekarang</button>
             </div>
@@ -222,10 +199,10 @@
 
                 <div id="sec-report" class="hidden space-y-4">
                     <div class="grid grid-cols-2 gap-3 text-left">
-                        <div class="card p-6 !mb-0 text-center"><p class="text-[8px] font-black text-slate-400 uppercase">Hari Ini</p><h2 id="rep-today" class="text-3xl font-black text-orange-500">0</h2></div>
-                        <div class="card p-6 !mb-0 text-center"><p class="text-[8px] font-black text-slate-400 uppercase">Total Database</p><h2 id="rep-total" class="text-3xl font-black text-blue-500">0</h2></div>
+                        <div class="card p-6 !mb-0 text-center shadow-md"><p class="text-[8px] font-black text-slate-400 uppercase">Hari Ini</p><h2 id="rep-today" class="text-3xl font-black text-orange-500">0</h2></div>
+                        <div class="card p-6 !mb-0 text-center shadow-md"><p class="text-[8px] font-black text-slate-400 uppercase">Total Database</p><h2 id="rep-total" class="text-3xl font-black text-blue-500">0</h2></div>
                     </div>
-                    <div class="card p-6">
+                    <div class="card p-6 shadow-sm">
                         <div class="flex justify-between items-center mb-6">
                             <h3 class="font-black text-xs uppercase tracking-widest leading-none">Analitik Pendaftar</h3>
                             <button onclick="exportToExcel()" class="bg-emerald-500 text-white px-4 py-2 rounded-xl text-[8px] font-black uppercase">Export XLSX</button>
@@ -235,7 +212,7 @@
                 </div>
 
                 <div id="sec-master" class="hidden space-y-4 text-left">
-                    <div class="card border-2 border-orange-200">
+                    <div class="card border-2 border-orange-200 shadow-sm">
                         <div class="flex gap-2 mb-4">
                             <input id="new-vacancy" class="flex-1 p-3 bg-slate-100 rounded-xl text-xs outline-none" placeholder="Loker Baru...">
                             <button onclick="addVacancy()" class="px-4 bg-slate-800 text-white rounded-xl font-bold text-[9px]">TAMBAH</button>
@@ -245,24 +222,19 @@
                 </div>
 
                 <div id="sec-settings" class="hidden space-y-4 text-center">
-                    <div class="card border-2 border-orange-200 text-left">
-                        <label class="form-label text-[10px] font-black text-slate-400 uppercase">Branding PT</label>
+                    <div class="card border-2 border-orange-200 text-left shadow-sm">
+                        <label class="form-label text-[10px] font-black text-slate-400 uppercase">Identitas PT</label>
                         <input id="set-name" class="input-pro">
-                        <input id="set-wa" class="input-pro" placeholder="WA Admin (62...)">
-                        <label class="form-label text-[10px] font-black text-slate-400 uppercase mt-4">Domain Kantor Resmi</label>
+                        <input id="set-wa" class="input-pro" placeholder="WA HR (62...)">
+                        <label class="form-label text-[10px] font-black text-slate-400 uppercase mt-4">Domain Email Kantor Resmi</label>
                         <input id="set-domain" class="input-pro" placeholder="Contoh: @csii.co.id">
-                        <div class="grid grid-cols-3 gap-2 mb-6">
-                            <div class="theme-btn" onclick="applyTheme('#f97316')" style="background:#f97316;color:white;border-radius:12px;padding:10px;font-size:8px">ORANGE</div>
-                            <div class="theme-btn" onclick="applyTheme('#2563eb')" style="background:#2563eb;color:white;border-radius:12px;padding:10px;font-size:8px">BLUE</div>
-                            <div class="theme-btn" onclick="applyTheme('#10b981')" style="background:#10b981;color:white;border-radius:12px;padding:10px;font-size:8px">GREEN</div>
-                        </div>
                         <div class="flex items-center gap-4 mb-4">
                             <img id="set-logo-preview" src="" class="doc-view-full w-16 h-16 !mb-0 shadow-sm border p-1">
                             <label class="flex-1 py-4 bg-slate-100 border text-slate-500 rounded-xl text-center text-[10px] font-black uppercase cursor-pointer">Ganti Logo<input type="file" class="hidden" onchange="handleLogoUpload(this)"></label>
                         </div>
                         <button onclick="saveGlobalSet()" class="btn-primary shadow-lg w-full">Simpan Setelan</button>
                     </div>
-                    <button onclick="clearAllData()" class="w-full py-4 mt-8 bg-red-600 text-white rounded-2xl font-black text-[10px] uppercase shadow-lg">BERSIHKAN DATA PELAMAR</button>
+                    <button onclick="clearAllData()" class="w-full py-4 mt-8 bg-red-600 text-white rounded-2xl font-black text-[10px] uppercase shadow-lg">BERSIHKAN SEMUA DATA PELAMAR</button>
                 </div>
             </div>
             <button onclick="handleExit()" class="mx-12 p-4 bg-slate-200 rounded-2xl text-[9px] font-black uppercase mb-10 shadow-sm">Logout Panel Admin</button>
@@ -271,17 +243,23 @@
 
     <!-- :: SCRIPT ENGINE :: -->
     <script>
-        let MASTER = { companyName: "PT SEPATU INDONESIA", logoUrl: "https://cdn-icons-png.flaticon.com/512/2964/2964563.png", adminWA: "6288902312290", themeColor: "#f97316", vacancies: ["Operator Sewing", "QC Inspector"], corporateDomain: "@csii.co.id" };
-        const DB_ID = "v112_governance_master"; 
+        let MASTER = { companyName: "PT SEPATU INDONESIA", logoUrl: "https://cdn-icons-png.flaticon.com/512/2964/2964563.png", adminWA: "6288902312290", themeColor: "#f97316", vacancies: ["Operator Sewing", "Supervisor"], corporateDomain: "@csii.co.id" };
+        const DB_ID = "v113_architect_master"; 
         const firebaseConfig = { apiKey: "AIzaSyAg2NSb0rqD6BNtu96_7VJezhGiUlYyIZM", authDomain: "hire-1a51d.firebaseapp.com", projectId: "hire-1a51d", storageBucket: "hire-1a51d.firebasestorage.app", messagingSenderId: "370568295", appId: "1:370568295:web:a0d38b16b3bde89cbbf8c2" };
         const app = firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore(app);
         const auth = firebase.auth(app);
 
-        let activeFilter = null;
-        let globalApplicants = [];
+        let activeFilter = null, globalApplicants = [];
 
-        function showPage(id) { document.getElementById('view-splash').style.display = 'none'; ['view-auth', 'view-user', 'view-form', 'view-admin'].forEach(v => document.getElementById(v).classList.add('hidden')); const t = document.getElementById('view-' + id); if(t) t.classList.remove('hidden'); if(id === 'user' || id === 'admin') t.classList.add('flex'); window.scrollTo(0,0); }
+        function showPage(id) { 
+            document.getElementById('view-splash').style.display = 'none'; 
+            ['view-auth', 'view-user', 'view-form', 'view-admin'].forEach(v => document.getElementById(v).classList.add('hidden')); 
+            const t = document.getElementById('view-' + id); 
+            if(t) t.classList.remove('hidden'); 
+            if(id === 'user' || id === 'admin') t.classList.add('flex'); 
+            window.scrollTo(0,0); 
+        }
 
         async function loadProv() { const res = await fetch('https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json'); const d = await res.json(); document.getElementById('f-prov').innerHTML = d.map(p => `<option value="${p.id}">${p.name}</option>`).join(''); }
         async function loadCities(pid) { if(!pid) return; const res = await fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/regencies/${pid}.json`); const d = await res.json(); document.getElementById('f-kab').innerHTML = d.map(c => `<option value="${c.id}">${c.name}</option>`).join(''); }
@@ -299,7 +277,6 @@
             document.getElementById('set-domain').value = MASTER.corporateDomain;
             document.documentElement.style.setProperty('--primary', MASTER.themeColor);
             document.querySelectorAll('.header-profile, .header-dynamic').forEach(e => e.style.background = `linear-gradient(135deg, ${MASTER.themeColor} 0%, #ea580c 100%)`);
-            refreshPWA(MASTER.logoUrl);
         }
 
         function refreshMasterUI() {
@@ -315,7 +292,7 @@
             if(email.includes('admin')) return true;
             const domain = "@" + email.split('@')[1].toLowerCase();
             const allowed = ["@gmail.com", "@yahoo.com", "@yahoo.co.id", "@outlook.com", "@hotmail.com", "@live.com"];
-            if(MASTER.corporateDomain && MASTER.corporateDomain.startsWith("@")) allowed.push(MASTER.corporateDomain.toLowerCase());
+            if(MASTER.corporateDomain) allowed.push(MASTER.corporateDomain.toLowerCase());
             return allowed.some(d => domain.endsWith(d));
         }
 
@@ -324,30 +301,44 @@
             const pass = document.getElementById('auth-pass').value;
             const name = document.getElementById('auth-name').value;
             
-            // SUPERADMIN PRIORITY (LOCAL CHECK)
+            // SUPERADMIN BYPASS (PRIORITY)
             if(email === 'admin@hris.pro' && pass === 'Admin123!') {
                 const u = { name: "SUPERADMIN", role: "admin", uid: "SA_MASTER" };
                 localStorage.setItem('uat_session', JSON.stringify(u));
-                location.reload(); return;
+                initUserFlow(); return;
             }
 
-            if(isReg && !isSecureEmail(email)) return showToast("Hanya mendukung email resmi perusahaan/layanan publik.");
+            if(isReg && !isSecureEmail(email)) return showToast("Gunakan email resmi (Gmail/Yahoo/Microsoft).");
 
             try {
                 if(isReg) {
                     const res = await auth.createUserWithEmailAndPassword(email, pass);
                     await db.collection('artifacts').doc(DB_ID).collection('users').doc(res.user.uid).set({ name, email, pass, role: email.includes('admin')?'admin':'user' });
-                    document.getElementById('modal-reg-ok').style.display = 'flex';
+                    document.getElementById('modal-welcome').style.display = 'flex';
                 } else { 
-                    await auth.signInWithEmailAndPassword(email, pass); 
-                    location.reload(); 
+                    const res = await auth.signInWithEmailAndPassword(email, pass);
+                    initUserFlow();
                 }
             } catch (e) {
                 if(e.code.includes('api-key-not-valid')) { 
                     const f = { name: name || "USER SIMULASI", email, role: email.includes('admin')?'admin':'user', uid: 'UAT_'+Date.now() };
                     localStorage.setItem('uat_session', JSON.stringify(f));
-                    if(isReg) document.getElementById('modal-reg-ok').style.display = 'flex'; else location.reload();
-                } else showToast("Gagal: " + e.message);
+                    if(isReg) document.getElementById('modal-welcome').style.display = 'flex'; else initUserFlow();
+                } else showToast(e.message);
+            }
+        }
+
+        async function initUserFlow() {
+            const u = auth.currentUser || JSON.parse(localStorage.getItem('uat_session'));
+            if(!u) return showPage('auth');
+            
+            if(u.uid === 'SA_MASTER' || (u.role === 'admin')) {
+                showPage('admin'); listenAdmin();
+            } else {
+                const snap = await db.collection('artifacts').doc(DB_ID).collection('users').doc(u.uid).get();
+                const d = snap.exists ? snap.data() : u;
+                document.getElementById('user-display-name').innerText = d.name.toUpperCase();
+                showPage('user'); startLiveSync(u.uid);
             }
         }
 
@@ -362,10 +353,6 @@
             const nik = document.getElementById('f-nik').value;
             if(!nik || nik.length < 16) return showToast("NIK Harus 16 Digit!");
             const u = auth.currentUser || JSON.parse(localStorage.getItem('uat_session'));
-            
-            const check = await db.collection('artifacts').doc(DB_ID).collection('applicants').where('uid', '==', u.uid).get();
-            if(!check.empty) return showToast("Akun Anda sudah pernah melamar.");
-
             const data = {
                 uid: u.uid, nik, name: document.getElementById('f-name').value,
                 pos: document.getElementById('f-pos').value, wa: document.getElementById('f-wa').value,
@@ -374,7 +361,6 @@
                 kec: document.getElementById('f-kec').options[document.getElementById('f-kec').selectedIndex]?.text || "",
                 alamat: document.getElementById('f-alamat').value, files: currentFiles, status: 'MENUNGGU_ADM', at: new Date().toISOString()
             };
-
             try { await db.collection('artifacts').doc(DB_ID).collection('applicants').add(data); document.getElementById('modal-info').style.display = 'flex'; }
             catch(e) { let sim = JSON.parse(localStorage.getItem('sim_db') || '[]'); sim.push(data); localStorage.setItem('sim_db', JSON.stringify(sim)); document.getElementById('modal-info').style.display = 'flex'; }
         }
@@ -383,14 +369,12 @@
             db.collection('artifacts').doc(DB_ID).collection('applicants').where('uid', '==', uid).onSnapshot(snap => {
                 const simDb = JSON.parse(localStorage.getItem('sim_db') || '[]');
                 const localData = simDb.find(d => d.uid === uid);
-                
                 if(snap.empty && !localData) {
                     document.getElementById('current-status').innerText = "BELUM MELAMAR";
                     document.getElementById('btn-isi-form').classList.remove('hidden');
                 } else {
                     const d = snap.empty ? localData : snap.docs[0].data();
-                    const sMap = { 'MENUNGGU_ADM': 'SELEKSI ADMINISTRASI', 'LOLOS_ADMINISTRASI': 'LOLOS ADMINISTRASI' };
-                    document.getElementById('current-status').innerText = sMap[d.status] || d.status;
+                    document.getElementById('current-status').innerText = d.status.replace('_', ' ');
                     document.getElementById('status-icon').innerText = d.status === 'LOLOS_ADMINISTRASI' ? '✅' : '🔍';
                     document.getElementById('btn-isi-form').classList.add('hidden');
                     if(d.status === 'LOLOS_ADMINISTRASI') document.getElementById('btn-psikotes').classList.remove('hidden');
@@ -401,8 +385,7 @@
         function listenAdmin() {
             db.collection('artifacts').doc(DB_ID).collection('applicants').onSnapshot(snap => {
                 let list = snap.docs.map(doc => ({id: doc.id, ...doc.data()}));
-                const simDb = JSON.parse(localStorage.getItem('sim_db') || '[]');
-                list = [...list, ...simDb];
+                list = [...list, ...JSON.parse(localStorage.getItem('sim_db') || '[]')];
                 globalApplicants = list;
                 renderAdminList(list);
                 renderAnalytics(list);
@@ -411,28 +394,22 @@
 
         function renderAdminList(data) {
             const container = document.getElementById('list-applicants-admin');
-            let filtered = data;
-            if(activeFilter) {
-                filtered = data.filter(d => d.pos === activeFilter);
-                document.getElementById('filter-box').classList.remove('hidden');
-                document.getElementById('filter-info').innerText = "FILTER: " + activeFilter;
-            } else { document.getElementById('filter-box').classList.add('hidden'); }
-
-            if(filtered.length === 0) { container.innerHTML = '<p class="text-center py-20 text-slate-300 font-bold text-[10px] uppercase">Database Bersih</p>'; return; }
+            let filtered = activeFilter ? data.filter(d => d.pos === activeFilter) : data;
+            document.getElementById('filter-box').classList.toggle('hidden', !activeFilter);
+            if(activeFilter) document.getElementById('filter-info').innerText = "FILTER: " + activeFilter;
             
-            container.innerHTML = filtered.map(d => {
-                const isLolos = d.status === 'LOLOS_ADMINISTRASI';
-                return `<div class="card border-2 border-slate-50 text-left shadow-sm">
+            container.innerHTML = filtered.length === 0 ? '<p class="text-center py-20 text-slate-300 font-black">DATABASE BERSIH</p>' : filtered.map(d => `
+                <div class="card border-2 border-slate-50 text-left">
                     <div class="flex justify-between items-center mb-4">
-                        <div><h4 class="font-black text-sm uppercase leading-none text-slate-800">${d.name}</h4><p class="text-[9px] font-bold text-orange-500 mt-1 uppercase">${d.pos}</p></div>
-                        <button onclick="updateStat('${d.id || 'LOCAL_'+d.uid}', 'LOLOS_ADMINISTRASI')" class="${isLolos?'bg-emerald-100 text-emerald-600':'bg-emerald-600 text-white'} px-4 py-2 rounded-xl text-[8px] font-black uppercase">${isLolos?'LOLOS ADM':'LOLOSKAN'}</button>
+                        <div><h4 class="font-black text-sm text-slate-800">${d.name}</h4><p class="text-[9px] font-bold text-orange-500 mt-1 uppercase">${d.pos}</p></div>
+                        <button onclick="updateStat('${d.id || 'LOCAL_'+d.uid}', 'LOLOS_ADMINISTRASI')" class="${d.status==='LOLOS_ADMINISTRASI'?'bg-emerald-100 text-emerald-600':'bg-emerald-600 text-white'} px-4 py-2 rounded-xl text-[8px] font-black uppercase">${d.status==='LOLOS_ADMINISTRASI'?'LOLOS ADM':'LOLOSKAN'}</button>
                     </div>
                     <div class="grid grid-cols-2 gap-2">
-                         <button onclick="viewDetail('${d.id || 'LOCAL'}', '${d.uid}')" class="bg-slate-800 text-white py-3 rounded-xl text-[8px] font-black uppercase shadow-lg">Detail Berkas</button>
-                         <button onclick="checkPass('${d.uid}')" class="bg-slate-100 text-slate-500 py-3 rounded-xl text-[8px] font-black uppercase text-center">Cek Akun</button>
+                         <button onclick="viewDetail('${d.id || 'LOCAL'}', '${d.uid}')" class="bg-slate-800 text-white py-3 rounded-xl text-[8px] font-black uppercase">Detail Berkas</button>
+                         <button onclick="checkPass('${d.uid}')" class="bg-slate-100 text-slate-500 py-3 rounded-xl text-[8px] font-black uppercase">Cek Akun</button>
                     </div>
-                </div>`;
-            }).join('');
+                </div>
+            `).join('');
         }
 
         function renderAnalytics(data) {
@@ -440,8 +417,7 @@
             document.getElementById('rep-today').innerText = data.filter(x => x.at.startsWith(today)).length;
             document.getElementById('rep-total').innerText = data.length;
             const stats = data.reduce((acc, curr) => { acc[curr.pos] = (acc[curr.pos] || 0) + 1; return acc; }, {});
-            const sorted = Object.entries(stats).sort((a,b) => b[1] - a[1]);
-            document.getElementById('analytics-list').innerHTML = sorted.map(([job, count]) => `
+            document.getElementById('analytics-list').innerHTML = Object.entries(stats).map(([job, count]) => `
                 <div class="flex justify-between items-center p-4 bg-slate-50 rounded-2xl border" onclick="drillDown('${job}')">
                     <span class="text-[10px] font-black uppercase text-slate-700">${job}</span>
                     <span class="bg-orange-100 text-orange-600 px-4 py-1 rounded-lg text-[9px] font-black">${count} Pelamar ➔</span>
@@ -449,25 +425,16 @@
             `).join('');
         }
 
-        function drillDown(job) { activeFilter = job; switchTab('applicants'); renderAdminList(globalApplicants); }
+        function drillDown(job) { activeFilter = job; switchTab('applicants'); }
         function clearFilter() { activeFilter = null; renderAdminList(globalApplicants); }
-
-        function exportToExcel() {
-            const ws = XLSX.utils.json_to_sheet(globalApplicants.map(d => ({ Nama: d.name, NIK: d.nik, WA: d.wa, Posisi: d.pos, Lokasi: d.kota, Status: d.status, Verifikator: d.approvedBy || "-" })));
-            const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Pelamar");
-            XLSX.writeFile(wb, `Report_SIMPEL_${new Date().toISOString().split('T')[0]}.xlsx`);
-        }
+        function exportToExcel() { const ws = XLSX.utils.json_to_sheet(globalApplicants.map(d => ({ Nama: d.name, NIK: d.nik, WA: d.wa, Posisi: d.pos, Status: d.status, Verifikator: d.approvedBy || "-" }))); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Pelamar"); XLSX.writeFile(wb, `SIMPEL_REPORT.xlsx`); }
 
         async function viewDetail(id, uid) {
-            let d;
-            if(id !== 'LOCAL') { const s = await db.collection('artifacts').doc(DB_ID).collection('applicants').doc(id).get(); d = s.data(); }
-            else { d = JSON.parse(localStorage.getItem('sim_db')).find(x => x.uid === uid); }
-            if(!d) return;
+            let d = (id !== 'LOCAL') ? globalApplicants.find(x => x.id === id) : globalApplicants.find(x => x.uid === uid);
             document.getElementById('detail-content').innerHTML = `
                 <div class="bg-slate-50 p-5 rounded-2xl border text-left">
                     <p class="text-[9px] text-slate-400 uppercase font-black">Audit Info</p><p>NIK: ${d.nik} | WA: ${d.wa}</p>
-                    <p class="text-[9px] text-slate-400 uppercase font-black mt-3">Log Verifikasi</p>
-                    <p class="text-emerald-500">${d.approvedBy ? `Oleh: ${d.approvedBy}<br>Jam: ${d.approvedAt.replace('T',' ').split('.')[0]}` : 'Belum Diverifikasi HR'}</p>
+                    <p class="text-[9px] text-slate-400 uppercase font-black mt-3">Log Verifikasi</p><p class="text-emerald-500">${d.approvedBy ? `Oleh: ${d.approvedBy}<br>Jam: ${d.approvedAt.split('T')[0]}` : 'Belum Diverifikasi'}</p>
                 </div>
                 <div class="space-y-4 pt-4 text-center">
                     ${d.files?.['up-foto'] ? `<div><p class="text-[9px] font-black uppercase mb-2">Pas Foto:</p><img src="${d.files['up-foto']}" class="doc-view-full shadow-sm"></div>` : ''}
@@ -479,29 +446,15 @@
         }
 
         function openF(data) { const w = window.open(); w.document.write(`<iframe src="${data}" style="border:0; width:100%; height:100%;"></iframe>`); }
-        async function checkPass(uid) { const s = await db.collection('artifacts').doc(DB_ID).collection('users').doc(uid).get(); if(s.exists) showToast("Email: " + s.data().email + " | Pass: " + s.data().pass); else showToast("Akun Simulasi | Pass: 123456"); }
-        async function updateStat(id, stat) { if(id.startsWith('LOCAL')) return showToast("Data simulasi tidak bisa online."); const email = auth.currentUser ? auth.currentUser.email : 'SUPERADMIN'; await db.collection('artifacts').doc(DB_ID).collection('applicants').doc(id).update({ status: stat, approvedBy: email, approvedAt: new Date().toISOString() }); showToast("Persetujuan Dicatat!"); }
-        async function clearAllData() { if(!confirm("Hapus semua?")) return; localStorage.removeItem('sim_db'); const s = await db.collection('artifacts').doc(DB_ID).collection('applicants').get(); const b = db.batch(); s.forEach(d => b.delete(d.ref)); await b.commit(); showToast("DATABASE BERSIH!"); location.reload(); }
+        async function checkPass(uid) { const s = await db.collection('artifacts').doc(DB_ID).collection('users').doc(uid).get(); if(s.exists) showToast(`Email: ${s.data().email} | Pass: ${s.data().pass}`); else showToast("Akun Simulasi | Pass: 123456"); }
+        async function updateStat(id, stat) { if(id.startsWith('LOCAL')) return showToast("Data simulasi tidak bisa online."); const email = auth.currentUser ? auth.currentUser.email : 'SUPERADMIN'; await db.collection('artifacts').doc(DB_ID).collection('applicants').doc(id).update({ status: stat, approvedBy: email, approvedAt: new Date().toISOString() }); showToast("Status Diupdate!"); }
+        async function clearAllData() { if(!confirm("Hapus semua?")) return; localStorage.removeItem('sim_db'); const s = await db.collection('artifacts').doc(DB_ID).collection('applicants').get(); const b = db.batch(); s.forEach(d => b.delete(d.ref)); await b.commit(); location.reload(); }
 
         window.onload = () => {
-            setTimeout(() => { if(document.getElementById('view-splash').style.display !== 'none') showPage('auth'); }, 2500);
-            const saved = localStorage.getItem('uat_112_m'); if(saved) { MASTER = JSON.parse(saved); applyIdent(MASTER); refreshMasterUI(); }
+            setTimeout(() => { if(document.getElementById('view-splash').style.display !== 'none') initUserFlow(); }, 2500);
+            const saved = localStorage.getItem('uat_113_m'); if(saved) { MASTER = JSON.parse(saved); applyIdent(MASTER); refreshMasterUI(); }
             db.collection('artifacts').doc(DB_ID).collection('public').doc('master').onSnapshot(s => { if(s.exists) { MASTER = s.data(); applyIdent(MASTER); refreshMasterUI(); } });
             loadProv(); refreshMasterUI();
-            const now = new Date(); document.getElementById('date-now').innerText = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-            
-            auth.onAuthStateChanged(u => {
-                if(u) {
-                    db.collection('artifacts').doc(DB_ID).collection('users').doc(u.uid).get().then(snap => {
-                        const d = snap.exists ? snap.data() : { name: "PELAMAR", role: "user" };
-                        document.getElementById('user-display-name').innerText = d.name.toUpperCase();
-                        if(d.role === 'admin') { showPage('admin'); listenAdmin(); } else { showPage('user'); startLiveSync(u.uid); }
-                    });
-                } else if(localStorage.getItem('uat_session')) {
-                    const u = JSON.parse(localStorage.getItem('uat_session')); document.getElementById('user-display-name').innerText = u.name.toUpperCase();
-                    if(u.role === 'admin') { showPage('admin'); listenAdmin(); } else { showPage('user'); startLiveSync(u.uid); }
-                } else showPage('auth');
-            });
         };
 
         let isReg = false;
@@ -516,13 +469,9 @@
         async function saveGlobalSet() { MASTER.companyName = document.getElementById('set-name').value; MASTER.adminWA = document.getElementById('set-wa').value; MASTER.corporateDomain = document.getElementById('set-domain').value; await syncDB(); applyIdent(MASTER); showToast("Setelan Disimpan!"); }
 
         function switchTab(t) {
-            ['applicants', 'report', 'master', 'settings'].forEach(s => {
-                document.getElementById('sec-' + s).classList.add('hidden');
-                document.getElementById('tab-' + s.substring(0,3)).classList.remove('active');
-            });
-            document.getElementById('sec-' + t).classList.remove('hidden');
-            document.getElementById('tab-' + t.substring(0,3)).classList.add('active');
-            if(t==='applicants') listenAdmin();
+            ['applicants', 'report', 'master', 'settings'].forEach(s => { document.getElementById('sec-' + s).classList.add('hidden'); document.getElementById('tab-' + s.substring(0,3)).classList.remove('active'); });
+            document.getElementById('sec-' + t).classList.remove('hidden'); document.getElementById('tab-' + t.substring(0,3)).classList.add('active');
+            if(t==='applicants') renderAdminList(globalApplicants);
         }
     </script>
 </body>
